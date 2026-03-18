@@ -34,7 +34,17 @@ export function Navbar() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <NavLink to="/" className="flex items-center gap-2 font-bold text-foreground">
-            <GraduationCap className="h-7 w-7 text-primary" />
+            <img
+              src="/images/logo.png"
+              alt={`Logo ${SCHOOL.shortName}`}
+              className="h-10 w-auto"
+              onError={(e) => {
+                // Fallback al ícono si no existe el logo todavía
+                e.currentTarget.style.display = 'none'
+                e.currentTarget.nextElementSibling?.classList.remove('hidden')
+              }}
+            />
+            <GraduationCap className="hidden h-7 w-7 text-primary" />
             <span className="text-sm sm:text-base">{SCHOOL.shortName}</span>
           </NavLink>
 
@@ -62,7 +72,7 @@ export function Navbar() {
           {/* Desktop CTA */}
           <div className="hidden md:block">
             <Button asChild size="sm">
-              <NavLink to="/admision">Postular ahora</NavLink>
+              <NavLink to="/contacto">Contáctanos</NavLink>
             </Button>
           </div>
 
@@ -101,7 +111,7 @@ export function Navbar() {
               ))}
               <div className="pt-2 px-4">
                 <Button asChild className="w-full">
-                  <NavLink to="/admision">Postular ahora</NavLink>
+                  <NavLink to="/contacto">Contáctanos</NavLink>
                 </Button>
               </div>
             </div>

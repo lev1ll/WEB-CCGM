@@ -1,11 +1,19 @@
+import { HeroSeccion } from './sections/HeroSeccion'
+import { PasosAdmision } from './sections/PasosAdmision'
+import { Requisitos } from './sections/Requisitos'
+import { CalendarioAdmision } from './sections/CalendarioAdmision'
+import { FormularioPreInscripcion } from './sections/FormularioPreInscripcion'
+import { FAQAdmision } from './sections/FAQAdmision'
+
 export function AdmisionPage() {
   return (
-    <div>
-      {/* === PASOS DEL PROCESO === */}
-      {/* === REQUISITOS === */}
-      {/* === CALENDARIO DE ADMISIÓN === */}
-      {/* === FORMULARIO DE PRE-INSCRIPCIÓN === */}
-      {/* === FAQ ADMISIÓN === */}
-    </div>
+    <>
+      <HeroSeccion />
+      <PasosAdmision />
+      <Requisitos />
+      <CalendarioAdmision />
+      <FormularioPreInscripcion />
+      <FAQAdmision />
+    </>
   )
 }

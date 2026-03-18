@@ -1,11 +1,13 @@
+import { HeroSeccion } from './sections/HeroSeccion'
+import { NivelCard } from './sections/NivelCard'
+import { Extraescolares } from './sections/Extraescolares'
+
 export function NivelesPage() {
   return (
-    <div>
-      {/* === HERO DE SECCIÓN === */}
-      {/* === PRE-KÍNDER / KÍNDER === */}
-      {/* === BÁSICA (1° - 8°) === */}
-      {/* === MEDIA (1° - 4° MEDIO) === */}
-      {/* === EXTRAESCOLARES === */}
-    </div>
+    <>
+      <HeroSeccion />
+      <NivelCard />
+      <Extraescolares />
+    </>
   )
 }
