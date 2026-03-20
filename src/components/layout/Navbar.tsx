@@ -35,7 +35,7 @@ export function Navbar() {
           {/* Logo */}
           <NavLink to="/" className="flex items-center gap-2 font-bold text-foreground">
             <img
-              src="/images/logo.png"
+              src="/images/logo_gabriela_mistral.png"
               alt={`Logo ${SCHOOL.shortName}`}
               className="h-10 w-auto"
               onError={(e) => {

@@ -1,3 +1,4 @@
+import UltimasNoticias from './sections/UltimasNoticias'
 import { Hero } from './sections/Hero'
 import { HeroSplit } from './sections/HeroSplit'
 import { HeroBillboard } from './sections/HeroBillboard'
@@ -84,6 +85,7 @@ export function HomePage() {
       <Valores />
       {/* <Testimonios /> — desactivado hasta tener reseñas reales */}
       <Galeria />
+      <UltimasNoticias />
       <FAQ />
       <CTAAdmision />
     </>

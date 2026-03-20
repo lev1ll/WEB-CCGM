@@ -12,9 +12,9 @@ export function Hero() {
       {/* Background image */}
       <div className="absolute inset-0">
         <img
-          src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=1600&auto=format&fit=crop&q=80"
-          alt="Alumnos del colegio"
-          className="h-full w-full object-cover"
+          src="/images/hero-escuela.jpg.jpg"
+          alt="Colegio Cristiano Gabriela Mistral"
+          className="h-full w-full object-cover object-center"
         />
         <div className="absolute inset-0 bg-gradient-to-br from-navy-deep/90 via-navy-deep/75 to-primary/60" />
       </div>
