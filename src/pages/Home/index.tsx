@@ -1,4 +1,5 @@
 import UltimasNoticias from './sections/UltimasNoticias'
+import { HeroCarousel, HeroCarouselDark, HeroCarouselRed } from './sections/HeroCarousel'
 import { Hero } from './sections/Hero'
 import { HeroSplit } from './sections/HeroSplit'
 import { HeroBillboard } from './sections/HeroBillboard'
@@ -78,6 +79,30 @@ export function HomePage() {
         desc="Banda roja con texto en la parte superior, foto recortada que sube desde abajo. Estilo Stripe/Linear."
       />
       <HeroStripe />
+
+      {/* ── OPCIÓN G: Carrusel fondo blanco ── */}
+      <HeroLabel
+        letter="G"
+        name="Carrusel — fondo blanco"
+        desc="Texto fijo a la izquierda sobre blanco, carrusel de fotos a la derecha."
+      />
+      <HeroCarousel />
+
+      {/* ── OPCIÓN H: Carrusel fondo negro ── */}
+      <HeroLabel
+        letter="H"
+        name="Carrusel — fondo negro + rojo/amarillo"
+        desc="Panel izquierdo negro con acentos rojo y amarillo. Más impactante e institucional."
+      />
+      <HeroCarouselDark />
+
+      {/* ── OPCIÓN I: Carrusel fondo rojo ── */}
+      <HeroLabel
+        letter="I"
+        name="Carrusel — fondo rojo + amarillo"
+        desc="Panel izquierdo en rojo vivo con texto blanco y acentos amarillos. Muy llamativo."
+      />
+      <HeroCarouselRed />
 
       {/* ── Resto de la página (solo aparece una vez) ── */}
       <SobreNosotros />

@@ -11,7 +11,7 @@ type IconName = keyof typeof ICON_MAP
 
 export function Instalaciones() {
   return (
-    <SectionWrapper>
+    <SectionWrapper variant="secondary">
       <SectionTitle
         title="Nuestras instalaciones"
         subtitle="Espacios pensados para el bienestar y el aprendizaje de nuestros estudiantes"

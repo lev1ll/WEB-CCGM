@@ -36,7 +36,7 @@ const itemVariants = {
 
 export function Valores() {
   return (
-    <SectionWrapper>
+    <SectionWrapper variant="accent">
       <SectionTitle
         title="Nuestros valores"
         subtitle="Principios que guían cada decisión en nuestra comunidad educativa"

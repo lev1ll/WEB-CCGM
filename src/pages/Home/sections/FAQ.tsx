@@ -11,7 +11,7 @@ import { HOME_FAQ } from '@/constants/home'
 
 export function FAQ() {
   return (
-    <SectionWrapper className="bg-muted/40">
+    <SectionWrapper variant="secondary">
       <SectionTitle
         title="Preguntas frecuentes"
         subtitle="Respuestas a las consultas más comunes de las familias"

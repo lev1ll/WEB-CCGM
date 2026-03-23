@@ -53,12 +53,33 @@ export default function AdminLayout() {
   // Supabase Realtime: notificar cuando llega una preinscripción nueva
   useEffect(() => {
     if (!supabase || !session) return
+
+    function getSeenIds(): Set<string> {
+      try {
+        const raw = localStorage.getItem('ccgm_seen_preinscripciones')
+        return new Set(raw ? JSON.parse(raw) : [])
+      } catch { return new Set() }
+    }
+
+    function markSeen(rowId: string) {
+      try {
+        const seen = getSeenIds()
+        seen.add(rowId)
+        const arr = Array.from(seen).slice(-500)
+        localStorage.setItem('ccgm_seen_preinscripciones', JSON.stringify(arr))
+      } catch { /* ignore */ }
+    }
+
     const channel = supabase
       .channel('admin-preinscripciones')
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'preinscripciones' },
         (payload) => {
+          const rowId = String((payload.new as { id?: unknown })?.id ?? '')
+          if (rowId && getSeenIds().has(rowId)) return
+          if (rowId) markSeen(rowId)
+
           setNewPostulaciones(prev => prev + 1)
           playChime()
           setBellAnimate(true)

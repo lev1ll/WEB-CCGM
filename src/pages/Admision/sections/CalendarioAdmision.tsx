@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils'
 
 export function CalendarioAdmision() {
   return (
-    <SectionWrapper>
+    <SectionWrapper variant="accent">
       <SectionTitle
         title="Calendario de admisión"
         subtitle="Fechas clave del proceso para el año escolar 2026"

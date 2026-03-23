@@ -4,7 +4,7 @@ import { AnimatedSection } from '@/components/shared/AnimatedSection'
 
 export function MapaInteractivo() {
   return (
-    <SectionWrapper className="bg-muted/40">
+    <SectionWrapper variant="dark">
       <SectionTitle title="Encuéntranos" subtitle="Estamos en Nueva Imperial, Región de La Araucanía" />
 
       <AnimatedSection direction="up" delay={0.1} className="mt-10">

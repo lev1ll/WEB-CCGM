@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { PageHero } from '@/components/shared/PageHero'
 import { useSupabaseQuery } from '@/hooks/useSupabaseQuery'
 import type { Noticia, NoticiaCategoria } from '@/types/noticias.types'
 import NoticiasGrid from './sections/NoticiasGrid'
@@ -22,11 +21,6 @@ export default function NoticiasPage() {
 
   return (
     <>
-      <PageHero
-        title="Noticias y Eventos"
-        subtitle="Mantente al día con todo lo que ocurre en el Colegio Cristiano Gabriela Mistral"
-        breadcrumb="Noticias"
-      />
       <NoticiasGrid
         items={items}
         isLoading={isLoading}

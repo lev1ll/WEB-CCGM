@@ -43,7 +43,7 @@ const NIVELES = [
 
 export function NivelesHome() {
   return (
-    <SectionWrapper className="bg-muted/40">
+    <SectionWrapper variant="dark">
       <SectionTitle
         title="Niveles educativos"
         subtitle="De 1° a 8° Básico — Acompañamos a cada estudiante en cada etapa de su crecimiento"

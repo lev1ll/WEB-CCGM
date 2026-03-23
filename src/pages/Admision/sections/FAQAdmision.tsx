@@ -11,7 +11,7 @@ import { ADMISSION_FAQ } from '@/constants/admision'
 
 export function FAQAdmision() {
   return (
-    <SectionWrapper>
+    <SectionWrapper variant="secondary">
       <SectionTitle
         title="Preguntas sobre admisión"
         subtitle="Resolvemos las dudas más comunes del proceso"

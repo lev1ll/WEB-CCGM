@@ -33,7 +33,7 @@ export default function UltimasNoticias() {
   if (loaded && items.length === 0) return null
 
   return (
-    <SectionWrapper className="bg-muted/30">
+    <SectionWrapper variant="dark">
       <AnimatedSection direction="up">
         <SectionTitle
           title="Últimas Noticias"

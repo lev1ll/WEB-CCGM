@@ -18,7 +18,7 @@ const itemVariants = {
 
 export function ValoresInstitucionales() {
   return (
-    <SectionWrapper className="bg-muted/40">
+    <SectionWrapper variant="accent">
       <SectionTitle
         title="Valores institucionales"
         subtitle="Los principios que guían cada decisión en el CCGM"

@@ -26,7 +26,7 @@ const PASOS = [
 
 export function CTAAdmision() {
   return (
-    <section className="relative overflow-hidden bg-navy-deep py-20 md:py-28">
+    <section className="relative overflow-hidden bg-primary py-20 md:py-28">
       {/* Decorative diagonal pattern */}
       <div
         className="absolute inset-0 opacity-5"

@@ -7,7 +7,7 @@ import { ADMISSION_REQUIREMENTS } from '@/constants/admision'
 
 export function Requisitos() {
   return (
-    <SectionWrapper className="bg-muted/40">
+    <SectionWrapper variant="dark">
       <SectionTitle
         title="Requisitos de postulación"
         subtitle="Documentos necesarios para completar el proceso de admisión"

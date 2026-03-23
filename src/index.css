@@ -39,24 +39,24 @@
 :root {
   --radius: 0.75rem;
 
-  /* Core surfaces — blanco limpio */
-  --background:         oklch(0.98  0.003 0);
+  /* Core surfaces — crema cálida #FFFBF0 */
+  --background:         oklch(0.98  0.015 88);
   --foreground:         oklch(0.14  0.01  0);
-  --card:               oklch(1     0     0);
+  --card:               oklch(0.99  0.008 88);
   --card-foreground:    oklch(0.14  0.01  0);
-  --popover:            oklch(1     0     0);
+  --popover:            oklch(0.99  0.008 88);
   --popover-foreground: oklch(0.14  0.01  0);
 
-  /* Brand primary — rojo vibrante colegio */
-  --primary:            oklch(0.48  0.27  27);
+  /* Brand primary — rojo institucional suavizado */
+  --primary:            oklch(0.52  0.21  27);
   --primary-foreground: oklch(0.98  0     0);
 
-  /* Secondary — amarillo dorado */
-  --secondary:          oklch(0.85  0.18  88);
-  --secondary-foreground: oklch(0.12 0.01  0);
+  /* Secondary — dorado ámbar (menos amarillo chillón) */
+  --secondary:          oklch(0.82  0.13  78);
+  --secondary-foreground: oklch(0.15 0.02  0);
 
-  /* Muted */
-  --muted:              oklch(0.95  0.005 0);
+  /* Muted — tono crema oscurecido */
+  --muted:              oklch(0.94  0.012 88);
   --muted-foreground:   oklch(0.50  0.01  0);
 
   /* Accent — amarillo claro */
@@ -65,8 +65,8 @@
 
   /* Semantic */
   --destructive:        oklch(0.577 0.245 27.325);
-  --border:             oklch(0.88  0.005 0);
-  --input:              oklch(0.88  0.005 0);
+  --border:             oklch(0.88  0.012 88);
+  --input:              oklch(0.88  0.012 88);
   --ring:               oklch(0.48  0.27  27);
 
   /* Custom brand tokens — rojo para secciones oscuras */
@@ -99,6 +99,52 @@
   --gold-light:         oklch(0.93  0.10  95);
   --navy-deep:          oklch(0.12  0.005 0);
   --navy-surface:       oklch(0.18  0.005 0);
+}
+
+/* ── Sección con fondo ROJO — todo el texto adapta automáticamente ── */
+.section-accent {
+  background-color:     oklch(0.52 0.21 27);
+  --foreground:         oklch(0.98 0    0  );
+  --muted-foreground:   oklch(0.95 0    0  / 0.65);
+  --primary:            oklch(0.85 0.18 88 );   /* gold se convierte en el acento */
+  --primary-foreground: oklch(0.12 0.01 0  );
+  --secondary:          oklch(0.85 0.18 88 );
+  --card:               oklch(0.53 0.25 27 );
+  --card-foreground:    oklch(0.98 0    0  );
+  --border:             oklch(1    0    0  / 0.15);
+  --muted:              oklch(0.53 0.25 27 );
+  --ring:               oklch(0.85 0.18 88 );
+}
+
+/* ── Sección con fondo DORADO ÁMBAR — todo el texto adapta automáticamente ── */
+.section-secondary {
+  background-color:     oklch(0.82 0.13 78 );  /* dorado cálido, menos chillón */
+  --foreground:         oklch(0.12 0.01 0  );
+  --muted-foreground:   oklch(0.28 0.02 0  );
+  --primary:            oklch(0.42 0.27 27 );   /* rojo sobre amarillo */
+  --primary-foreground: oklch(0.98 0    0  );
+  --secondary:          oklch(0.78 0.16 88 );   /* amarillo más oscuro para hover */
+  --secondary-foreground: oklch(0.12 0.01 0);
+  --card:               oklch(0.90 0.14 88 );   /* amarillo más claro para cards */
+  --card-foreground:    oklch(0.12 0.01 0  );
+  --border:             oklch(0    0    0  / 0.12);
+  --muted:              oklch(0.90 0.12 88 );
+  --ring:               oklch(0.42 0.27 27 );
+}
+
+/* ── Sección con fondo CARBÓN CÁLIDO — todo el texto adapta automáticamente ── */
+.section-dark {
+  background-color:     oklch(0.24 0.02 45 );  /* carbón medio, no negro puro */
+  --foreground:         oklch(0.94 0    0  );
+  --muted-foreground:   oklch(0.56 0    0  );
+  --primary:            oklch(0.62 0.22 27 );   /* rojo más claro en fondo oscuro */
+  --primary-foreground: oklch(0.98 0    0  );
+  --secondary:          oklch(0.85 0.18 88 );
+  --card:               oklch(0.18 0.01 0  );
+  --card-foreground:    oklch(0.94 0    0  );
+  --border:             oklch(1    0    0  / 0.09);
+  --muted:              oklch(0.20 0.01 0  );
+  --ring:               oklch(0.62 0.22 27 );
 }
 
 *,

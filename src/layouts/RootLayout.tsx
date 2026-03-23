@@ -4,6 +4,7 @@ import { Footer } from '@/components/layout/Footer'
 import { ChatWidget } from '@/chatbot/ChatWidget'
 import { Toaster } from '@/components/ui/toast'
 import { ScrollToTop } from '@/components/shared/ScrollToTop'
+import { VariantSwitcher } from '@/components/shared/VariantSwitcher'
 
 /**
  * RootLayout
@@ -30,6 +31,9 @@ export function RootLayout() {
       </main>
 
       <Footer />
+
+      {/* Selector de diseño — para elegir variante visual */}
+      <VariantSwitcher />
 
       {/* Widget flotante del asistente IA */}
       <ChatWidget />

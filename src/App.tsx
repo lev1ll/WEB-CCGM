@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { RootLayout } from '@/layouts/RootLayout'
 import AdminLayout from '@/layouts/AdminLayout'
 import { HomePage } from '@/pages/Home'
+// HomePage queda en /old por si se necesita comparar
 import { NosotrosPage } from '@/pages/Nosotros'
 import { NivelesPage } from '@/pages/Niveles'
 import { AdmisionPage } from '@/pages/Admision'
@@ -14,15 +15,19 @@ import AdminContactos from '@/pages/Admin/Contactos'
 import AdminNoticiasPage from '@/pages/Admin/Noticias'
 import NoticiaEditorPage from '@/pages/Admin/Noticias/Editor'
 import { ErrorBoundary } from '@/components/shared/ErrorBoundary'
+import { VariantProvider } from '@/context/VariantContext'
+import { HomeNueva } from '@/pages/HomeNueva'
 
 export default function App() {
   return (
+    <VariantProvider>
     <BrowserRouter>
       <ErrorBoundary>
         <Routes>
           {/* ── Sitio público ── */}
           <Route element={<RootLayout />}>
-            <Route index element={<ErrorBoundary><HomePage /></ErrorBoundary>} />
+            <Route index element={<ErrorBoundary><HomeNueva /></ErrorBoundary>} />
+            <Route path="old" element={<ErrorBoundary><HomePage /></ErrorBoundary>} />
             <Route path="nosotros" element={<ErrorBoundary><NosotrosPage /></ErrorBoundary>} />
             <Route path="niveles" element={<ErrorBoundary><NivelesPage /></ErrorBoundary>} />
             <Route path="admision" element={<ErrorBoundary><AdmisionPage /></ErrorBoundary>} />
@@ -43,5 +48,6 @@ export default function App() {
         </Routes>
       </ErrorBoundary>
     </BrowserRouter>
+    </VariantProvider>
   )
 }

@@ -36,7 +36,7 @@ export function Extraescolares() {
     active === 'all' ? EXTRAESCOLARES : EXTRAESCOLARES.filter((e) => e.category === active)
 
   return (
-    <SectionWrapper className="bg-muted/40">
+    <SectionWrapper variant="accent">
       <SectionTitle
         title="Actividades extraprogramáticas"
         subtitle="Talleres que potencian los talentos de nuestros estudiantes"
