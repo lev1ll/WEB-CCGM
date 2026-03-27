@@ -58,6 +58,18 @@ export interface Preinscripcion {
   created_at: string
 }
 
+export type TrabajadorCategoria = 'directivo' | 'docente' | 'asistente'
+
+export interface Trabajador {
+  id: string
+  name: string
+  role: string
+  categoria: TrabajadorCategoria
+  photo: string
+  orden: number
+  created_at: string
+}
+
 export interface ContactMessage {
   id: string
   name: string

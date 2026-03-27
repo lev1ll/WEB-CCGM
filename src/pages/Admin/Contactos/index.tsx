@@ -48,6 +48,8 @@ export default function AdminContactos() {
   const [searchPI, setSearchPI] = useState('')
   const [selectedPI, setSelectedPI] = useState<Preinscripcion | null>(null)
 
+  const [confirmDeletePI, setConfirmDeletePI] = useState<Preinscripcion | null>(null)
+
   // mensajes
   const [mensajes, setMensajes] = useState<ContactMessage[]>([])
   const [searchMsg, setSearchMsg] = useState('')
@@ -83,6 +85,17 @@ export default function AdminContactos() {
       setActionError(r.error ?? 'Error al actualizar')
     }
     setLoadingId(null)
+  }
+
+  async function deletePI(p: Preinscripcion) {
+    setLoadingId(p.id)
+    const r = await remove('preinscripciones', p.id)
+    if (r.success) {
+      setInscripciones(prev => prev.filter(x => x.id !== p.id))
+      if (selectedPI?.id === p.id) setSelectedPI(null)
+    } else { setActionError(r.error ?? 'Error') }
+    setLoadingId(null)
+    setConfirmDeletePI(null)
   }
 
   // ── Convertir mensaje → preinscripción ───────────────────────────────────
@@ -275,6 +288,12 @@ export default function AdminContactos() {
                                   : `→ ${target.label.slice(0, -1)}`}
                               </button>
                             ))}
+                            <button
+                              onClick={() => setConfirmDeletePI(p)}
+                              className="px-2.5 py-1.5 rounded-md bg-red-50 text-red-500 border border-red-200 hover:bg-red-100 transition-colors"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
                           </div>
                         </div>
                       ))}
@@ -454,7 +473,29 @@ export default function AdminContactos() {
         )}
       </Dialog>
 
-      {/* ── Confirm delete ─────────────────────────────────────────────── */}
+      {/* ── Confirm delete pre-inscripción ────────────────────────────── */}
+      <Dialog open={!!confirmDeletePI} onOpenChange={open => !open && setConfirmDeletePI(null)}>
+        {confirmDeletePI && (
+          <DialogContent className="max-w-sm">
+            <DialogHeader><DialogTitle>¿Eliminar pre-inscripción?</DialogTitle></DialogHeader>
+            <p className="text-sm text-gray-600">
+              La pre-inscripción de <strong>{confirmDeletePI.child_name}</strong> ({confirmDeletePI.name}) será eliminada permanentemente.
+            </p>
+            <div className="flex gap-2 mt-2">
+              <button onClick={() => setConfirmDeletePI(null)}
+                className="flex-1 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
+                Cancelar
+              </button>
+              <button disabled={loadingId === confirmDeletePI.id} onClick={() => deletePI(confirmDeletePI)}
+                className="flex-1 py-2 rounded-lg bg-red-500 text-white text-sm font-semibold hover:bg-red-600 transition-colors disabled:opacity-50">
+                {loadingId === confirmDeletePI.id ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : 'Eliminar'}
+              </button>
+            </div>
+          </DialogContent>
+        )}
+      </Dialog>
+
+      {/* ── Confirm delete mensaje ─────────────────────────────────────── */}
       <Dialog open={!!confirmDeleteMsg} onOpenChange={open => !open && setConfirmDeleteMsg(null)}>
         {confirmDeleteMsg && (
           <DialogContent className="max-w-sm">

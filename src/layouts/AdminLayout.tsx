@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import { Outlet, NavLink, useLocation, Navigate } from 'react-router-dom'
-import { LayoutDashboard, Newspaper, Users, LogOut, Bell, UserPlus, X } from 'lucide-react'
+import { LayoutDashboard, Newspaper, Users, LogOut, Bell, UserPlus, X, GraduationCap } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
 
@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, exact: true },
   { to: '/admin/noticias', label: 'Noticias', icon: Newspaper, exact: false },
   { to: '/admin/contactos', label: 'Contactos', icon: Users, exact: false },
+  { to: '/admin/trabajadores', label: 'Equipo', icon: GraduationCap, exact: false },
 ]
 
 function playChime() {
@@ -84,7 +85,7 @@ export default function AdminLayout() {
           playChime()
           setBellAnimate(true)
           setTimeout(() => setBellAnimate(false), 1000)
-          const nombre = (payload.new as { nombre_completo?: string })?.nombre_completo ?? 'Alguien'
+          const nombre = (payload.new as { name?: string })?.name ?? 'Alguien'
           const id = Date.now()
           setToasts(prev => [...prev, { id, nombre }])
           setTimeout(() => dismissToast(id), 8000)

@@ -29,6 +29,29 @@ export function toEmbedUrl(url: string): string | null {
   return null
 }
 
+export async function cropToSquare(file: File): Promise<File> {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    const url = URL.createObjectURL(file)
+    img.onload = () => {
+      const size = Math.min(img.width, img.height)
+      const canvas = document.createElement('canvas')
+      canvas.width = size
+      canvas.height = size
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return reject(new Error('Canvas no disponible'))
+      ctx.drawImage(img, (img.width - size) / 2, (img.height - size) / 2, size, size, 0, 0, size, size)
+      URL.revokeObjectURL(url)
+      canvas.toBlob(blob => {
+        if (!blob) return reject(new Error('Error al recortar imagen'))
+        resolve(new File([blob], file.name, { type: 'image/jpeg' }))
+      }, 'image/jpeg', 0.9)
+    }
+    img.onerror = () => reject(new Error('Error al cargar imagen'))
+    img.src = url
+  })
+}
+
 export async function uploadToCloudinary(file: File): Promise<string> {
   const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME as string
   const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET as string

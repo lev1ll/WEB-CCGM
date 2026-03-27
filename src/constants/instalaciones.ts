@@ -69,44 +69,92 @@ export const TRABAJADORES: Trabajador[] = [
   // ── Directivos ──
   {
     id: 'director',
-    name: '',           // TODO: nombre real
-    role: 'Director/a',
+    name: 'María González Rojas',
+    role: 'Directora',
     categoria: 'directivo',
     photo: '',
-    initials: 'D',
+    initials: 'MG',
   },
   {
     id: 'jefe-utp',
-    name: '',           // TODO: nombre real
-    role: 'Jefe/a de UTP',
+    name: 'Carlos Muñoz Pérez',
+    role: 'Jefe de UTP',
     categoria: 'directivo',
     photo: '',
-    initials: 'U',
+    initials: 'CM',
   },
-  // ── Docentes (agregar uno por cada profesor) ──
+  {
+    id: 'pie',
+    name: 'Ana Soto Vargas',
+    role: 'Coordinadora PIE',
+    categoria: 'directivo',
+    photo: '',
+    initials: 'AS',
+  },
+  // ── Docentes ──
   {
     id: 'docente-1',
-    name: '',           // TODO: nombre real
+    name: 'Lucía Ramírez Torres',
     role: 'Profesora 1° y 2° Básico',
     categoria: 'docente',
     photo: '',
-    initials: 'P',
+    initials: 'LR',
   },
   {
     id: 'docente-2',
-    name: '',           // TODO: nombre real
+    name: 'Jorge Flores Silva',
     role: 'Profesor 3° y 4° Básico',
     categoria: 'docente',
     photo: '',
-    initials: 'P',
+    initials: 'JF',
+  },
+  {
+    id: 'docente-3',
+    name: 'Patricia Vega Morales',
+    role: 'Profesora 5° y 6° Básico',
+    categoria: 'docente',
+    photo: '',
+    initials: 'PV',
+  },
+  {
+    id: 'docente-4',
+    name: 'Roberto Díaz Castro',
+    role: 'Profesor 7° y 8° Básico',
+    categoria: 'docente',
+    photo: '',
+    initials: 'RD',
+  },
+  {
+    id: 'docente-5',
+    name: 'Claudia Ortiz Núñez',
+    role: 'Profesora de Educación Física',
+    categoria: 'docente',
+    photo: '',
+    initials: 'CO',
   },
   // ── Asistentes ──
   {
     id: 'asistente-1',
-    name: '',           // TODO: nombre real
+    name: 'Sandra López Reyes',
     role: 'Asistente de Educación',
     categoria: 'asistente',
     photo: '',
-    initials: 'A',
+    initials: 'SL',
+  },
+  {
+    id: 'asistente-2',
+    name: 'Miguel Herrera Campos',
+    role: 'Inspector General',
+    categoria: 'asistente',
+    photo: '',
+    initials: 'MH',
+  },
+  {
+    id: 'asistente-3',
+    name: 'Verónica Pinto Araya',
+    role: 'Secretaria',
+    categoria: 'asistente',
+    photo: '',
+    initials: 'VP',
   },
 ]

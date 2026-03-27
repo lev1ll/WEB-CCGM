@@ -3,7 +3,7 @@ import { Historia } from './sections/Historia'
 import { MisionVision } from './sections/MisionVision'
 import { ValoresInstitucionales } from './sections/ValoresInstitucionales'
 import { Instalaciones } from './sections/Instalaciones'
-// import { EquipoEscuela } from './sections/EquipoEscuela' // ← activar cuando haya datos del personal
+import { EquipoEscuela } from './sections/EquipoEscuela'
 
 export function NosotrosPage() {
   return (
@@ -13,7 +13,7 @@ export function NosotrosPage() {
       <MisionVision />
       <ValoresInstitucionales />
       <Instalaciones />
-      {/* <EquipoEscuela /> — pendiente: agregar nombres y fotos del personal */}
+      <EquipoEscuela />
     </>
   )
 }

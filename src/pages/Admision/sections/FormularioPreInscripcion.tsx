@@ -31,7 +31,7 @@ export function FormularioPreInscripcion() {
       table: 'preinscripciones',
       onSuccess: () => {
         setToastVariant('success')
-        setToastMsg('Tu pre-inscripción fue recibida. Te contactaremos pronto.')
+        setToastMsg('¡Mensaje recibido! Te contactaremos pronto para coordinar la visita.')
         setToastOpen(true)
       },
       onError: (err) => {
@@ -45,8 +45,8 @@ export function FormularioPreInscripcion() {
   return (
     <SectionWrapper className="bg-muted/40" id="formulario">
       <SectionTitle
-        title="Formulario de pre-inscripción"
-        subtitle="Completa los datos y nos pondremos en contacto contigo"
+        title="Contáctanos"
+        subtitle="Déjanos tus datos y los de tu hijo/a — te llamamos para coordinar la visita"
       />
 
       <AnimatedSection direction="up" delay={0.1} className="mt-10 max-w-2xl mx-auto">
@@ -146,7 +146,7 @@ export function FormularioPreInscripcion() {
                 className="w-full gap-2"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Enviando...' : 'Enviar pre-inscripción'}
+                {isSubmitting ? 'Enviando...' : 'Enviar mensaje'}
                 {!isSubmitting && <Send className="h-4 w-4" />}
               </Button>
             </div>

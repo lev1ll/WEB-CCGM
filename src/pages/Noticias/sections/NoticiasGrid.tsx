@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Calendar, ArrowRight } from 'lucide-react'
@@ -6,6 +7,11 @@ import { Badge } from '@/components/ui/badge'
 import { AnimatedSection } from '@/components/shared/AnimatedSection'
 import type { Noticia, NoticiaCategoria } from '@/types/noticias.types'
 import { formatDate } from '@/lib/utils'
+
+const MESES = [
+  'Enero','Febrero','Marzo','Abril','Mayo','Junio',
+  'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre',
+]
 
 interface Props {
   items: Noticia[]
@@ -21,27 +27,87 @@ const FILTERS: { value: NoticiaCategoria | 'todas'; label: string }[] = [
 ]
 
 export default function NoticiasGrid({ items, isLoading, filter, onFilterChange }: Props) {
-  const filtered = filter === 'todas' ? items : items.filter(n => n.categoria === filter)
+  const [anio, setAnio] = useState<number | null>(null)
+  const [mes, setMes] = useState<number | null>(null)
+
+  // Años disponibles según los items
+  const aniosDisponibles = Array.from(
+    new Set(items.map(n => new Date(n.created_at).getFullYear()))
+  ).sort((a, b) => b - a)
+
+  const filtered = items.filter(n => {
+    if (filter !== 'todas' && n.categoria !== filter) return false
+    const fecha = new Date(n.created_at)
+    if (anio !== null && fecha.getFullYear() !== anio) return false
+    if (mes !== null && fecha.getMonth() !== mes) return false
+    return true
+  })
+
+  function handleAnio(val: string) {
+    setAnio(val === '' ? null : Number(val))
+    setMes(null)
+  }
 
   return (
     <section className="py-16 md:py-24 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        {/* Filter tabs */}
-        <div className="flex gap-2 mb-10 justify-center">
-          {FILTERS.map(f => (
-            <button
-              key={f.value}
-              onClick={() => onFilterChange(f.value)}
-              className={`px-5 py-2 rounded-full text-sm font-semibold transition-all
-                ${filter === f.value
-                  ? 'bg-primary text-white shadow-md shadow-primary/20'
-                  : 'bg-muted text-muted-foreground hover:bg-muted/70'
-                }`}
-            >
-              {f.label}
-            </button>
-          ))}
+        {/* Filtros */}
+        <div className="flex flex-col items-center gap-4 mb-10">
+          {/* Categoría */}
+          <div className="flex gap-2">
+            {FILTERS.map(f => (
+              <button
+                key={f.value}
+                onClick={() => onFilterChange(f.value)}
+                className={`px-5 py-2 rounded-full text-sm font-semibold transition-all
+                  ${filter === f.value
+                    ? 'bg-primary text-white shadow-md shadow-primary/20'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/70'
+                  }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Año / Mes */}
+          {aniosDisponibles.length > 0 && (
+            <div className="flex gap-2 items-center">
+              <select
+                value={anio ?? ''}
+                onChange={e => handleAnio(e.target.value)}
+                className="px-3 py-1.5 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+              >
+                <option value="">Todos los años</option>
+                {aniosDisponibles.map(a => (
+                  <option key={a} value={a}>{a}</option>
+                ))}
+              </select>
+
+              {anio !== null && (
+                <select
+                  value={mes ?? ''}
+                  onChange={e => setMes(e.target.value === '' ? null : Number(e.target.value))}
+                  className="px-3 py-1.5 rounded-lg border border-border bg-background text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                >
+                  <option value="">Todos los meses</option>
+                  {MESES.map((m, i) => (
+                    <option key={i} value={i}>{m}</option>
+                  ))}
+                </select>
+              )}
+
+              {(anio !== null || mes !== null) && (
+                <button
+                  onClick={() => { setAnio(null); setMes(null) }}
+                  className="text-xs text-muted-foreground hover:text-foreground underline transition-colors"
+                >
+                  Limpiar
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Loading skeleton */}
