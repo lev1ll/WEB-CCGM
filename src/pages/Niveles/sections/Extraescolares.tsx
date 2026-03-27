@@ -38,7 +38,7 @@ export function Extraescolares() {
   return (
     <SectionWrapper variant="accent">
       <SectionTitle
-        title="Actividades extraprogramáticas"
+        title="Academias"
         subtitle="Talleres que potencian los talentos de nuestros estudiantes"
       />
 

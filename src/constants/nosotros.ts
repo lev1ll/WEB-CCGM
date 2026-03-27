@@ -33,7 +33,7 @@ export const HISTORIA_TIMELINE = [
     year: '2024',
     title: '30 años formando vidas',
     description:
-      'Celebramos tres décadas de historia con más de 800 alumnos, renovando nuestro compromiso con la excelencia, la fe y la formación integral.',
+      'Celebramos tres décadas de historia con más de 200 alumnos, renovando nuestro compromiso con la excelencia, la fe y la formación integral.',
   },
 ] as const
 

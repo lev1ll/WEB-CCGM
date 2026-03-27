@@ -9,7 +9,7 @@ export const HERO_CONTENT = {
 
 export const HOME_STATS = [
   { value: 30, suffix: '+', label: 'Años de historia' },
-  { value: 800, suffix: '+', label: 'Alumnos' },
+  { value: 200, suffix: '+', label: 'Alumnos' },
   { value: 45, suffix: '', label: 'Docentes titulados' },
 ] as const
 

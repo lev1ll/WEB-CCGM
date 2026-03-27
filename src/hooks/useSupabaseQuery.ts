@@ -71,8 +71,9 @@ export function useSupabaseQuery() {
     setIsLoading(true)
     setError(null)
     try {
-      const { error: sbError } = await supabase.from(table).delete().eq('id', id)
+      const { data: deleted, error: sbError } = await supabase.from(table).delete().eq('id', id).select('id')
       if (sbError) { setError(sbError.message); return { success: false, error: sbError.message } }
+      if (!deleted || deleted.length === 0) return { success: false, error: 'No se pudo eliminar. Verifica los permisos en Supabase (RLS).' }
       return { success: true }
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Error desconocido'

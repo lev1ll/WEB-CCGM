@@ -21,7 +21,7 @@ const FOTOS = [
 ]
 
 const STATS = [
-  { value: '800+', label: 'Estudiantes activos'   },
+  { value: '200+', label: 'Estudiantes activos'   },
   { value: '30+',  label: 'Años de trayectoria'   },
   { value: '95%',  label: 'Satisfacción familiar'  },
 ]
