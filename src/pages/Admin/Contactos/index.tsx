@@ -8,14 +8,21 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import type { Preinscripcion, PreinscripcionEstado } from '@/types/noticias.types'
 import { formatDate } from '@/lib/utils'
 
-const ESTADOS_PI: { value: PreinscripcionEstado; label: string; color: string; bg: string; border: string }[] = [
-  { value: 'pendiente',           label: 'Pendiente',           color: 'text-slate-700',  bg: 'bg-slate-100',  border: 'border-slate-200'  },
-  { value: 'llamar_mas_tarde',    label: 'Llamar más tarde',    color: 'text-orange-700', bg: 'bg-orange-50',  border: 'border-orange-200' },
-  { value: 'no_contesta',         label: 'No contesta',         color: 'text-red-700',    bg: 'bg-red-50',     border: 'border-red-200'    },
-  { value: 'entrevista_agendada', label: 'Entrevista agendada', color: 'text-purple-700', bg: 'bg-purple-50',  border: 'border-purple-200' },
-  { value: 'contactado',          label: 'Contactado',          color: 'text-blue-700',   bg: 'bg-blue-50',    border: 'border-blue-200'   },
-  { value: 'matriculado',         label: 'Matriculado',         color: 'text-green-700',  bg: 'bg-green-50',   border: 'border-green-200'  },
-  { value: 'descartado',          label: 'Descartado',          color: 'text-gray-500',   bg: 'bg-gray-50',    border: 'border-gray-200'   },
+const ESTADOS_PI: {
+  value: PreinscripcionEstado
+  label: string
+  // badge selector inline
+  color: string; bg: string; border: string
+  // KPI card (solid)
+  kpiBg: string; kpiNumColor: string; kpiLabelColor: string
+}[] = [
+  { value: 'pendiente',           label: 'Pendiente',           color: 'text-slate-800',  bg: 'bg-slate-200',   border: 'border-slate-300',   kpiBg: 'bg-slate-600',    kpiNumColor: 'text-white',       kpiLabelColor: 'text-slate-200'  },
+  { value: 'llamar_mas_tarde',    label: 'Llamar más tarde',    color: 'text-orange-900', bg: 'bg-orange-200',  border: 'border-orange-300',  kpiBg: 'bg-orange-500',   kpiNumColor: 'text-white',       kpiLabelColor: 'text-orange-100' },
+  { value: 'no_contesta',         label: 'No contesta',         color: 'text-red-900',    bg: 'bg-red-200',     border: 'border-red-300',     kpiBg: 'bg-red-600',      kpiNumColor: 'text-white',       kpiLabelColor: 'text-red-100'    },
+  { value: 'entrevista_agendada', label: 'Entrevista agendada', color: 'text-purple-900', bg: 'bg-purple-200',  border: 'border-purple-300',  kpiBg: 'bg-purple-600',   kpiNumColor: 'text-white',       kpiLabelColor: 'text-purple-100' },
+  { value: 'contactado',          label: 'Contactado',          color: 'text-blue-900',   bg: 'bg-blue-200',    border: 'border-blue-300',    kpiBg: 'bg-blue-600',     kpiNumColor: 'text-white',       kpiLabelColor: 'text-blue-100'   },
+  { value: 'matriculado',         label: 'Matriculado',         color: 'text-green-900',  bg: 'bg-green-200',   border: 'border-green-300',   kpiBg: 'bg-green-600',    kpiNumColor: 'text-white',       kpiLabelColor: 'text-green-100'  },
+  { value: 'descartado',          label: 'Descartado',          color: 'text-gray-700',   bg: 'bg-gray-200',    border: 'border-gray-300',    kpiBg: 'bg-gray-400',     kpiNumColor: 'text-white',       kpiLabelColor: 'text-gray-100'   },
 ]
 
 const ESTADO_MAP = Object.fromEntries(ESTADOS_PI.map(e => [e.value, e])) as Record<PreinscripcionEstado, typeof ESTADOS_PI[0]>
@@ -103,16 +110,19 @@ export default function AdminContactos() {
   return (
     <div className="space-y-5">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Pre-inscripciones</h1>
-        <p className="text-sm text-gray-500 mt-0.5">
-          {items.length} postulación{items.length !== 1 ? 'es' : ''} recibida{items.length !== 1 ? 's' : ''}
-        </p>
-      </div>
-
-      {/* Buscador */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative w-full sm:w-72">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Pre-inscripciones</h1>
+          <p className="text-sm text-gray-500 mt-0.5">
+            {items.length} postulación{items.length !== 1 ? 'es' : ''} recibida{items.length !== 1 ? 's' : ''}
+            {filterEstado !== 'todos' && (
+              <button onClick={() => setFilterEstado('todos')} className="ml-2 text-primary hover:underline text-xs">
+                · Ver todas
+              </button>
+            )}
+          </p>
+        </div>
+        <div className="relative w-full sm:w-64">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
@@ -124,25 +134,24 @@ export default function AdminContactos() {
         </div>
       </div>
 
-      {/* Filtros */}
-      <div className="flex flex-wrap gap-2">
-        <button
-          onClick={() => setFilterEstado('todos')}
-          className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all
-            ${filterEstado === 'todos' ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'}`}
-        >
-          Todos ({items.length})
-        </button>
+      {/* KPIs — clickeables para filtrar */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
         {ESTADOS_PI.map(e => {
           const count = countBy(e.value)
-          if (count === 0) return null
+          const active = filterEstado === e.value
           return (
-            <button key={e.value}
-              onClick={() => setFilterEstado(filterEstado === e.value ? 'todos' : e.value)}
-              className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all
-                ${filterEstado === e.value ? `${e.bg} ${e.color} ${e.border}` : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300'}`}
+            <button
+              key={e.value}
+              onClick={() => setFilterEstado(active ? 'todos' : e.value)}
+              className={`rounded-xl px-3 py-4 text-center transition-all hover:shadow-lg hover:scale-[1.03]
+                ${active ? `${e.kpiBg} shadow-lg scale-[1.03]` : 'bg-white border border-gray-200 hover:border-transparent'}`}
             >
-              {e.label} ({count})
+              <p className={`text-3xl font-extrabold leading-none ${active ? e.kpiNumColor : 'text-gray-300'}`}>
+                {count}
+              </p>
+              <p className={`text-[10px] font-semibold mt-2 leading-tight ${active ? e.kpiLabelColor : 'text-gray-400'}`}>
+                {e.label}
+              </p>
             </button>
           )
         })}
@@ -229,22 +238,6 @@ export default function AdminContactos() {
           </table>
         </div>
       )}
-
-      {/* Resumen por estado */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
-        {ESTADOS_PI.map(e => (
-          <button key={e.value}
-            onClick={() => setFilterEstado(e.value)}
-            className={`rounded-xl border px-3 py-3 text-center transition-all hover:shadow-sm
-              ${filterEstado === e.value ? `${e.bg} ${e.border} shadow-sm` : 'bg-white border-gray-100 hover:border-gray-200'}`}
-          >
-            <p className={`text-2xl font-extrabold ${filterEstado === e.value ? e.color : 'text-gray-700'}`}>
-              {countBy(e.value)}
-            </p>
-            <p className="text-[10px] text-gray-500 mt-1 leading-tight">{e.label}</p>
-          </button>
-        ))}
-      </div>
 
       {/* Detalle */}
       <Dialog open={!!selected} onOpenChange={open => !open && setSelected(null)}>
