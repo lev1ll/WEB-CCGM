@@ -11,24 +11,17 @@ import { formatDate } from '@/lib/utils'
 
 // ─── Pre-inscripciones config ────────────────────────────────────────────────
 
-const KANBAN_COLS: {
-  value: PreinscripcionEstado
-  label: string
-  color: string
-  bg: string
-  border: string
-  headerBg: string
-}[] = [
-  { value: 'pendiente',  label: 'Pendientes',  color: 'text-amber-700', bg: 'bg-amber-50',  border: 'border-amber-200', headerBg: 'bg-amber-500'  },
-  { value: 'contactado', label: 'Contactados', color: 'text-blue-700',  bg: 'bg-blue-50',   border: 'border-blue-200',  headerBg: 'bg-blue-500'   },
-  { value: 'matriculado',label: 'Matriculados',color: 'text-green-700', bg: 'bg-green-50',  border: 'border-green-200', headerBg: 'bg-green-500'  },
+const ESTADOS_PI: { value: PreinscripcionEstado; label: string; color: string; bg: string; border: string; dot: string }[] = [
+  { value: 'pendiente',           label: 'Pendiente',           color: 'text-slate-700',  bg: 'bg-slate-100',  border: 'border-slate-200',  dot: 'bg-slate-400'  },
+  { value: 'llamar_mas_tarde',    label: 'Llamar más tarde',    color: 'text-orange-700', bg: 'bg-orange-50',  border: 'border-orange-200', dot: 'bg-orange-400' },
+  { value: 'no_contesta',         label: 'No contesta',         color: 'text-red-700',    bg: 'bg-red-50',     border: 'border-red-200',    dot: 'bg-red-400'    },
+  { value: 'entrevista_agendada', label: 'Entrevista agendada', color: 'text-purple-700', bg: 'bg-purple-50',  border: 'border-purple-200', dot: 'bg-purple-400' },
+  { value: 'contactado',          label: 'Contactado',          color: 'text-blue-700',   bg: 'bg-blue-50',    border: 'border-blue-200',   dot: 'bg-blue-400'   },
+  { value: 'matriculado',         label: 'Matriculado',         color: 'text-green-700',  bg: 'bg-green-50',   border: 'border-green-200',  dot: 'bg-green-500'  },
+  { value: 'descartado',          label: 'Descartado',          color: 'text-gray-500',   bg: 'bg-gray-50',    border: 'border-gray-200',   dot: 'bg-gray-400'   },
 ]
 
-const BADGE_PI: Record<PreinscripcionEstado, string> = {
-  pendiente:  'bg-amber-100 text-amber-700',
-  contactado: 'bg-blue-100 text-blue-700',
-  matriculado:'bg-green-100 text-green-700',
-}
+const ESTADO_PI_MAP = Object.fromEntries(ESTADOS_PI.map(e => [e.value, e])) as Record<PreinscripcionEstado, typeof ESTADOS_PI[0]>
 
 const GRADO: Record<string, string> = {
   '1basico':'1° Básico','2basico':'2° Básico','3basico':'3° Básico','4basico':'4° Básico',
@@ -240,67 +233,66 @@ export default function AdminContactos() {
 
           {isLoading && inscripciones.length === 0 ? (
             <Loading />
+          ) : filteredPI.length === 0 ? (
+            <p className="text-center text-sm text-gray-400 py-12">No hay resultados.</p>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-              {KANBAN_COLS.map(col => {
-                const rows = filteredPI.filter(p => p.estado === col.value)
-                return (
-                  <div key={col.value} className={`rounded-xl border ${col.border} overflow-hidden`}>
-                    <div className={`${col.headerBg} px-4 py-3 flex items-center justify-between`}>
-                      <span className="text-white font-semibold text-sm">{col.label}</span>
-                      <span className="bg-white/30 text-white text-xs font-bold px-2 py-0.5 rounded-full">{rows.length}</span>
-                    </div>
-                    <div className={`${col.bg} min-h-32 p-3 space-y-2.5`}>
-                      {rows.length === 0 && <p className="text-center text-xs text-gray-400 py-6">Sin registros</p>}
-                      {rows.map(p => (
-                        <div key={p.id} className="bg-white rounded-lg border border-gray-200 p-3.5 shadow-sm hover:shadow-md transition-shadow">
-                          <div className="flex items-start justify-between gap-2 mb-1.5">
-                            <div>
-                              <p className="font-semibold text-gray-900 text-sm leading-tight">{p.child_name}</p>
-                              <p className="text-xs text-gray-500">{p.name}</p>
-                            </div>
-                            <button
-                              onClick={() => setSelectedPI(p)}
-                              className="flex-shrink-0 p-1 rounded-md text-gray-400 hover:text-primary hover:bg-primary/5 transition-colors"
-                            >
+            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-gray-100 bg-gray-50 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    <th className="text-left px-4 py-3">Postulante</th>
+                    <th className="text-left px-4 py-3 hidden sm:table-cell">Apoderado</th>
+                    <th className="text-left px-4 py-3 hidden md:table-cell">Curso</th>
+                    <th className="text-left px-4 py-3">Estado</th>
+                    <th className="text-left px-4 py-3 hidden lg:table-cell">Fecha</th>
+                    <th className="px-4 py-3 w-16" />
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {filteredPI.map(p => {
+                    const est = ESTADO_PI_MAP[p.estado]
+                    const busy = loadingId === p.id
+                    return (
+                      <tr key={p.id} className="hover:bg-gray-50 transition-colors group">
+                        <td className="px-4 py-3">
+                          <p className="font-semibold text-gray-900">{p.child_name}</p>
+                        </td>
+                        <td className="px-4 py-3 hidden sm:table-cell text-gray-600">{p.name}</td>
+                        <td className="px-4 py-3 hidden md:table-cell text-gray-500">
+                          {GRADO[p.current_grade] ?? p.current_grade}
+                        </td>
+                        <td className="px-4 py-3">
+                          <select
+                            value={p.estado}
+                            disabled={busy}
+                            onChange={e => changeEstado(p, e.target.value as PreinscripcionEstado)}
+                            className={`text-xs font-semibold rounded-full px-3 py-1 border appearance-none cursor-pointer disabled:opacity-60 ${est.color} ${est.bg} ${est.border}`}
+                          >
+                            {ESTADOS_PI.map(e => (
+                              <option key={e.value} value={e.value}>{e.label}</option>
+                            ))}
+                          </select>
+                        </td>
+                        <td className="px-4 py-3 hidden lg:table-cell text-gray-400 text-xs">
+                          {formatDate(p.created_at)}
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onClick={() => setSelectedPI(p)}
+                              className="p-1.5 rounded-md text-gray-400 hover:text-primary hover:bg-primary/5 transition-colors">
                               <ChevronRight className="w-4 h-4" />
                             </button>
-                          </div>
-                          <div className="flex items-center gap-1 text-xs text-gray-500 mb-3">
-                            <GraduationCap className="w-3 h-3" />
-                            {GRADO[p.current_grade] ?? p.current_grade}
-                            <span className="mx-1">·</span>
-                            <Calendar className="w-3 h-3" />
-                            {formatDate(p.created_at)}
-                          </div>
-                          <div className="flex gap-1.5">
-                            {KANBAN_COLS.filter(c => c.value !== col.value).map(target => (
-                              <button
-                                key={target.value}
-                                disabled={loadingId === p.id}
-                                onClick={() => changeEstado(p, target.value)}
-                                className={`flex-1 py-1.5 text-xs font-semibold rounded-md border transition-colors
-                                  ${target.color} ${target.bg} ${target.border}
-                                  hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed`}
-                              >
-                                {loadingId === p.id
-                                  ? <Loader2 className="w-3 h-3 animate-spin mx-auto" />
-                                  : `→ ${target.label.slice(0, -1)}`}
-                              </button>
-                            ))}
-                            <button
-                              onClick={() => setConfirmDeletePI(p)}
-                              className="px-2.5 py-1.5 rounded-md bg-red-50 text-red-500 border border-red-200 hover:bg-red-100 transition-colors"
-                            >
-                              <Trash2 className="w-3 h-3" />
+                            <button onClick={() => setConfirmDeletePI(p)}
+                              className="p-1.5 rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
+                              <Trash2 className="w-4 h-4" />
                             </button>
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )
-              })}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
             </div>
           )}
         </>
@@ -369,25 +361,18 @@ export default function AdminContactos() {
             </DialogHeader>
             <div className="space-y-4 text-sm">
               <div>
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Estado actual</p>
-                <span className={`inline-flex px-3 py-1 rounded-full text-xs font-bold capitalize ${BADGE_PI[selectedPI.estado]}`}>
-                  {selectedPI.estado}
-                </span>
-              </div>
-              <div>
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Mover a</p>
-                <div className="flex gap-2">
-                  {KANBAN_COLS.filter(c => c.value !== selectedPI.estado).map(target => (
-                    <button
-                      key={target.value}
-                      disabled={loadingId === selectedPI.id}
-                      onClick={() => changeEstado(selectedPI, target.value)}
-                      className={`flex-1 py-2 rounded-lg text-xs font-bold border transition-colors ${target.color} ${target.bg} ${target.border} hover:opacity-80 disabled:opacity-50`}
-                    >
-                      {loadingId === selectedPI.id ? <Loader2 className="w-3 h-3 animate-spin mx-auto" /> : target.label}
-                    </button>
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Estado</p>
+                <select
+                  value={selectedPI.estado}
+                  disabled={loadingId === selectedPI.id}
+                  onChange={e => changeEstado(selectedPI, e.target.value as PreinscripcionEstado)}
+                  className={`text-sm font-semibold rounded-lg px-4 py-2 border appearance-none cursor-pointer w-full disabled:opacity-60
+                    ${ESTADO_PI_MAP[selectedPI.estado].color} ${ESTADO_PI_MAP[selectedPI.estado].bg} ${ESTADO_PI_MAP[selectedPI.estado].border}`}
+                >
+                  {ESTADOS_PI.map(e => (
+                    <option key={e.value} value={e.value}>{e.label}</option>
                   ))}
-                </div>
+                </select>
               </div>
               <hr className="border-gray-100" />
               <InfoBlock title="Apoderado">
