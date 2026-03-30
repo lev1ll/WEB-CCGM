@@ -12,112 +12,73 @@ export interface Nivel {
 
 export const NIVELES: Nivel[] = [
   {
-    id: 'primero-segundo',
-    name: '1° y 2° Básico',
-    grades: '1° y 2° Básico',
-    ageRange: '6 a 8 años',
-    icon: 'Smile',
+    id: 'primer-ciclo',
+    name: 'Primer Ciclo',
+    grades: '1° a 4° Básico',
+    ageRange: '6 a 10 años',
+    icon: 'BookOpen',
     description:
-      'Los primeros años de la escuela son fundamentales. Desarrollamos la lectoescritura, el pensamiento matemático inicial y las habilidades de convivencia en un ambiente cálido y estructurado.',
+      'Los primeros cuatro años de escolaridad son la base de todo aprendizaje posterior. Desarrollamos la lectoescritura, el pensamiento matemático y las habilidades de convivencia en un ambiente cálido, estructurado e inclusivo, preparando a cada estudiante para avanzar con confianza.',
     highlights: [
       'Lectura y escritura con método silábico y global',
       'Matemática concreta con material manipulable',
       'Hábitos y rutinas escolares',
       'Educación física y psicomotricidad',
-      'Inglés inicial (2 hrs/semana)',
       'Taller de valores y convivencia',
+      'Ciencias Naturales y Sociales introductorias',
+      'Academias: Fútbol, Polideportivo, Danza, Matemáticas, Reciclaje',
     ],
     color: 'text-emerald-700',
     bgColor: 'bg-emerald-50',
   },
   {
-    id: 'tercero-cuarto',
-    name: '3° y 4° Básico',
-    grades: '3° y 4° Básico',
-    ageRange: '8 a 10 años',
-    icon: 'BookOpen',
-    description:
-      'Consolidamos las habilidades de lectura y escritura, ampliamos el pensamiento matemático y comenzamos el estudio de las ciencias naturales y sociales de forma más estructurada.',
-    highlights: [
-      'Comprensión lectora y producción de textos',
-      'Operaciones y resolución de problemas',
-      'Ciencias Naturales y Sociales',
-      'Inglés con énfasis en comunicación oral',
-      'Talleres artísticos y musicales',
-      'Proyecto lector trimestral',
-    ],
-    color: 'text-blue-700',
-    bgColor: 'bg-blue-50',
-  },
-  {
-    id: 'quinto-sexto',
-    name: '5° y 6° Básico',
-    grades: '5° y 6° Básico',
-    ageRange: '10 a 12 años',
-    icon: 'Lightbulb',
-    description:
-      'Etapa de mayor autonomía académica. Profundizamos en todas las asignaturas del plan de estudios y fomentamos el pensamiento crítico, la investigación y el trabajo colaborativo.',
-    highlights: [
-      'Historia, Geografía y Ciencias Sociales',
-      'Biología, Física y Química introductorias',
-      'Inglés con habilidades de escritura',
-      'Educación tecnológica y computación',
-      'Orientación y proyecto de vida',
-      'Talleres de liderazgo estudiantil',
-    ],
-    color: 'text-purple-700',
-    bgColor: 'bg-purple-50',
-  },
-  {
-    id: 'septimo-octavo',
-    name: '7° y 8° Básico',
-    grades: '7° y 8° Básico',
-    ageRange: '12 a 14 años',
+    id: 'segundo-ciclo',
+    name: 'Segundo Ciclo',
+    grades: '5° a 8° Básico',
+    ageRange: '10 a 14 años',
     icon: 'GraduationCap',
     description:
-      'La etapa final de la enseñanza básica. Preparamos a nuestros alumnos para la transición a la educación media con sólidos fundamentos académicos, orientación vocacional y formación en valores.',
+      'La etapa de mayor autonomía académica. Profundizamos en todas las asignaturas del plan de estudios, fomentamos el pensamiento crítico y la investigación, y preparamos a nuestros alumnos con sólidos fundamentos para enfrentar con éxito la educación media y la vida.',
     highlights: [
+      'Historia, Geografía y Ciencias Sociales',
+      'Biología, Física y Química',
+      'Inglés con habilidades de escritura y comunicación oral',
+      'Educación tecnológica',
+      'Orientación vocacional y proyecto de vida',
       'Preparación para pruebas de diagnóstico',
-      'Orientación vocacional y elección de liceo',
-      'Ciencias con laboratorio experimental',
-      'Inglés con certificación básica',
-      'Consejo de curso y liderazgo estudiantil',
-      'Proyecto de ciencias anual',
+      'Academias: Fútbol, Polideportivo, Danza, Matemáticas, Reciclaje, Inglés',
     ],
     color: 'text-amber-700',
     bgColor: 'bg-amber-50',
   },
 ]
 
-export type ExtraescolarCategory = 'deportivo' | 'artistico' | 'academico' | 'tecnologico'
+export type ExtraescolarCategory = 'deportivo' | 'artistico' | 'academico'
+export type ExtraescolarCycle = 'ambos' | 'segundo'
 
 export interface Extraescolar {
   name: string
   icon: string
   category: ExtraescolarCategory
+  cycle: ExtraescolarCycle
 }
 
 export const EXTRAESCOLARES: Extraescolar[] = [
-  { name: 'Fútbol', icon: 'Trophy', category: 'deportivo' },
-  { name: 'Básquetbol', icon: 'Circle', category: 'deportivo' },
-  { name: 'Atletismo', icon: 'Wind', category: 'deportivo' },
-  { name: 'Voleibol', icon: 'Circle', category: 'deportivo' },
-  { name: 'Música', icon: 'Music', category: 'artistico' },
-  { name: 'Teatro', icon: 'Drama', category: 'artistico' },
-  { name: 'Danza', icon: 'Star', category: 'artistico' },
-  { name: 'Coro', icon: 'Mic', category: 'artistico' },
-  { name: 'Robótica', icon: 'Bot', category: 'tecnologico' },
-  { name: 'Programación', icon: 'Code', category: 'tecnologico' },
-  { name: 'Diseño digital', icon: 'Palette', category: 'tecnologico' },
-  { name: 'Matemática olímpica', icon: 'Calculator', category: 'academico' },
-  { name: 'Inglés avanzado', icon: 'Globe', category: 'academico' },
-  { name: 'Debate', icon: 'MessageSquare', category: 'academico' },
-  { name: 'Ciencia creativa', icon: 'FlaskConical', category: 'academico' },
+  { name: 'Fútbol',        icon: 'Trophy',        category: 'deportivo', cycle: 'ambos'   },
+  { name: 'Polideportivo', icon: 'Dumbbell',       category: 'deportivo', cycle: 'ambos'   },
+  { name: 'Danza',         icon: 'Music',          category: 'artistico', cycle: 'ambos'   },
+  { name: 'Matemáticas',   icon: 'Calculator',     category: 'academico', cycle: 'ambos'   },
+  { name: 'Reciclaje',     icon: 'Recycle',        category: 'academico', cycle: 'ambos'   },
+  { name: 'Inglés',        icon: 'Globe',          category: 'academico', cycle: 'segundo' },
 ]
 
 export const CATEGORY_LABELS: Record<ExtraescolarCategory, string> = {
   deportivo: 'Deportivo',
   artistico: 'Artístico',
-  tecnologico: 'Tecnológico',
   academico: 'Académico',
+}
+
+export const CYCLE_LABELS: Record<ExtraescolarCycle, string> = {
+  ambos:   'Ambos ciclos',
+  segundo: '2° ciclo',
 }

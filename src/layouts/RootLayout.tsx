@@ -1,14 +1,11 @@
 import { Outlet } from 'react-router-dom'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
-import { ChatWidget } from '@/chatbot/ChatWidget'
 import { Toaster } from '@/components/ui/toast'
 import { ScrollToTop } from '@/components/shared/ScrollToTop'
-import { VariantSwitcher } from '@/components/shared/VariantSwitcher'
-
 /**
  * RootLayout
- * Envuelve todas las páginas con el Navbar sticky, el Footer y el widget del chatbot.
+ * Envuelve todas las páginas con el Navbar sticky y el Footer.
  * Las animaciones de entrada las maneja cada AnimatedSection individualmente.
  */
 export function RootLayout() {
@@ -31,12 +28,6 @@ export function RootLayout() {
       </main>
 
       <Footer />
-
-      {/* Selector de diseño — para elegir variante visual */}
-      <VariantSwitcher />
-
-      {/* Widget flotante del asistente IA */}
-      <ChatWidget />
 
       {/* Toast notifications */}
       <Toaster />

@@ -10,7 +10,6 @@ import { SectionTitle } from '@/components/shared/SectionTitle'
 import { AnimatedSection } from '@/components/shared/AnimatedSection'
 import { ADMISSION_STEPS } from '@/constants/admision'
 import { cn } from '@/lib/utils'
-import { useVariant } from '@/context/VariantContext'
 
 const ICON_MAP = { FileText, CalendarCheck, ClipboardList, CheckCircle2 } as const
 type IconName = keyof typeof ICON_MAP
@@ -137,10 +136,6 @@ function PasosAdmisionV3() {
   )
 }
 
-// ── Entrada ────────────────────────────────────────────────────────────
 export function PasosAdmision() {
-  const { variant } = useVariant()
-  if (variant === 2) return <PasosAdmisionV2 />
-  if (variant === 3) return <PasosAdmisionV3 />
   return <PasosAdmisionV1 />
 }

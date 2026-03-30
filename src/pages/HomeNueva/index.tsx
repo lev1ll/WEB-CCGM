@@ -8,37 +8,43 @@ import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowRight, ChevronLeft, ChevronRight, MessageCircle,
-  Heart, Users, Shield, Star, BookOpen,
-  GraduationCap, Smile, Lightbulb,
+  BookOpen, GraduationCap, Instagram, Facebook,
 } from 'lucide-react'
+import { SCHOOL } from '@/constants/school'
 
 // ── Datos ──────────────────────────────────────────────────────────────
 const FOTOS = [
-  { src: '/images/hero-escuela.jpg.jpg',                                                              alt: 'Colegio Cristiano Gabriela Mistral' },
-  { src: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=1400&auto=format&fit=crop', alt: 'Alumnos en clases'                  },
-  { src: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1400&auto=format&fit=crop', alt: 'Lectura y aprendizaje'              },
-  { src: 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=1400&auto=format&fit=crop',    alt: 'Vida deportiva'                    },
+  { src: '/images/hero-escuela.jpg.jpg',                                                              alt: 'Escuela Gabriela Mistral' },
+  { src: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=1400&auto=format&fit=crop', alt: 'Alumnos en clases'        },
+  { src: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1400&auto=format&fit=crop', alt: 'Lectura y aprendizaje'    },
+  { src: 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=1400&auto=format&fit=crop',    alt: 'Vida deportiva'          },
 ]
 
 const STATS = [
-  { value: '200+', label: 'Estudiantes activos'   },
-  { value: '30+',  label: 'Años de trayectoria'   },
-  { value: '95%',  label: 'Satisfacción familiar'  },
+  { value: '198',  label: 'Estudiantes'       },
+  { value: '46',   label: 'Años de historia'  },
+  { value: '17',   label: 'Docentes'          },
 ]
 
-const NIVELES = [
-  { num: '01', icon: Smile,         name: '1° y 2° Básico', ages: '6 – 8 años',   desc: 'Lectoescritura, matemática concreta y hábitos escolares en un ambiente cálido y estructurado.'             },
-  { num: '02', icon: BookOpen,      name: '3° y 4° Básico', ages: '8 – 10 años',  desc: 'Comprensión lectora, ciencias naturales y resolución de problemas con énfasis comunicacional.'             },
-  { num: '03', icon: Lightbulb,     name: '5° y 6° Básico', ages: '10 – 12 años', desc: 'Pensamiento crítico, investigación científica y trabajo colaborativo en todas las asignaturas.'            },
-  { num: '04', icon: GraduationCap, name: '7° y 8° Básico', ages: '12 – 14 años', desc: 'Preparación sólida para educación media con orientación vocacional y liderazgo estudiantil.'              },
-]
-
-const VALORES = [
-  { icon: Heart,    title: 'Amor',          desc: 'Base de toda relación pedagógica auténtica e incondicional.'  },
-  { icon: Shield,   title: 'Justicia',      desc: 'Equidad y trato justo en cada instancia de la convivencia.'  },
-  { icon: Users,    title: 'Servicio',      desc: 'El verdadero liderazgo se expresa sirviendo a los demás.'    },
-  { icon: Star,     title: 'Excelencia',    desc: 'Dar siempre lo mejor en todo lo que emprendemos juntos.'     },
-  { icon: BookOpen, title: 'Trascendencia', desc: 'Propósito de vida claro, más allá de lo inmediato.'          },
+const CICLOS = [
+  {
+    num: '01',
+    icon: BookOpen,
+    name: 'Primer Ciclo',
+    grades: '1° a 4° Básico',
+    ages: '6 – 10 años',
+    desc: 'Lectoescritura, matemática concreta y hábitos escolares en un ambiente cálido, inclusivo y estructurado.',
+    academias: 'Fútbol · Polideportivo · Danza · Matemáticas · Reciclaje',
+  },
+  {
+    num: '02',
+    icon: GraduationCap,
+    name: 'Segundo Ciclo',
+    grades: '5° a 8° Básico',
+    ages: '10 – 14 años',
+    desc: 'Pensamiento crítico, ciencias, orientación vocacional y preparación sólida para la educación media.',
+    academias: 'Fútbol · Polideportivo · Danza · Matemáticas · Reciclaje · Inglés',
+  },
 ]
 
 // ── 1. HERO ────────────────────────────────────────────────────────────
@@ -75,7 +81,7 @@ function Hero() {
         />
       </AnimatePresence>
 
-      {/* ── Degradado: más cubierto en la zona de texto ── */}
+      {/* ── Degradado ── */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-black/10" />
 
       {/* ── Dots esquina superior derecha ── */}
@@ -93,7 +99,7 @@ function Hero() {
         <div className="flex items-center gap-3">
           <div className="h-px w-10 bg-secondary" />
           <span className="text-xs font-bold tracking-[0.28em] text-white/70 uppercase">
-            Escuela Gabriela Mistral · Nueva Imperial
+            Escuela Gabriela Mistral · Nueva Imperial · Desde 1980
           </span>
         </div>
       </motion.div>
@@ -126,49 +132,49 @@ function Hero() {
       </button>
 
       {/* ── Contenido inferior ── */}
-      <div className="absolute bottom-0 left-0 right-0 z-10 px-4 sm:px-6 lg:px-8 pb-6">
-        <div>
+      <div className="absolute bottom-0 left-0 right-0 z-10 px-4 sm:px-6 lg:px-8 pb-8">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
 
-
-          {/* Headline + CTAs en fila */}
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-
-            {/* Título */}
+          {/* Título — slogan real del PEI */}
+          <div className="max-w-2xl">
             <motion.h1
-              className="text-4xl sm:text-5xl xl:text-6xl font-extrabold
-                         text-white leading-[1.05] tracking-tight max-w-xl"
+              className="text-3xl sm:text-4xl xl:text-5xl font-extrabold
+                         text-white leading-[1.15] tracking-tight"
               initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.4 }}
             >
-              Formando personas<br />
-              <span className="text-white/90 italic">con valores.</span>
+              Enseñar siempre: en el patio<br />
+              y en la calle como en la sala de clase.<br />
+              Enseñar con la{' '}
+              <span className="text-secondary">actitud</span>,{' '}
+              el <span className="text-secondary">gesto</span>{' '}
+              y la <span className="text-secondary">palabra</span>.
             </motion.h1>
-
-            {/* Bloque derecho: texto + botones */}
-            <motion.div className="lg:max-w-xs"
-              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.65 }}>
-              <p className="text-sm text-white/55 leading-relaxed mb-5">
-                Más de 30 años educando con fe, excelencia académica y formación
-                en valores en el corazón de La Araucanía.
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <Link to="/admision"
-                  className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90
-                             text-white font-bold px-5 py-2.5 rounded-xl transition-colors text-sm">
-                  <MessageCircle className="w-4 h-4" />
-                  Pre-inscripción 2026
-                </Link>
-                <Link to="/nosotros"
-                  className="inline-flex items-center gap-2 border border-white/20
-                             hover:border-white/40 text-white/60 hover:text-white
-                             font-medium px-4 py-2.5 rounded-xl transition-colors text-sm">
-                  Conocer más <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
-            </motion.div>
           </div>
 
+          {/* Bloque derecho: botones */}
+          <motion.div className="lg:max-w-xs shrink-0"
+            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.85 }}>
+            <p className="text-sm text-white/50 leading-relaxed mb-5">
+              46 años educando con fe, excelencia académica y formación
+              en valores en el corazón de La Araucanía.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Link to="/admision"
+                className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90
+                           text-white font-bold px-5 py-2.5 rounded-xl transition-colors text-sm">
+                <MessageCircle className="w-4 h-4" />
+                Pre-inscripción 2026
+              </Link>
+              <Link to="/nosotros"
+                className="inline-flex items-center gap-2 border border-white/20
+                           hover:border-white/40 text-white/60 hover:text-white
+                           font-medium px-4 py-2.5 rounded-xl transition-colors text-sm">
+                Conocer más <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>
@@ -190,17 +196,17 @@ function SobreNosotros() {
               Quiénes somos
             </p>
             <h2 className="text-4xl sm:text-5xl font-extrabold text-foreground leading-tight tracking-tight">
-              Más de tres décadas<br />
-              educando con <span className="text-primary">propósito</span>
+              46 años educando<br />
+              con <span className="text-primary">propósito</span>
             </h2>
             <div className="mt-5 flex gap-2">
               <div className="h-1 w-10 rounded-full bg-primary" />
               <div className="h-1 w-4  rounded-full bg-secondary" />
             </div>
             <p className="mt-6 text-lg text-muted-foreground leading-relaxed max-w-md">
-              Nacimos con la convicción de que la educación transforma vidas.
-              Combinamos rigor académico con formación en valores, preparando a
-              nuestros estudiantes para los desafíos del siglo XXI con fe y carácter.
+              Desde 1980, la Escuela Gabriela Mistral forma personas íntegras en Nueva Imperial.
+              Combinamos rigor académico con valores cristianos, preparando a nuestros estudiantes
+              para la vida con fe y carácter.
             </p>
             <Link to="/nosotros"
               className="mt-8 inline-flex items-center gap-2 text-sm font-bold text-primary
@@ -209,17 +215,51 @@ function SobreNosotros() {
             </Link>
           </motion.div>
 
-          {/* Stats grid */}
+          {/* Stats + redes */}
           <motion.div
-            className="grid grid-cols-3 gap-px bg-border rounded-2xl overflow-hidden shadow-sm"
             initial={{ opacity: 0, x: 24 }} whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.15 }}>
-            {STATS.map(s => (
-              <div key={s.label} className="bg-white py-12 px-6 text-center">
-                <p className="text-5xl font-extrabold text-primary leading-none">{s.value}</p>
-                <p className="text-sm text-muted-foreground mt-3 leading-tight">{s.label}</p>
-              </div>
-            ))}
+            viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.15 }}
+            className="flex flex-col gap-6">
+
+            {/* Stats grid */}
+            <div className="grid grid-cols-3 gap-px bg-border rounded-2xl overflow-hidden shadow-sm">
+              {STATS.map(s => (
+                <div key={s.label} className="bg-white py-10 px-6 text-center">
+                  <p className="text-5xl font-extrabold text-primary leading-none">{s.value}</p>
+                  <p className="text-sm text-muted-foreground mt-3 leading-tight">{s.label}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Redes sociales */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              {SCHOOL.socialMedia.instagram && (
+                <a
+                  href={SCHOOL.socialMedia.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-center gap-3 rounded-2xl px-5 py-4
+                             font-bold text-white transition-all hover:scale-[1.02] hover:shadow-lg"
+                  style={{ background: 'linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)' }}
+                >
+                  <Instagram className="w-6 h-6 shrink-0" />
+                  <span>@escuela_gm</span>
+                </a>
+              )}
+              {SCHOOL.socialMedia.facebook && (
+                <a
+                  href={SCHOOL.socialMedia.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-center gap-3 rounded-2xl px-5 py-4
+                             bg-[#1877F2] hover:bg-[#166fe5] font-bold text-white
+                             transition-all hover:scale-[1.02] hover:shadow-lg"
+                >
+                  <Facebook className="w-6 h-6 shrink-0" />
+                  <span>Escuela Gabriela Mistral</span>
+                </a>
+              )}
+            </div>
           </motion.div>
         </div>
       </div>
@@ -227,8 +267,8 @@ function SobreNosotros() {
   )
 }
 
-// ── 3. NIVELES ────────────────────────────────────────────────────────
-function Niveles() {
+// ── 3. CICLOS EDUCATIVOS ──────────────────────────────────────────────
+function Ciclos() {
   return (
     <section className="bg-[#2C2825] py-20 md:py-28">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -240,7 +280,7 @@ function Niveles() {
               Programa académico
             </p>
             <h2 className="text-4xl sm:text-5xl font-extrabold text-white leading-tight">
-              Niveles educativos
+              Ciclos educativos
             </h2>
           </div>
           <Link to="/niveles"
@@ -250,34 +290,40 @@ function Niveles() {
           </Link>
         </div>
 
-        {/* Lista dividida — sin tarjetas */}
+        {/* Lista de ciclos */}
         <div className="divide-y divide-white/8">
-          {NIVELES.map((nivel, i) => {
-            const Icon = nivel.icon
+          {CICLOS.map((ciclo, i) => {
+            const Icon = ciclo.icon
             return (
-              <motion.div key={nivel.num}
-                className="group grid grid-cols-[auto_1fr_2fr] items-center gap-6 sm:gap-10 py-8
-                           hover:bg-white/[0.02] -mx-4 px-4 transition-colors cursor-default"
+              <motion.div key={ciclo.num}
+                className="group py-10 hover:bg-white/[0.02] -mx-4 px-4 transition-colors cursor-default"
                 initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }} transition={{ delay: i * 0.09 }}>
+                viewport={{ once: true }} transition={{ delay: i * 0.12 }}>
 
-                {/* Número en amarillo */}
-                <span className="text-5xl font-extrabold leading-none text-secondary/25
-                                 group-hover:text-secondary/60 transition-colors select-none w-14 text-right">
-                  {nivel.num}
-                </span>
+                <div className="grid grid-cols-[auto_1fr] sm:grid-cols-[auto_1fr_2fr] items-start gap-6 sm:gap-10">
+                  {/* Número */}
+                  <span className="text-5xl font-extrabold leading-none text-secondary/25
+                                   group-hover:text-secondary/60 transition-colors select-none w-14 text-right pt-1">
+                    {ciclo.num}
+                  </span>
 
-                {/* Nombre + edad */}
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <Icon className="w-4 h-4 text-white/30 group-hover:text-secondary transition-colors shrink-0" />
-                    <h3 className="font-bold text-white text-base leading-tight">{nivel.name}</h3>
+                  {/* Nombre + edad */}
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <Icon className="w-4 h-4 text-white/30 group-hover:text-secondary transition-colors shrink-0" />
+                      <h3 className="font-bold text-white text-lg leading-tight">{ciclo.name}</h3>
+                    </div>
+                    <span className="text-xs font-semibold text-secondary/60 block mb-2">{ciclo.grades} · {ciclo.ages}</span>
+                    <p className="text-sm text-white/40 leading-relaxed sm:hidden">{ciclo.desc}</p>
+                    <p className="text-xs text-secondary/50 mt-3 leading-relaxed">
+                      <span className="text-white/30 uppercase tracking-wider text-[10px] mr-2">Academias</span>
+                      {ciclo.academias}
+                    </p>
                   </div>
-                  <span className="text-xs font-semibold text-secondary/60">{nivel.ages}</span>
-                </div>
 
-                {/* Descripción */}
-                <p className="text-sm text-white/40 leading-relaxed hidden sm:block">{nivel.desc}</p>
+                  {/* Descripción — solo en sm+ */}
+                  <p className="text-sm text-white/40 leading-relaxed hidden sm:block">{ciclo.desc}</p>
+                </div>
               </motion.div>
             )
           })}
@@ -287,56 +333,14 @@ function Niveles() {
   )
 }
 
-// ── 4. VALORES ────────────────────────────────────────────────────────
-function Valores() {
-  return (
-    <section className="bg-[#1C1814] py-20 md:py-28 relative overflow-hidden">
-      {/* Patrón de puntos sutil */}
-      <div className="absolute inset-0 opacity-[0.06]"
-        style={{ backgroundImage: 'radial-gradient(circle, white 1.5px, transparent 1.5px)', backgroundSize: '28px 28px' }} />
-
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-14">
-          <p className="text-[11px] font-bold tracking-[0.25em] text-primary/70 uppercase mb-3">
-            Lo que nos define
-          </p>
-          <h2 className="text-4xl sm:text-5xl font-extrabold text-white leading-tight">
-            Nuestros valores
-          </h2>
-        </div>
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
-          {VALORES.map((v, i) => {
-            const Icon = v.icon
-            return (
-              <motion.div key={v.title}
-                className="group bg-white/5 hover:bg-primary/80 rounded-2xl p-6 text-center
-                           border border-white/8 hover:border-primary transition-all duration-300 hover:-translate-y-1"
-                initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }} transition={{ delay: i * 0.09 }}>
-                <div className="w-12 h-12 rounded-xl bg-primary/20 group-hover:bg-secondary/25
-                                flex items-center justify-center mx-auto mb-4 transition-colors">
-                  <Icon className="w-6 h-6 text-primary group-hover:text-secondary transition-colors" />
-                </div>
-                <h3 className="font-bold text-white mb-2 text-base">{v.title}</h3>
-                <p className="text-xs text-white/45 group-hover:text-white/70 leading-relaxed transition-colors">{v.desc}</p>
-              </motion.div>
-            )
-          })}
-        </div>
-      </div>
-    </section>
-  )
-}
-
-// ── 5. FRANJA DE IDENTIDAD ────────────────────────────────────────────
+// ── 4. FRANJA DE IDENTIDAD ────────────────────────────────────────────
 function FranjaIdentidad() {
-  const PALABRAS = ['Fe', 'Familia', 'Formación', 'Futuro', 'Fe', 'Familia', 'Formación', 'Futuro']
+  const PALABRAS = ['Fe', 'Familia', 'Inclusión', 'Excelencia', '46 años', 'Nueva Imperial', 'Fe', 'Familia', 'Inclusión', 'Excelencia']
   return (
     <div className="bg-primary overflow-hidden py-5 select-none">
       <motion.div className="flex gap-10 whitespace-nowrap"
         animate={{ x: ['0%', '-50%'] }}
-        transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}>
+        transition={{ duration: 22, repeat: Infinity, ease: 'linear' }}>
         {[...PALABRAS, ...PALABRAS].map((word, i) => (
           <span key={i} className="text-sm font-extrabold tracking-widest text-white/70 uppercase">
             {word} <span className="text-secondary mx-3">·</span>
@@ -397,8 +401,7 @@ export function HomeNueva() {
     <>
       <Hero />
       <SobreNosotros />
-      <Niveles />
-      <Valores />
+      <Ciclos />
       <FranjaIdentidad />
       <CTAFinal />
     </>

@@ -1,15 +1,14 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Baby, BookOpen, GraduationCap, Smile, Lightbulb, ChevronDown, CheckCircle2 } from 'lucide-react'
+import { BookOpen, GraduationCap, ChevronDown, CheckCircle2 } from 'lucide-react'
 import { SectionWrapper } from '@/components/shared/SectionWrapper'
 import { SectionTitle } from '@/components/shared/SectionTitle'
 import { AnimatedSection } from '@/components/shared/AnimatedSection'
 import type { Nivel } from '@/constants/niveles'
 import { NIVELES } from '@/constants/niveles'
 import { cn } from '@/lib/utils'
-import { useVariant } from '@/context/VariantContext'
 
-const ICON_MAP = { Baby, BookOpen, GraduationCap, Smile, Lightbulb } as const
+const ICON_MAP = { BookOpen, GraduationCap } as const
 type IconName = keyof typeof ICON_MAP
 
 function NivelCardItem({ nivel, defaultOpen = false }: { nivel: Nivel; defaultOpen?: boolean }) {
@@ -174,7 +173,7 @@ function NivelCardV3() {
         title="Programas por nivel"
         subtitle="Todo el detalle de cada nivel en un solo vistazo"
       />
-      <div className="mt-10 grid sm:grid-cols-2 gap-6">
+      <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-6">
         {NIVELES.map((nivel, i) => {
           const Icon = ICON_MAP[nivel.icon as IconName] ?? BookOpen
           return (
@@ -210,10 +209,6 @@ function NivelCardV3() {
   )
 }
 
-// ── Entrada: elige variante según contexto ─────────────────────────────
 export function NivelCard() {
-  const { variant } = useVariant()
-  if (variant === 2) return <NivelCardV2 />
-  if (variant === 3) return <NivelCardV3 />
-  return <NivelCardV1 />
+  return <NivelCardV3 />
 }

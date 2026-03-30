@@ -25,7 +25,7 @@ export const ADMISSION_STEPS = [
     icon: 'CheckCircle2',
     title: 'Matrícula',
     description:
-      'Una vez aceptado, se firma el contrato de matrícula y se completa la documentación requerida.',
+      'Una vez aceptado, se completa la documentación requerida y se formaliza la matrícula para el año escolar.',
   },
 ] as const
 
@@ -36,17 +36,17 @@ export const ADMISSION_REQUIREMENTS = [
       'Certificado de nacimiento del alumno (original)',
       'Cédula de identidad del alumno (copia)',
       'Carnet de vacunas al día',
-      'Cédulas de identidad de ambos apoderados',
-      'Certificado de residencia (servicio básico)',
+      'Cédulas de identidad de ambos apoderados o tutor legal',
+      'Certificado de residencia (boleta de servicio básico)',
     ],
   },
   {
     category: 'Documentos académicos',
     items: [
-      'Informe de notas del año anterior (original timbrado)',
+      'Informe de notas del año anterior (original timbrado por el establecimiento de origen)',
       'Certificado de conducta del establecimiento anterior',
       'Informe de personalidad del establecimiento anterior',
-      'Informe de atención diferenciada (si aplica)',
+      'Informe PIE o de atención diferenciada si el alumno tiene NEE (si aplica)',
       'Carta de retiro del establecimiento de origen',
     ],
   },
@@ -74,46 +74,46 @@ export const ADMISSION_CALENDAR = [
   {
     period: 'Comunicación de resultados',
     dateRange: 'Noviembre – Diciembre 2025',
-    description: 'Notificación por correo electrónico a las familias sobre el resultado del proceso.',
+    description: 'Notificación a las familias sobre el resultado del proceso de admisión.',
     isActive: false,
   },
   {
     period: 'Período de matrícula',
     dateRange: 'Diciembre 2025 – Enero 2026',
-    description: 'Firma de contratos y pago de matrícula para el año escolar 2026.',
+    description: 'Firma de documentación y formalización de la matrícula para el año escolar 2026.',
     isActive: false,
   },
 ] as const
 
 export const ADMISSION_FAQ = [
   {
-    question: '¿Hay cupos disponibles para todos los niveles?',
+    question: '¿Para qué niveles hay cupos disponibles?',
     answer:
-      'Los cupos varían según el nivel y año. Pre-Kínder, Kínder y 1° Básico tienen cupos definidos al inicio del proceso. Para los demás niveles, los cupos dependen de las vacantes disponibles. Te recomendamos inscribirte pronto.',
+      'La Escuela Gabriela Mistral atiende desde 1° hasta 8° Año Básico (educación básica completa). Los cupos varían según el nivel y la disponibilidad de cada año. Te recomendamos inscribirte con anticipación para asegurar un lugar.',
   },
   {
     question: '¿El proceso de admisión tiene algún costo?',
     answer:
-      'La pre-inscripción y la entrevista familiar son completamente gratuitas. Solo al momento de formalizar la matrícula se cobra el monto correspondiente, detallado en el contrato.',
+      'La pre-inscripción y la entrevista familiar son completamente gratuitas. Solo al momento de formalizar la matrícula se cobra el monto correspondiente, el cual se informa en la entrevista familiar.',
   },
   {
-    question: '¿Aceptan alumnos con necesidades educativas especiales?',
+    question: '¿Aceptan alumnos con necesidades educativas especiales (NEE)?',
     answer:
-      'Sí. Contamos con un equipo de apoyo educativo (psicólogo, educadora diferencial, fonoaudióloga) que evalúa cada caso. La decisión de admisión considera las posibilidades reales de acompañamiento que podemos ofrecer.',
+      'Sí. Contamos con un equipo PIE (Programa de Integración Escolar) compuesto por educadoras diferenciales, psicólogo y fonoaudiólogo. La escuela acepta postulantes con NEE independientemente de la disponibilidad de cupos PIE; sin embargo, si los cupos PIE están completos al momento de la matrícula, no podemos garantizar la asignación de apoyo diferenciado de forma inmediata. En ese caso, el alumno queda en lista de espera para el próximo cupo disponible. Para más información consulta directamente con la Coordinadora PIE.',
   },
   {
-    question: '¿Cuáles son los valores de mensualidad?',
+    question: '¿Cuál es el enfoque valórico de la escuela?',
     answer:
-      'Los valores de mensualidad varían según el nivel educativo. Una vez iniciado el proceso de admisión, se entrega el detalle arancelario completo en la entrevista familiar.',
+      'Somos una escuela sustentada en valores cristianos. Nuestro accionar formativo se centra en valores como el amor al prójimo, el respeto mutuo, la honestidad, la perseverancia, la solidaridad y la fe. Formamos ciudadanos íntegros y comprometidos con su comunidad.',
   },
   {
-    question: '¿Existe alguna beca o beneficio económico?',
+    question: '¿La escuela cuenta con beneficios de alimentación o transporte?',
     answer:
-      'Sí. El colegio tiene convenios de beca con fundaciones cristianas y aplica la Ley SEP (Subvención Escolar Preferencial) para alumnos prioritarios. Consulta en Administración para más información.',
+      'Sí. A través de los programas de apoyo del Estado y la gestión de la Corporación Educacional GM, apoyamos a estudiantes vulnerables con alimentación (JUNAEB), transporte de acercamiento y otros beneficios. Consulta en secretaría para más información según tu situación.',
   },
   {
     question: '¿Puedo inscribir a mi hijo fuera del período de admisión?',
     answer:
-      'Las admisiones fuera de período se evalúan caso a caso según la disponibilidad de cupos. Contáctanos directamente para consultar la situación de tu hijo.',
+      'Las admisiones fuera de período se evalúan caso a caso según la disponibilidad de cupos en cada nivel. Contáctanos directamente al +56 9 9643 2865 o visítanos en General Urrutia N° 763, Nueva Imperial.',
   },
 ] as const

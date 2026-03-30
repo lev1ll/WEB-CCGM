@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
 
-type SectionVariant = 'default' | 'accent' | 'dark' | 'secondary'
+type SectionVariant = 'default' | 'accent' | 'dark' | 'secondary' | 'warm'
 
 interface SectionWrapperProps {
   children: React.ReactNode
@@ -18,6 +18,7 @@ export function SectionWrapper({ children, className, id, variant = 'default' }:
         variant === 'accent'    && 'section-accent',
         variant === 'dark'      && 'section-dark',
         variant === 'secondary' && 'section-secondary',
+        variant === 'warm'      && 'section-warm',
         className
       )}
     >

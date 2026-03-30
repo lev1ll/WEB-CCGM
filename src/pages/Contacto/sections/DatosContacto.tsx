@@ -4,7 +4,6 @@ import { SectionTitle } from '@/components/shared/SectionTitle'
 import { AnimatedSection } from '@/components/shared/AnimatedSection'
 import { Card, CardContent } from '@/components/ui/card'
 import { SCHOOL } from '@/constants/school'
-import { useVariant } from '@/context/VariantContext'
 
 const CONTACT_CARDS = [
   {
@@ -166,10 +165,6 @@ function DatosContactoV3() {
   )
 }
 
-// ── Entrada ────────────────────────────────────────────────────────────
 export function DatosContacto() {
-  const { variant } = useVariant()
-  if (variant === 2) return <DatosContactoV2 />
-  if (variant === 3) return <DatosContactoV3 />
-  return <DatosContactoV1 />
+  return <DatosContactoV3 />
 }

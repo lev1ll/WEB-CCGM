@@ -1,10 +1,10 @@
-import { Heart, Scale, Handshake, Award, Globe } from 'lucide-react'
+import { Heart, Users, Handshake, CheckCircle, Flame, Globe, Star } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { SectionWrapper } from '@/components/shared/SectionWrapper'
 import { SectionTitle } from '@/components/shared/SectionTitle'
 import { VALORES_INSTITUCIONALES } from '@/constants/nosotros'
 
-const ICON_MAP = { Heart, Scale, Handshake, Award, Globe } as const
+const ICON_MAP = { Heart, Users, Handshake, CheckCircle, Flame, Globe, Star } as const
 type IconName = keyof typeof ICON_MAP
 
 const containerVariants = {
@@ -21,11 +21,11 @@ export function ValoresInstitucionales() {
     <SectionWrapper variant="accent">
       <SectionTitle
         title="Valores institucionales"
-        subtitle="Los principios que guían cada decisión en el CCGM"
+        subtitle="Los principios que guían cada decisión en la Escuela Gabriela Mistral"
       />
 
       <motion.div
-        className="mt-10 grid sm:grid-cols-2 lg:grid-cols-5 gap-6"
+        className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: '-80px' }}
@@ -37,13 +37,13 @@ export function ValoresInstitucionales() {
             <motion.div
               key={valor.title}
               variants={itemVariants}
-              className="flex flex-col items-center text-center gap-3 p-5 rounded-2xl bg-card border border-border hover:shadow-md transition-shadow"
+              className="flex flex-col items-center text-center gap-4 p-8 rounded-2xl bg-card border border-border hover:shadow-lg transition-shadow"
             >
-              <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center">
-                <Icon className="h-7 w-7 text-primary" />
+              <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center">
+                <Icon className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="font-bold text-foreground">{valor.title}</h3>
-              <p className="text-xs text-muted-foreground leading-relaxed">{valor.description}</p>
+              <h3 className="font-bold text-foreground text-lg">{valor.title}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{valor.description}</p>
             </motion.div>
           )
         })}

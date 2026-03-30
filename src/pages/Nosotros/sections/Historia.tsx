@@ -2,7 +2,6 @@ import { SectionWrapper } from '@/components/shared/SectionWrapper'
 import { SectionTitle } from '@/components/shared/SectionTitle'
 import { AnimatedSection } from '@/components/shared/AnimatedSection'
 import { HISTORIA_TIMELINE } from '@/constants/nosotros'
-import { useVariant } from '@/context/VariantContext'
 
 // ── Variante 1: Timeline alternado izq/der (original) ─────────────────
 function HistoriaV1() {
@@ -82,7 +81,7 @@ function HistoriaV2() {
 // ── Variante 3: Hitos en bloques grandes — estilo editorial ───────────
 function HistoriaV3() {
   return (
-    <SectionWrapper>
+    <SectionWrapper variant="warm">
       <SectionTitle title="Nuestra historia" subtitle="Hitos que han marcado el camino del CCGM" />
 
       <div className="mt-12 divide-y divide-border">
@@ -111,10 +110,6 @@ function HistoriaV3() {
   )
 }
 
-// ── Entrada ────────────────────────────────────────────────────────────
 export function Historia() {
-  const { variant } = useVariant()
-  if (variant === 2) return <HistoriaV2 />
-  if (variant === 3) return <HistoriaV3 />
-  return <HistoriaV1 />
+  return <HistoriaV3 />
 }
