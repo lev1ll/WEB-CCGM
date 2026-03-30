@@ -186,7 +186,8 @@ function NivelCardV3() {
                   </div>
                   <div>
                     <h3 className="font-bold text-foreground leading-tight">{nivel.name}</h3>
-                    <p className={cn('text-xs font-medium', nivel.color)}>{nivel.ageRange}</p>
+                    <p className={cn('text-xs font-semibold', nivel.color)}>{nivel.grades}</p>
+                    <p className="text-xs text-muted-foreground">{nivel.ageRange}</p>
                   </div>
                 </div>
 

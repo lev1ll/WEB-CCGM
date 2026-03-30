@@ -1,56 +1,51 @@
 import { useEffect, useState } from 'react'
-import { Search, User, Mail, Phone, GraduationCap, MessageSquare, Calendar, ChevronRight, Loader2, AlertCircle } from 'lucide-react'
+import {
+  Search, User, Mail, Phone, GraduationCap, MessageSquare,
+  Calendar, ChevronRight, Loader2, AlertCircle, StickyNote, Save,
+} from 'lucide-react'
 import { useSupabaseQuery } from '@/hooks/useSupabaseQuery'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import type { Preinscripcion, PreinscripcionEstado } from '@/types/noticias.types'
 import { formatDate } from '@/lib/utils'
 
-const ESTADOS: { value: PreinscripcionEstado; label: string; color: string; bg: string; border: string; headerBg: string }[] = [
-  {
-    value: 'pendiente',
-    label: 'Pendientes',
-    color: 'text-amber-700',
-    bg: 'bg-amber-50',
-    border: 'border-amber-200',
-    headerBg: 'bg-amber-500',
-  },
-  {
-    value: 'contactado',
-    label: 'Contactados',
-    color: 'text-blue-700',
-    bg: 'bg-blue-50',
-    border: 'border-blue-200',
-    headerBg: 'bg-blue-500',
-  },
-  {
-    value: 'matriculado',
-    label: 'Matriculados',
-    color: 'text-green-700',
-    bg: 'bg-green-50',
-    border: 'border-green-200',
-    headerBg: 'bg-green-500',
-  },
+// ── Configuración de estados ──────────────────────────────────────────────
+const ESTADOS: {
+  value: PreinscripcionEstado
+  label: string
+  color: string
+  bg: string
+  border: string
+  dot: string
+}[] = [
+  { value: 'pendiente',           label: 'Pendiente',            color: 'text-slate-700',  bg: 'bg-slate-100',   border: 'border-slate-200', dot: 'bg-slate-400'   },
+  { value: 'llamar_mas_tarde',    label: 'Llamar más tarde',     color: 'text-orange-700', bg: 'bg-orange-50',   border: 'border-orange-200',dot: 'bg-orange-400'  },
+  { value: 'no_contesta',         label: 'No contesta',          color: 'text-red-700',    bg: 'bg-red-50',      border: 'border-red-200',   dot: 'bg-red-400'     },
+  { value: 'entrevista_agendada', label: 'Entrevista agendada',  color: 'text-purple-700', bg: 'bg-purple-50',   border: 'border-purple-200',dot: 'bg-purple-400'  },
+  { value: 'contactado',          label: 'Contactado',           color: 'text-blue-700',   bg: 'bg-blue-50',     border: 'border-blue-200',  dot: 'bg-blue-400'    },
+  { value: 'matriculado',         label: 'Matriculado',          color: 'text-green-700',  bg: 'bg-green-50',    border: 'border-green-200', dot: 'bg-green-500'   },
+  { value: 'descartado',          label: 'Descartado',           color: 'text-gray-500',   bg: 'bg-gray-50',     border: 'border-gray-200',  dot: 'bg-gray-400'    },
 ]
 
-const BADGE: Record<PreinscripcionEstado, string> = {
-  pendiente: 'bg-amber-100 text-amber-700',
-  contactado: 'bg-blue-100 text-blue-700',
-  matriculado: 'bg-green-100 text-green-700',
-}
+const ESTADO_MAP = Object.fromEntries(ESTADOS.map(e => [e.value, e])) as Record<PreinscripcionEstado, typeof ESTADOS[0]>
 
 const GRADO_LABEL: Record<string, string> = {
-  '1basico': '1° Básico', '2basico': '2° Básico', '3basico': '3° Básico',
-  '4basico': '4° Básico', '5basico': '5° Básico', '6basico': '6° Básico',
-  '7basico': '7° Básico', '8basico': '8° Básico',
+  '1basico': '1° Básico', '2basico': '2° Básico', '3basico': '3° Básico', '4basico': '4° Básico',
+  '5basico': '5° Básico', '6basico': '6° Básico', '7basico': '7° Básico', '8basico': '8° Básico',
 }
+
+// ── Estados que se usan como columnas kanban ──────────────────────────────
+const COLUMNAS: PreinscripcionEstado[] = ['pendiente', 'llamar_mas_tarde', 'no_contesta', 'entrevista_agendada', 'contactado', 'matriculado', 'descartado']
 
 export default function AdminPreinscripciones() {
   const { select, update, isLoading, error } = useSupabaseQuery()
   const [items, setItems] = useState<Preinscripcion[]>([])
   const [search, setSearch] = useState('')
+  const [filterEstado, setFilterEstado] = useState<PreinscripcionEstado | 'todos'>('todos')
   const [selected, setSelected] = useState<Preinscripcion | null>(null)
   const [updatingId, setUpdatingId] = useState<string | null>(null)
   const [updateError, setUpdateError] = useState<string | null>(null)
+  const [notasDraft, setNotasDraft] = useState('')
+  const [savingNotas, setSavingNotas] = useState(false)
 
   useEffect(() => { load() }, [])
 
@@ -75,18 +70,35 @@ export default function AdminPreinscripciones() {
     setUpdatingId(null)
   }
 
-  const q = search.toLowerCase()
-  const filtered = items.filter(p =>
-    !q ||
-    p.name.toLowerCase().includes(q) ||
-    p.child_name.toLowerCase().includes(q) ||
-    p.email.toLowerCase().includes(q)
-  )
+  async function handleSaveNotas() {
+    if (!selected) return
+    setSavingNotas(true)
+    const result = await update('preinscripciones', selected.id, { notas: notasDraft } as Record<string, unknown>)
+    if (result.success) {
+      setItems(prev => prev.map(x => x.id === selected.id ? { ...x, notas: notasDraft } : x))
+      setSelected(prev => prev ? { ...prev, notas: notasDraft } : null)
+    } else {
+      setUpdateError(result.error ?? 'Error al guardar notas')
+    }
+    setSavingNotas(false)
+  }
 
-  const byEstado = (estado: PreinscripcionEstado) => filtered.filter(p => p.estado === estado)
+  function openDetail(p: Preinscripcion) {
+    setSelected(p)
+    setNotasDraft(p.notas ?? '')
+  }
+
+  const q = search.toLowerCase()
+  const filtered = items.filter(p => {
+    const matchSearch = !q || p.name.toLowerCase().includes(q) || p.child_name.toLowerCase().includes(q) || p.email.toLowerCase().includes(q)
+    const matchEstado = filterEstado === 'todos' || p.estado === filterEstado
+    return matchSearch && matchEstado
+  })
+
+  const countByEstado = (e: PreinscripcionEstado) => items.filter(p => p.estado === e).length
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-3">
         <div className="flex-1">
@@ -107,11 +119,37 @@ export default function AdminPreinscripciones() {
         </div>
       </div>
 
-      {/* Error update */}
-      {updateError && (
+      {/* Filtros por estado */}
+      <div className="flex flex-wrap gap-2">
+        <button
+          onClick={() => setFilterEstado('todos')}
+          className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all
+            ${filterEstado === 'todos' ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'}`}
+        >
+          Todos ({items.length})
+        </button>
+        {ESTADOS.map(e => {
+          const count = countByEstado(e.value)
+          if (count === 0) return null
+          return (
+            <button
+              key={e.value}
+              onClick={() => setFilterEstado(filterEstado === e.value ? 'todos' : e.value)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all
+                ${filterEstado === e.value ? `${e.bg} ${e.color} ${e.border}` : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300'}`}
+            >
+              <span className={`w-1.5 h-1.5 rounded-full ${e.dot}`} />
+              {e.label} ({count})
+            </button>
+          )
+        })}
+      </div>
+
+      {/* Error */}
+      {(updateError || error) && (
         <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
           <AlertCircle className="w-4 h-4 flex-shrink-0" />
-          {updateError}
+          {updateError || error}
         </div>
       )}
 
@@ -122,126 +160,116 @@ export default function AdminPreinscripciones() {
         </div>
       )}
 
-      {/* Kanban columns */}
-      {!isLoading && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          {ESTADOS.map(col => {
-            const rows = byEstado(col.value)
-            return (
-              <div key={col.value} className={`rounded-xl border ${col.border} overflow-hidden`}>
-                {/* Column header */}
-                <div className={`${col.headerBg} px-4 py-3 flex items-center justify-between`}>
-                  <span className="text-white font-semibold text-sm">{col.label}</span>
-                  <span className="bg-white/30 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                    {rows.length}
-                  </span>
-                </div>
+      {/* Lista */}
+      {!isLoading && filtered.length === 0 && (
+        <p className="text-center text-sm text-gray-400 py-12">No hay resultados.</p>
+      )}
 
-                {/* Cards */}
-                <div className={`${col.bg} min-h-32 p-3 space-y-2.5`}>
-                  {rows.length === 0 && (
-                    <p className="text-center text-xs text-gray-400 py-6">Sin registros</p>
-                  )}
-                  {rows.map(p => (
-                    <div
-                      key={p.id}
-                      className="bg-white rounded-lg border border-gray-200 p-3.5 shadow-sm hover:shadow-md transition-shadow"
-                    >
-                      {/* Name + detail link */}
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                        <div>
-                          <p className="font-semibold text-gray-900 text-sm leading-tight">{p.child_name}</p>
-                          <p className="text-xs text-gray-500">{p.name}</p>
-                        </div>
-                        <button
-                          onClick={() => setSelected(p)}
-                          className="flex-shrink-0 p-1 rounded-md text-gray-400 hover:text-primary hover:bg-primary/5 transition-colors"
-                          title="Ver detalle"
-                        >
-                          <ChevronRight className="w-4 h-4" />
-                        </button>
-                      </div>
-
-                      <div className="flex items-center gap-1 text-xs text-gray-500 mb-3">
-                        <GraduationCap className="w-3 h-3" />
-                        {GRADO_LABEL[p.current_grade] ?? p.current_grade}
-                        <span className="mx-1">·</span>
-                        <Calendar className="w-3 h-3" />
-                        {formatDate(p.created_at)}
-                      </div>
-
-                      {/* Move to estado buttons */}
-                      <div className="flex gap-1.5">
-                        {ESTADOS.filter(e => e.value !== col.value).map(target => (
-                          <button
-                            key={target.value}
-                            disabled={updatingId === p.id}
-                            onClick={() => handleEstadoChange(p, target.value)}
-                            className={`flex-1 py-1.5 text-xs font-semibold rounded-md border transition-colors
-                              ${target.color} ${target.bg} ${target.border}
-                              hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed`}
-                          >
-                            {updatingId === p.id
-                              ? <Loader2 className="w-3 h-3 animate-spin mx-auto" />
-                              : `→ ${target.label.replace('s', '')}`
-                            }
-                          </button>
+      {!isLoading && filtered.length > 0 && (
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-100 bg-gray-50 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                <th className="text-left px-4 py-3">Postulante</th>
+                <th className="text-left px-4 py-3 hidden sm:table-cell">Apoderado</th>
+                <th className="text-left px-4 py-3 hidden md:table-cell">Curso</th>
+                <th className="text-left px-4 py-3">Estado</th>
+                <th className="text-left px-4 py-3 hidden lg:table-cell">Fecha</th>
+                <th className="px-4 py-3 w-10" />
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {filtered.map(p => {
+                const est = ESTADO_MAP[p.estado]
+                const isUpdating = updatingId === p.id
+                return (
+                  <tr key={p.id} className="hover:bg-gray-50 transition-colors group">
+                    <td className="px-4 py-3">
+                      <p className="font-semibold text-gray-900">{p.child_name}</p>
+                      {p.notas && (
+                        <p className="text-xs text-amber-600 flex items-center gap-1 mt-0.5">
+                          <StickyNote className="w-3 h-3" /> Tiene notas
+                        </p>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 hidden sm:table-cell text-gray-600">{p.name}</td>
+                    <td className="px-4 py-3 hidden md:table-cell text-gray-500">
+                      {GRADO_LABEL[p.current_grade] ?? p.current_grade}
+                    </td>
+                    <td className="px-4 py-3">
+                      {/* Selector de estado inline */}
+                      <select
+                        value={p.estado}
+                        disabled={isUpdating}
+                        onChange={e => handleEstadoChange(p, e.target.value as PreinscripcionEstado)}
+                        className={`text-xs font-semibold rounded-full px-3 py-1 border appearance-none cursor-pointer
+                          disabled:opacity-60 ${est.color} ${est.bg} ${est.border}`}
+                      >
+                        {ESTADOS.map(e => (
+                          <option key={e.value} value={e.value}>{e.label}</option>
                         ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )
-          })}
+                      </select>
+                    </td>
+                    <td className="px-4 py-3 hidden lg:table-cell text-gray-400 text-xs">
+                      {formatDate(p.created_at)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <button
+                        onClick={() => openDetail(p)}
+                        className="p-1.5 rounded-md text-gray-400 hover:text-primary hover:bg-primary/5 transition-colors opacity-0 group-hover:opacity-100"
+                        title="Ver detalle"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
         </div>
       )}
 
-      {/* Error general (fetch) */}
-      {error && (
-        <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
-          <AlertCircle className="w-4 h-4 flex-shrink-0" />
-          Error al cargar: {error}
-        </div>
-      )}
+      {/* Resumen rápido por estado */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+        {ESTADOS.map(e => (
+          <button
+            key={e.value}
+            onClick={() => setFilterEstado(e.value)}
+            className={`rounded-xl border px-3 py-3 text-center transition-all hover:shadow-sm
+              ${filterEstado === e.value ? `${e.bg} ${e.border} shadow-sm` : 'bg-white border-gray-100 hover:border-gray-200'}`}
+          >
+            <p className={`text-2xl font-extrabold ${filterEstado === e.value ? e.color : 'text-gray-700'}`}>
+              {countByEstado(e.value)}
+            </p>
+            <p className="text-[10px] text-gray-500 mt-1 leading-tight">{e.label}</p>
+          </button>
+        ))}
+      </div>
 
-      {/* Detail dialog */}
+      {/* Detalle modal */}
       <Dialog open={!!selected} onOpenChange={open => !open && setSelected(null)}>
         {selected && (
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-lg">
             <DialogHeader>
               <DialogTitle>Postulación — {selected.child_name}</DialogTitle>
             </DialogHeader>
 
             <div className="space-y-4 text-sm">
-              {/* Estado actual */}
+              {/* Estado */}
               <div>
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Estado actual</p>
-                <span className={`inline-flex px-3 py-1 rounded-full text-xs font-bold capitalize ${BADGE[selected.estado]}`}>
-                  {selected.estado}
-                </span>
-              </div>
-
-              {/* Cambiar estado */}
-              <div>
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Mover a</p>
-                <div className="flex gap-2">
-                  {ESTADOS.filter(e => e.value !== selected.estado).map(target => (
-                    <button
-                      key={target.value}
-                      disabled={updatingId === selected.id}
-                      onClick={() => handleEstadoChange(selected, target.value)}
-                      className={`flex-1 py-2 rounded-lg text-xs font-bold border transition-colors
-                        ${target.color} ${target.bg} ${target.border}
-                        hover:opacity-80 disabled:opacity-50`}
-                    >
-                      {updatingId === selected.id
-                        ? <Loader2 className="w-3 h-3 animate-spin mx-auto" />
-                        : target.label
-                      }
-                    </button>
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Estado</p>
+                <select
+                  value={selected.estado}
+                  disabled={updatingId === selected.id}
+                  onChange={e => handleEstadoChange(selected, e.target.value as PreinscripcionEstado)}
+                  className={`text-sm font-semibold rounded-lg px-4 py-2 border appearance-none cursor-pointer w-full
+                    ${ESTADO_MAP[selected.estado].color} ${ESTADO_MAP[selected.estado].bg} ${ESTADO_MAP[selected.estado].border}`}
+                >
+                  {ESTADOS.map(e => (
+                    <option key={e.value} value={e.value}>{e.label}</option>
                   ))}
-                </div>
+                </select>
               </div>
 
               <hr className="border-gray-100" />
@@ -260,13 +288,35 @@ export default function AdminPreinscripciones() {
               </InfoSection>
 
               {selected.message && (
-                <InfoSection title="Mensaje">
+                <InfoSection title="Mensaje del apoderado">
                   <div className="flex gap-2 text-gray-700">
                     <MessageSquare className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-gray-400" />
                     <p>{selected.message}</p>
                   </div>
                 </InfoSection>
               )}
+
+              {/* Notas internas */}
+              <div>
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 flex items-center gap-1.5">
+                  <StickyNote className="w-3.5 h-3.5" /> Notas internas
+                </p>
+                <textarea
+                  value={notasDraft}
+                  onChange={e => setNotasDraft(e.target.value)}
+                  placeholder="Ej: Llamé el lunes, no contestó. Volver a llamar el miércoles..."
+                  rows={3}
+                  className="w-full rounded-lg border border-gray-200 bg-amber-50/50 px-3 py-2.5 text-sm text-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-300 placeholder:text-gray-400"
+                />
+                <button
+                  onClick={handleSaveNotas}
+                  disabled={savingNotas || notasDraft === (selected.notas ?? '')}
+                  className="mt-2 flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {savingNotas ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
+                  Guardar nota
+                </button>
+              </div>
 
               <p className="text-xs text-gray-400">Recibida el {formatDate(selected.created_at)}</p>
             </div>

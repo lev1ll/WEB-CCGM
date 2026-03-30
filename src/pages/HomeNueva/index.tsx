@@ -270,7 +270,7 @@ function SobreNosotros() {
 // ── 3. CICLOS EDUCATIVOS ──────────────────────────────────────────────
 function Ciclos() {
   return (
-    <section className="bg-[#2C2825] py-20 md:py-28">
+    <section className="bg-[#0F0D0C] py-20 md:py-28">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Header */}
@@ -284,45 +284,50 @@ function Ciclos() {
             </h2>
           </div>
           <Link to="/niveles"
-            className="inline-flex items-center gap-2 text-white/40 hover:text-white
-                       transition-colors text-sm font-medium shrink-0">
+            className="inline-flex items-center gap-2 text-secondary/70 hover:text-secondary
+                       transition-colors text-sm font-semibold shrink-0">
             Ver programas completos <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
 
-        {/* Lista de ciclos */}
-        <div className="divide-y divide-white/8">
+        {/* Cards de ciclos */}
+        <div className="grid sm:grid-cols-2 gap-6">
           {CICLOS.map((ciclo, i) => {
             const Icon = ciclo.icon
             return (
               <motion.div key={ciclo.num}
-                className="group py-10 hover:bg-white/[0.02] -mx-4 px-4 transition-colors cursor-default"
-                initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
+                className="group relative rounded-2xl border border-white/8 bg-white/[0.03]
+                           hover:bg-white/[0.06] hover:border-secondary/30 transition-all p-8"
+                initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }} transition={{ delay: i * 0.12 }}>
 
-                <div className="grid grid-cols-[auto_1fr] sm:grid-cols-[auto_1fr_2fr] items-start gap-6 sm:gap-10">
-                  {/* Número */}
-                  <span className="text-5xl font-extrabold leading-none text-secondary/25
-                                   group-hover:text-secondary/60 transition-colors select-none w-14 text-right pt-1">
-                    {ciclo.num}
-                  </span>
+                {/* Número decorativo */}
+                <span className="absolute top-6 right-7 text-7xl font-extrabold leading-none
+                                 text-secondary/10 group-hover:text-secondary/20 transition-colors select-none">
+                  {ciclo.num}
+                </span>
 
-                  {/* Nombre + edad */}
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <Icon className="w-4 h-4 text-white/30 group-hover:text-secondary transition-colors shrink-0" />
-                      <h3 className="font-bold text-white text-lg leading-tight">{ciclo.name}</h3>
-                    </div>
-                    <span className="text-xs font-semibold text-secondary/60 block mb-2">{ciclo.grades} · {ciclo.ages}</span>
-                    <p className="text-sm text-white/40 leading-relaxed sm:hidden">{ciclo.desc}</p>
-                    <p className="text-xs text-secondary/50 mt-3 leading-relaxed">
-                      <span className="text-white/30 uppercase tracking-wider text-[10px] mr-2">Academias</span>
-                      {ciclo.academias}
-                    </p>
+                {/* Encabezado */}
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-12 h-12 rounded-xl bg-secondary/15 flex items-center justify-center shrink-0
+                                  group-hover:bg-secondary/25 transition-colors">
+                    <Icon className="w-6 h-6 text-secondary" />
                   </div>
+                  <div>
+                    <h3 className="font-extrabold text-white text-xl leading-tight">{ciclo.name}</h3>
+                    <span className="text-sm font-semibold text-secondary">{ciclo.grades}</span>
+                    <span className="text-xs text-white/40 ml-2">· {ciclo.ages}</span>
+                  </div>
+                </div>
 
-                  {/* Descripción — solo en sm+ */}
-                  <p className="text-sm text-white/40 leading-relaxed hidden sm:block">{ciclo.desc}</p>
+                <p className="text-sm text-white/55 leading-relaxed mb-6">{ciclo.desc}</p>
+
+                {/* Academias */}
+                <div className="border-t border-white/8 pt-4">
+                  <p className="text-[10px] font-bold tracking-widest text-secondary/60 uppercase mb-2">
+                    Academias extracurriculares
+                  </p>
+                  <p className="text-sm text-white/70 font-medium">{ciclo.academias}</p>
                 </div>
               </motion.div>
             )

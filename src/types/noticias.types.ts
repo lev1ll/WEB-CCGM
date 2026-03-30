@@ -1,6 +1,13 @@
 export type NoticiaCategoria = 'noticia' | 'evento'
 export type BloqueType = 'texto' | 'imagen' | 'video' | 'carrusel'
-export type PreinscripcionEstado = 'pendiente' | 'contactado' | 'matriculado'
+export type PreinscripcionEstado =
+  | 'pendiente'
+  | 'llamar_mas_tarde'
+  | 'no_contesta'
+  | 'entrevista_agendada'
+  | 'contactado'
+  | 'matriculado'
+  | 'descartado'
 
 export interface CarruselItem {
   url: string
@@ -55,6 +62,7 @@ export interface Preinscripcion {
   current_grade: string
   message: string | null
   estado: PreinscripcionEstado
+  notas: string | null
   created_at: string
 }
 

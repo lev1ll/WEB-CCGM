@@ -90,7 +90,7 @@ function HistoriaV3() {
             <div className="py-10 grid md:grid-cols-[10rem_1fr] gap-6 items-start">
               {/* Year — giant, faded */}
               <div className="flex items-start">
-                <span className="text-7xl font-extrabold leading-none text-primary/15 select-none">
+                <span className="text-7xl font-extrabold leading-none text-primary/45 select-none">
                   {hito.year}
                 </span>
               </div>
