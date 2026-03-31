@@ -61,7 +61,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* KPIs principales */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
         <KpiCard
           icon={<FileText className="w-5 h-5" />}
           iconBg="bg-blue-600"
@@ -106,20 +106,17 @@ export default function AdminDashboard() {
         {isLoading ? (
           <div className="h-16 bg-gray-100 rounded-lg animate-pulse" />
         ) : (
-          <div className="flex items-stretch gap-2">
+          <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
             {[
-              { label: 'Recibidas',    value: total,                          bg: 'bg-slate-500'  },
-              { label: 'Por gestionar',value: pendientes,                     bg: 'bg-orange-500' },
-              { label: 'En proceso',   value: enProceso,                      bg: 'bg-purple-600' },
-              { label: 'Contactados',  value: count('contactado'),            bg: 'bg-blue-600'   },
-              { label: 'Matriculados', value: matriculados,                   bg: 'bg-green-600'  },
-            ].map((step, i, arr) => (
-              <div key={step.label} className="flex items-center gap-2 flex-1">
-                <div className={`flex-1 rounded-lg px-3 py-4 text-center text-white ${step.bg}`}>
-                  <p className="text-2xl font-extrabold">{step.value}</p>
-                  <p className="text-[10px] font-semibold mt-1 opacity-90 leading-tight">{step.label}</p>
-                </div>
-                {i < arr.length - 1 && <span className="text-gray-300 font-bold shrink-0">›</span>}
+              { label: 'Recibidas',     value: total,               bg: 'bg-slate-500'  },
+              { label: 'Por gestionar', value: pendientes,          bg: 'bg-orange-500' },
+              { label: 'En proceso',    value: enProceso,           bg: 'bg-purple-600' },
+              { label: 'Contactados',   value: count('contactado'), bg: 'bg-blue-600'   },
+              { label: 'Matriculados',  value: matriculados,        bg: 'bg-green-600'  },
+            ].map(step => (
+              <div key={step.label} className={`rounded-lg px-1 py-3 sm:px-3 sm:py-4 text-center text-white ${step.bg}`}>
+                <p className="text-xl sm:text-2xl font-extrabold">{step.value}</p>
+                <p className="text-[8px] sm:text-[10px] font-semibold mt-1 opacity-90 leading-tight">{step.label}</p>
               </div>
             ))}
           </div>
@@ -144,12 +141,12 @@ export default function AdminDashboard() {
               {recientes.map(p => {
                 const st = ESTADO_STYLE[p.estado] ?? { bg: 'bg-gray-100', color: 'text-gray-600' }
                 return (
-                  <div key={p.id} className="flex items-center justify-between py-2.5 border-b border-gray-50 last:border-0">
+                  <div key={p.id} className="flex items-start justify-between gap-2 py-2.5 border-b border-gray-50 last:border-0">
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-gray-900 truncate">{p.child_name}</p>
-                      <p className="text-xs text-gray-400">{p.name} · {formatDate(p.created_at)}</p>
+                      <p className="text-xs text-gray-400 truncate">{p.name} · {formatDate(p.created_at)}</p>
                     </div>
-                    <span className={`ml-3 shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full ${st.bg} ${st.color}`}>
+                    <span className={`shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full ${st.bg} ${st.color}`}>
                       {ESTADO_LABEL[p.estado] ?? p.estado}
                     </span>
                   </div>
@@ -237,19 +234,19 @@ function KpiCard({ icon, iconBg, label, value, sub, isLoading, highlight }: {
   value: number; sub: string; isLoading: boolean; highlight?: boolean
 }) {
   return (
-    <div className={`rounded-xl border p-5 transition-all ${highlight ? 'border-orange-300 bg-orange-50' : 'border-gray-200 bg-white'}`}>
-      <div className="flex items-center gap-3 mb-3">
-        <div className={`w-9 h-9 rounded-lg ${iconBg} flex items-center justify-center text-white shrink-0`}>
+    <div className={`rounded-xl border p-3 sm:p-5 transition-all ${highlight ? 'border-orange-300 bg-orange-50' : 'border-gray-200 bg-white'}`}>
+      <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+        <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg ${iconBg} flex items-center justify-center text-white shrink-0`}>
           {icon}
         </div>
-        <span className="text-sm text-gray-500 font-medium leading-tight">{label}</span>
+        <span className="text-xs sm:text-sm text-gray-500 font-medium leading-tight">{label}</span>
       </div>
       {isLoading ? (
-        <div className="h-8 w-16 bg-gray-100 rounded animate-pulse" />
+        <div className="h-7 w-14 bg-gray-100 rounded animate-pulse" />
       ) : (
         <>
-          <p className={`text-3xl font-extrabold ${highlight ? 'text-orange-700' : 'text-gray-900'}`}>{value}</p>
-          <p className="text-xs text-gray-400 mt-1">{sub}</p>
+          <p className={`text-2xl sm:text-3xl font-extrabold ${highlight ? 'text-orange-700' : 'text-gray-900'}`}>{value}</p>
+          <p className="text-[11px] sm:text-xs text-gray-400 mt-0.5 sm:mt-1 leading-tight">{sub}</p>
         </>
       )}
     </div>
