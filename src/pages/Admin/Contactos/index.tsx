@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import {
   Search, Mail, Phone, Trash2, Loader2,
-  AlertCircle, GraduationCap, ChevronRight, StickyNote, Save,
+  AlertCircle, GraduationCap, ChevronRight, StickyNote, Save, Check,
 } from 'lucide-react'
 import { useSupabaseQuery } from '@/hooks/useSupabaseQuery'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -43,6 +43,7 @@ export default function AdminContactos() {
   const [actionError, setActionError] = useState<string | null>(null)
   const [notasDraft, setNotasDraft] = useState('')
   const [savingNotas, setSavingNotas] = useState(false)
+  const [notasSaved, setNotasSaved] = useState(false)
 
   useEffect(() => { load() }, [])
 
@@ -87,6 +88,8 @@ export default function AdminContactos() {
     if (r.success) {
       setItems(prev => prev.map(x => x.id === selected.id ? { ...x, notas: notasDraft } : x))
       setSelected(prev => prev ? { ...prev, notas: notasDraft } : null)
+      setNotasSaved(true)
+      setTimeout(() => setNotasSaved(false), 2000)
     } else {
       setActionError(r.error ?? 'Error al guardar notas')
     }
@@ -292,10 +295,15 @@ export default function AdminContactos() {
                 <button
                   onClick={handleSaveNotas}
                   disabled={savingNotas || notasDraft === (selected.notas ?? '')}
-                  className="mt-2 flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className={`mt-2 flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-white text-xs font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed
+                    ${notasSaved ? 'bg-green-500' : 'bg-amber-500 hover:bg-amber-600'}`}
                 >
-                  {savingNotas ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
-                  Guardar nota
+                  {savingNotas
+                    ? <Loader2 className="w-3 h-3 animate-spin" />
+                    : notasSaved
+                      ? <Check className="w-3 h-3" />
+                      : <Save className="w-3 h-3" />}
+                  {notasSaved ? '¡Guardado!' : 'Guardar nota'}
                 </button>
               </div>
               <p className="text-xs text-gray-400">Recibida el {formatDate(selected.created_at)}</p>
