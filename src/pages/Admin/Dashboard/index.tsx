@@ -61,7 +61,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* KPIs principales */}
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <KpiCard
           icon={<FileText className="w-5 h-5" />}
           iconBg="bg-blue-600"

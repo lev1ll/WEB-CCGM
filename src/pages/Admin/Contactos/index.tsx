@@ -135,7 +135,7 @@ export default function AdminContactos() {
       </div>
 
       {/* KPIs — clickeables para filtrar */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2">
         {ESTADOS_PI.map(e => {
           const count = countBy(e.value)
           const active = filterEstado === e.value
@@ -175,7 +175,8 @@ export default function AdminContactos() {
 
       {!isLoading && filtered.length > 0 && (
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[540px]">
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50 text-xs font-semibold text-gray-500 uppercase tracking-wide">
                 <th className="text-left px-4 py-3">Postulante</th>
@@ -236,6 +237,7 @@ export default function AdminContactos() {
               })}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 

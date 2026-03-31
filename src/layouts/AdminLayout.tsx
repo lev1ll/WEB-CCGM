@@ -127,7 +127,7 @@ export default function AdminLayout() {
         fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-gray-200 flex flex-col
         transition-transform duration-200
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-        lg:static lg:translate-x-0
+        md:static md:translate-x-0
       `}>
         {/* Logo */}
         <div className="flex items-center gap-3 px-6 py-5 border-b border-gray-100">
@@ -185,7 +185,7 @@ export default function AdminLayout() {
       {/* Overlay mobile */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-30 bg-black/40 lg:hidden"
+          className="fixed inset-0 z-30 bg-black/40 md:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -195,7 +195,7 @@ export default function AdminLayout() {
         {/* Top bar */}
         <header className="sticky top-0 z-20 bg-white border-b border-gray-200 px-4 h-14 flex items-center gap-3">
           <button
-            className="lg:hidden p-2 rounded-md text-gray-500 hover:bg-gray-100"
+            className="md:hidden p-2 rounded-md text-gray-500 hover:bg-gray-100"
             onClick={() => setSidebarOpen(true)}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -228,11 +228,11 @@ export default function AdminLayout() {
         </header>
 
         {/* Toast notifications */}
-        <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3 pointer-events-none">
+        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col gap-3 pointer-events-none w-[calc(100vw-2rem)] sm:w-80">
           {toasts.map(t => (
             <div
               key={t.id}
-              className="pointer-events-auto flex items-start gap-3 bg-white border border-gray-200 rounded-xl shadow-xl px-4 py-3 w-80 animate-in slide-in-from-right-full duration-300"
+              className="pointer-events-auto flex items-start gap-3 bg-white border border-gray-200 rounded-xl shadow-xl px-4 py-3 w-full animate-in slide-in-from-right-full duration-300"
             >
               <div className="flex-shrink-0 w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
                 <UserPlus className="w-4 h-4 text-primary" />
@@ -252,7 +252,7 @@ export default function AdminLayout() {
         </div>
 
         {/* Page content */}
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-4 sm:p-6">
           <Outlet />
         </main>
       </div>
