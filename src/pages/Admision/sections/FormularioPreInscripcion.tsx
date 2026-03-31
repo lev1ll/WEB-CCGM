@@ -161,7 +161,7 @@ export function FormularioPreInscripcion() {
           <ToastDescription>{toastMsg}</ToastDescription>
           <ToastClose />
         </Toast>
-        <ToastPrimitive.Viewport className="fixed bottom-4 right-4 z-[100] w-full max-w-sm" />
+        <ToastPrimitive.Viewport className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-80 z-[100]" />
       </ToastPrimitive.Provider>
     </SectionWrapper>
   )
