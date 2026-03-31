@@ -21,7 +21,7 @@ const CURSOS = [
 const EMPTY_FORM = { titulo: '', descripcion: '', url: '', categoria: 'otro' as DocumentoCategoria, curso: '' }
 
 export default function AdminDocumentos() {
-  const { select, insert, remove, isLoading, error } = useSupabaseQuery()
+  const { select, upsert, remove, isLoading, error } = useSupabaseQuery()
   const [docs, setDocs] = useState<Documento[]>([])
   const [dialogOpen, setDialogOpen] = useState(false)
   const [form, setForm] = useState(EMPTY_FORM)
@@ -55,7 +55,7 @@ export default function AdminDocumentos() {
       categoria: form.categoria,
       curso: form.curso || null,
     }
-    const r = await insert('documentos', payload)
+    const r = await upsert('documentos', payload)
     if (r.success) {
       await load()
       setDialogOpen(false)

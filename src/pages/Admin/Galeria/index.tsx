@@ -6,7 +6,7 @@ import { uploadToCloudinary } from '@/lib/utils'
 import type { GaleriaItem } from '@/types/noticias.types'
 
 export default function AdminGaleria() {
-  const { select, insert, update, remove, isLoading, error } = useSupabaseQuery()
+  const { select, upsert, update, remove, isLoading, error } = useSupabaseQuery()
   const [items, setItems] = useState<GaleriaItem[]>([])
   const [uploading, setUploading] = useState(false)
   const [actionError, setActionError] = useState<string | null>(null)
@@ -33,7 +33,7 @@ export default function AdminGaleria() {
     try {
       for (const file of files) {
         const url = await uploadToCloudinary(file)
-        const r = await insert('galeria', { url, caption: '', orden: 0 })
+        const r = await upsert('galeria', { url, caption: '', orden: 0 })
         if (!r.success) throw new Error(r.error ?? 'Error al guardar')
       }
       await load()
