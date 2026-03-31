@@ -137,17 +137,89 @@ export default function NoticiasGrid({ items, isLoading, filter, onFilterChange 
         )}
 
         {/* Grid */}
-        {!isLoading && filtered.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map((noticia, i) => (
-              <AnimatedSection key={noticia.id} direction="up" delay={i * 0.05}>
-                <NoticiaCard noticia={noticia} />
-              </AnimatedSection>
-            ))}
-          </div>
-        )}
+        {!isLoading && filtered.length > 0 && (() => {
+          const destacada = filtered.find(n => n.destacada)
+          const resto = filtered.filter(n => !n.destacada || n !== destacada)
+          return (
+            <div className="space-y-6">
+              {/* Noticia destacada */}
+              {destacada && (
+                <AnimatedSection direction="up">
+                  <NoticiaCardDestacada noticia={destacada} />
+                </AnimatedSection>
+              )}
+              {/* Grid normal */}
+              {resto.length > 0 && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {resto.map((noticia, i) => (
+                    <AnimatedSection key={noticia.id} direction="up" delay={i * 0.05}>
+                      <NoticiaCard noticia={noticia} />
+                    </AnimatedSection>
+                  ))}
+                </div>
+              )}
+            </div>
+          )
+        })()}
       </div>
     </section>
+  )
+}
+
+function NoticiaCardDestacada({ noticia }: { noticia: Noticia }) {
+  return (
+    <motion.div whileHover={{ y: -4, transition: { duration: 0.2 } }}>
+      <Link to={`/noticias/${noticia.slug}`}>
+        <Card className="overflow-hidden group cursor-pointer border-border hover:shadow-xl transition-shadow duration-300">
+          <div className="grid md:grid-cols-2">
+            {/* Image */}
+            <div className="relative h-64 md:h-80 overflow-hidden bg-muted">
+              {noticia.imagen_portada ? (
+                <img
+                  src={noticia.imagen_portada}
+                  alt={noticia.titulo}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                  <Calendar className="w-16 h-16 text-primary/30" />
+                </div>
+              )}
+              <div className="absolute top-4 left-4 flex gap-2">
+                <Badge className="bg-amber-500 text-white border-transparent text-xs font-bold">
+                  Destacada
+                </Badge>
+                <Badge
+                  className={`text-xs font-semibold capitalize
+                    ${noticia.categoria === 'evento'
+                      ? 'bg-amber-500/80 text-white border-transparent'
+                      : 'bg-primary text-white border-transparent'
+                    }`}
+                >
+                  {noticia.categoria}
+                </Badge>
+              </div>
+            </div>
+            {/* Content */}
+            <div className="p-6 md:p-8 flex flex-col justify-center gap-3">
+              <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5" />
+                {formatDate(noticia.created_at)}
+              </p>
+              <h3 className="text-xl md:text-2xl font-bold text-foreground leading-tight group-hover:text-primary transition-colors">
+                {noticia.titulo}
+              </h3>
+              {noticia.resumen && (
+                <p className="text-muted-foreground leading-relaxed line-clamp-3">{noticia.resumen}</p>
+              )}
+              <div className="mt-2 flex items-center gap-1.5 text-primary font-semibold">
+                Leer más <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </div>
+          </div>
+        </Card>
+      </Link>
+    </motion.div>
   )
 }
 
@@ -157,7 +229,7 @@ function NoticiaCard({ noticia }: { noticia: Noticia }) {
       <Link to={`/noticias/${noticia.slug}`}>
         <Card className="overflow-hidden h-full group cursor-pointer border-border hover:shadow-lg transition-shadow duration-300">
           {/* Image */}
-          <div className="relative h-48 overflow-hidden bg-muted">
+          <div className="relative h-56 overflow-hidden bg-muted">
             {noticia.imagen_portada ? (
               <img
                 src={noticia.imagen_portada}

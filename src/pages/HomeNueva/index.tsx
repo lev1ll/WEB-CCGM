@@ -8,9 +8,12 @@ import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowRight, ChevronLeft, ChevronRight, MessageCircle,
-  BookOpen, GraduationCap, Instagram, Facebook,
+  BookOpen, GraduationCap, Instagram, Facebook, Calendar,
 } from 'lucide-react'
 import { SCHOOL } from '@/constants/school'
+import { useSupabaseQuery } from '@/hooks/useSupabaseQuery'
+import type { Noticia } from '@/types/noticias.types'
+import { formatDate } from '@/lib/utils'
 
 // ── Datos ──────────────────────────────────────────────────────────────
 const FOTOS = [
@@ -356,6 +359,97 @@ function FranjaIdentidad() {
   )
 }
 
+// ── 5. ÚLTIMAS NOTICIAS ───────────────────────────────────────────────
+function UltimasNoticias() {
+  const { select } = useSupabaseQuery()
+  const [noticias, setNoticias] = useState<Noticia[]>([])
+
+  useEffect(() => {
+    select<Noticia>('noticias', {
+      filter: { publicado: true },
+      order: { column: 'created_at', ascending: false },
+      limit: 3,
+    }).then(setNoticias)
+  }, [])
+
+  if (noticias.length === 0) return null
+
+  return (
+    <section className="bg-background py-20 md:py-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-end justify-between mb-10">
+          <div>
+            <p className="text-[11px] font-bold tracking-[0.25em] text-primary uppercase mb-3">
+              Novedades
+            </p>
+            <h2 className="text-4xl sm:text-5xl font-extrabold text-foreground leading-tight tracking-tight">
+              Últimas noticias
+            </h2>
+          </div>
+          <Link
+            to="/noticias"
+            className="hidden sm:inline-flex items-center gap-2 text-sm font-bold text-primary hover:gap-3 transition-all shrink-0"
+          >
+            Ver todas <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {noticias.map((n, i) => (
+            <motion.div
+              key={n.id}
+              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }} transition={{ delay: i * 0.1 }}
+            >
+              <Link to={`/noticias/${n.slug}`} className="group block h-full">
+                <div className="rounded-2xl border border-border overflow-hidden h-full hover:shadow-lg transition-shadow duration-300">
+                  <div className="relative h-48 overflow-hidden bg-muted">
+                    {n.imagen_portada ? (
+                      <img
+                        src={n.imagen_portada}
+                        alt={n.titulo}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-primary/15 to-primary/5 flex items-center justify-center">
+                        <Calendar className="w-10 h-10 text-primary/30" />
+                      </div>
+                    )}
+                    <span className={`absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full
+                      ${n.categoria === 'evento' ? 'bg-amber-500 text-white' : 'bg-primary text-white'}`}>
+                      {n.categoria}
+                    </span>
+                  </div>
+                  <div className="p-5">
+                    <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+                      <Calendar className="w-3 h-3" />{formatDate(n.created_at)}
+                    </p>
+                    <h3 className="font-bold text-foreground line-clamp-2 leading-tight group-hover:text-primary transition-colors">
+                      {n.titulo}
+                    </h3>
+                    {n.resumen && (
+                      <p className="text-sm text-muted-foreground line-clamp-2 mt-1.5">{n.resumen}</p>
+                    )}
+                  </div>
+                </div>
+              </Link>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="mt-8 sm:hidden text-center">
+          <Link
+            to="/noticias"
+            className="inline-flex items-center gap-2 text-sm font-bold text-primary"
+          >
+            Ver todas las noticias <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 // ── 6. CTA FINAL ─────────────────────────────────────────────────────
 function CTAFinal() {
   return (
@@ -408,6 +502,7 @@ export function HomeNueva() {
       <SobreNosotros />
       <Ciclos />
       <FranjaIdentidad />
+      <UltimasNoticias />
       <CTAFinal />
     </>
   )

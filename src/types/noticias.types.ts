@@ -45,6 +45,7 @@ export interface Noticia {
   imagen_portada: string | null
   resumen: string | null
   publicado: boolean
+  destacada: boolean
   created_at: string
   updated_at: string
 }

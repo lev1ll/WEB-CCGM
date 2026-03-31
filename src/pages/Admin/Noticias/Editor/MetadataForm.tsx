@@ -11,6 +11,7 @@ export interface MetadataValues {
   imagen_portada: string
   resumen: string
   publicado: boolean
+  destacada: boolean
 }
 
 interface Props {
@@ -182,6 +183,26 @@ export default function MetadataForm({ values, onChange }: Props) {
         <p className="text-xs text-gray-400 mt-1">
           {values.publicado ? 'Visible en el sitio web' : 'Borrador — no visible al público'}
         </p>
+      </div>
+
+      {/* Destacada */}
+      <div>
+        <label className="flex items-center justify-between cursor-pointer">
+          <div>
+            <span className="text-sm font-medium text-gray-700">Noticia destacada</span>
+            <p className="text-xs text-gray-400 mt-0.5">Aparece en grande arriba del listado</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => onChange({ ...values, destacada: !values.destacada })}
+            className={`relative w-10 h-5 rounded-full transition-colors shrink-0
+              ${values.destacada ? 'bg-amber-500' : 'bg-gray-300'}`}
+          >
+            <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform
+              ${values.destacada ? 'translate-x-5' : 'translate-x-0.5'}`}
+            />
+          </button>
+        </label>
       </div>
     </div>
   )

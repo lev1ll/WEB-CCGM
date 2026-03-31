@@ -14,6 +14,7 @@ const DEFAULT_METADATA: MetadataValues = {
   imagen_portada: '',
   resumen: '',
   publicado: false,
+  destacada: false,
 }
 
 export default function NoticiaEditorPage() {
@@ -32,7 +33,7 @@ export default function NoticiaEditorPage() {
     async function load() {
       const noticias = await select<MetadataValues & { id: string }>('noticias', {
         filter: { id },
-        select: 'id,titulo,slug,categoria,fecha_evento,imagen_portada,resumen,publicado',
+        select: 'id,titulo,slug,categoria,fecha_evento,imagen_portada,resumen,publicado,destacada',
       })
       const noticia = noticias[0]
       if (!noticia) { navigate('/admin/noticias'); return }
@@ -45,6 +46,7 @@ export default function NoticiaEditorPage() {
         imagen_portada: noticia.imagen_portada ?? '',
         resumen: noticia.resumen ?? '',
         publicado: noticia.publicado,
+        destacada: (noticia as MetadataValues & { destacada: boolean }).destacada ?? false,
       })
 
       const rawBloques = await select<Bloque>('noticias_bloques', {
@@ -84,6 +86,7 @@ export default function NoticiaEditorPage() {
       imagen_portada: metadata.imagen_portada || null,
       resumen: metadata.resumen || null,
       publicado: metadata.publicado,
+      destacada: metadata.destacada,
     }
     const { success, id: savedId, error } = await upsert('noticias', payload)
     if (!success || !savedId) {
