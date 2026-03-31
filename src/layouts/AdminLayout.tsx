@@ -1,8 +1,37 @@
-import { useEffect, useState, useCallback } from 'react'
-import { Outlet, NavLink, useLocation, Navigate } from 'react-router-dom'
-import { LayoutDashboard, Newspaper, Users, LogOut, Bell, UserPlus, X, GraduationCap } from 'lucide-react'
+import { useEffect, useState, useCallback, useRef } from 'react'
+import { Outlet, NavLink, useLocation, Navigate, Link } from 'react-router-dom'
+import { LayoutDashboard, Newspaper, Users, LogOut, Bell, UserPlus, X, GraduationCap, Loader2 } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
+
+const ESTADO_LABEL: Record<string, string> = {
+  pendiente:           'Pendiente',
+  llamar_mas_tarde:    'Llamar más tarde',
+  no_contesta:         'No contesta',
+  entrevista_agendada: 'Entrevista agendada',
+  contactado:          'Contactado',
+  matriculado:         'Matriculado',
+  descartado:          'Descartado',
+}
+const ESTADO_STYLE: Record<string, { bg: string; color: string }> = {
+  pendiente:           { bg: 'bg-slate-200',   color: 'text-slate-800'  },
+  llamar_mas_tarde:    { bg: 'bg-orange-200',  color: 'text-orange-900' },
+  no_contesta:         { bg: 'bg-red-200',     color: 'text-red-900'    },
+  entrevista_agendada: { bg: 'bg-purple-200',  color: 'text-purple-900' },
+  contactado:          { bg: 'bg-blue-200',    color: 'text-blue-900'   },
+  matriculado:         { bg: 'bg-green-200',   color: 'text-green-900'  },
+  descartado:          { bg: 'bg-gray-200',    color: 'text-gray-700'   },
+}
+
+function timeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime()
+  const mins = Math.floor(diff / 60000)
+  if (mins < 1) return 'ahora'
+  if (mins < 60) return `hace ${mins} min`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `hace ${hours} h`
+  return `hace ${Math.floor(hours / 24)} d`
+}
 
 const NAV_ITEMS = [
   { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, exact: true },
@@ -46,6 +75,35 @@ export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [toasts, setToasts] = useState<ToastNotif[]>([])
   const [bellAnimate, setBellAnimate] = useState(false)
+  const [panelOpen, setPanelOpen] = useState(false)
+  const [recentPI, setRecentPI] = useState<{id:string;name:string;child_name:string;estado:string;created_at:string}[]>([])
+  const [loadingPanel, setLoadingPanel] = useState(false)
+  const panelRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!panelOpen) return
+    function handleClick(e: MouseEvent) {
+      if (panelRef.current && !panelRef.current.contains(e.target as Node)) setPanelOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [panelOpen])
+
+  async function openPanel() {
+    const opening = !panelOpen
+    setPanelOpen(opening)
+    if (opening && supabase) {
+      setLoadingPanel(true)
+      const { data } = await supabase
+        .from('preinscripciones')
+        .select('id,name,child_name,estado,created_at')
+        .order('created_at', { ascending: false })
+        .limit(8)
+      setRecentPI(data ?? [])
+      setLoadingPanel(false)
+      setNewPostulaciones(0)
+    }
+  }
 
   const dismissToast = useCallback((id: number) => {
     setToasts(prev => prev.filter(t => t.id !== id))
@@ -205,22 +263,71 @@ export default function AdminLayout() {
 
           <div className="flex-1" />
 
-          {/* Notification bell — always visible */}
-          <button
-            onClick={clearNotifications}
-            className="relative p-2 rounded-md text-gray-500 hover:bg-gray-100 transition-colors"
-            title={newPostulaciones > 0 ? `${newPostulaciones} nueva(s) postulación(es)` : 'Notificaciones'}
-          >
-            <Bell className={`w-5 h-5 transition-transform ${bellAnimate ? 'animate-bounce' : ''}`} />
-            {newPostulaciones > 0 && (
-              <>
-                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                <span className="absolute -top-0.5 -right-0.5 min-w-[1.1rem] h-[1.1rem] px-0.5 flex items-center justify-center text-[10px] font-bold text-white bg-red-500 rounded-full">
-                  {newPostulaciones > 9 ? '9+' : newPostulaciones}
-                </span>
-              </>
+          {/* Notification bell + panel */}
+          <div className="relative" ref={panelRef}>
+            <button
+              onClick={openPanel}
+              className="relative p-2 rounded-md text-gray-500 hover:bg-gray-100 transition-colors"
+              title={newPostulaciones > 0 ? `${newPostulaciones} nueva(s) postulación(es)` : 'Notificaciones'}
+            >
+              <Bell className={`w-5 h-5 transition-transform ${bellAnimate ? 'animate-bounce' : ''}`} />
+              {newPostulaciones > 0 && (
+                <>
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                  <span className="absolute -top-0.5 -right-0.5 min-w-[1.1rem] h-[1.1rem] px-0.5 flex items-center justify-center text-[10px] font-bold text-white bg-red-500 rounded-full">
+                    {newPostulaciones > 9 ? '9+' : newPostulaciones}
+                  </span>
+                </>
+              )}
+            </button>
+
+            {panelOpen && (
+              <div className="fixed left-3 right-3 top-16 sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:w-80 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
+                <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+                  <h3 className="text-sm font-semibold text-gray-900">Pre-inscripciones</h3>
+                  <Link
+                    to="/admin/contactos"
+                    onClick={() => setPanelOpen(false)}
+                    className="text-xs text-primary hover:underline font-medium"
+                  >
+                    Ver todas →
+                  </Link>
+                </div>
+                {loadingPanel ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="w-5 h-5 animate-spin text-gray-300" />
+                  </div>
+                ) : recentPI.length === 0 ? (
+                  <p className="text-sm text-gray-400 text-center py-8">No hay postulaciones aún.</p>
+                ) : (
+                  <div className="divide-y divide-gray-50 max-h-80 overflow-y-auto">
+                    {recentPI.map(p => {
+                      const st = ESTADO_STYLE[p.estado] ?? { bg: 'bg-gray-100', color: 'text-gray-600' }
+                      return (
+                        <Link
+                          key={p.id}
+                          to="/admin/contactos"
+                          onClick={() => setPanelOpen(false)}
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
+                        >
+                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                            <span className="text-xs font-bold text-primary">{p.name.charAt(0).toUpperCase()}</span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-gray-900 truncate">{p.child_name}</p>
+                            <p className="text-xs text-gray-400 truncate">{p.name} · {timeAgo(p.created_at)}</p>
+                          </div>
+                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${st.bg} ${st.color}`}>
+                            {ESTADO_LABEL[p.estado] ?? p.estado}
+                          </span>
+                        </Link>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
             )}
-          </button>
+          </div>
 
           <div className="text-xs text-gray-500">
             {session?.user?.email}
