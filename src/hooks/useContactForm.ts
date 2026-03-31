@@ -3,6 +3,7 @@ import { useSupabase } from '@/hooks/useSupabase'
 
 interface UseContactFormOptions {
   table: string
+  requiredFields?: string[]
   onSuccess?: () => void
   onError?: (error: string) => void
 }
@@ -30,10 +31,10 @@ export function useContactForm<T extends Record<string, string>>(
 
   function validate(): boolean {
     const newErrors: Errors<T> = {}
-    for (const key of Object.keys(initialValues) as (keyof T)[]) {
+    const required = options.requiredFields ?? Object.keys(initialValues)
+    for (const key of required as (keyof T)[]) {
       const val = values[key]
-      // Only validate required fields (those present in initialValues as non-optional)
-      if (typeof val === 'string' && val.trim() === '' && !key.toString().endsWith('?')) {
+      if (typeof val === 'string' && val.trim() === '') {
         newErrors[key] = 'Este campo es requerido'
       }
     }

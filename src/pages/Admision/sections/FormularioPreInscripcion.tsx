@@ -29,6 +29,7 @@ export function FormularioPreInscripcion() {
     INITIAL_VALUES,
     {
       table: 'preinscripciones',
+      requiredFields: ['name', 'email', 'child_name', 'current_grade'],
       onSuccess: () => {
         setToastVariant('success')
         setToastMsg('¡Mensaje recibido! Te contactaremos pronto para coordinar la visita.')
