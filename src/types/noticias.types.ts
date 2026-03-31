@@ -79,6 +79,26 @@ export interface Trabajador {
   created_at: string
 }
 
+export interface GaleriaItem {
+  id: string
+  url: string
+  caption: string | null
+  orden: number
+  created_at: string
+}
+
+export type DocumentoCategoria = 'lista_utiles' | 'reglamento' | 'calendario' | 'circular' | 'otro'
+
+export interface Documento {
+  id: string
+  titulo: string
+  descripcion: string | null
+  url: string
+  categoria: DocumentoCategoria
+  curso: string | null
+  created_at: string
+}
+
 export interface ContactMessage {
   id: string
   name: string

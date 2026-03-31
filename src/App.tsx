@@ -15,6 +15,9 @@ import AdminContactos from '@/pages/Admin/Contactos'
 import AdminNoticiasPage from '@/pages/Admin/Noticias'
 import NoticiaEditorPage from '@/pages/Admin/Noticias/Editor'
 import AdminTrabajadores from '@/pages/Admin/Trabajadores'
+import AdminGaleria from '@/pages/Admin/Galeria'
+import AdminDocumentos from '@/pages/Admin/Documentos'
+import RecursosPage from '@/pages/Recursos'
 import { ErrorBoundary } from '@/components/shared/ErrorBoundary'
 import { VariantProvider } from '@/context/VariantContext'
 import { HomeNueva } from '@/pages/HomeNueva'
@@ -35,6 +38,7 @@ export default function App() {
             <Route path="contacto" element={<ErrorBoundary><ContactoPage /></ErrorBoundary>} />
             <Route path="noticias" element={<ErrorBoundary><NoticiasPage /></ErrorBoundary>} />
             <Route path="noticias/:slug" element={<ErrorBoundary><NoticiaDetallePage /></ErrorBoundary>} />
+            <Route path="recursos" element={<ErrorBoundary><RecursosPage /></ErrorBoundary>} />
           </Route>
 
           {/* ── Panel Admin (layout separado, auth-guardado) ── */}
@@ -46,6 +50,8 @@ export default function App() {
             <Route path="admin/noticias/nueva" element={<NoticiaEditorPage />} />
             <Route path="admin/noticias/:id/editar" element={<NoticiaEditorPage />} />
             <Route path="admin/trabajadores" element={<AdminTrabajadores />} />
+            <Route path="admin/galeria" element={<AdminGaleria />} />
+            <Route path="admin/documentos" element={<AdminDocumentos />} />
           </Route>
         </Routes>
       </ErrorBoundary>
