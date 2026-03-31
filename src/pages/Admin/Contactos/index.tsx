@@ -1,8 +1,8 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import {
-  Search, Mail, Phone, Trash2, Loader2,
-  AlertCircle, GraduationCap, ChevronRight, StickyNote, Save, Check,
+  Search, Trash2, Loader2,
+  AlertCircle, ChevronRight, StickyNote, Save, Check,
 } from 'lucide-react'
 import { useSupabaseQuery } from '@/hooks/useSupabaseQuery'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -197,11 +197,9 @@ export default function AdminContactos() {
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50 text-xs font-semibold text-gray-500 uppercase tracking-wide">
                 <th className="text-left px-4 py-3">Postulante</th>
-                <th className="text-left px-4 py-3 hidden sm:table-cell">Apoderado</th>
-                <th className="text-left px-4 py-3 hidden md:table-cell">Curso</th>
                 <th className="text-left px-4 py-3">Estado</th>
                 <th className="text-left px-4 py-3 hidden lg:table-cell">Fecha</th>
-                <th className="px-4 py-3 w-16" />
+                <th className="px-4 py-3 w-20" />
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -209,10 +207,10 @@ export default function AdminContactos() {
                 const est = ESTADO_MAP[p.estado]
                 const busy = loadingId === p.id
                 return (
-                  <tr key={p.id} className="hover:bg-gray-50 transition-colors group">
+                  <tr key={p.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-4 py-3">
                       <p className="font-semibold text-gray-900">{p.child_name}</p>
-                      <p className="text-xs text-gray-500 mt-0.5 sm:hidden">
+                      <p className="text-xs text-gray-500 mt-0.5">
                         {p.name} · {GRADO[p.current_grade] ?? p.current_grade}
                       </p>
                       {p.notas && (
@@ -221,22 +219,21 @@ export default function AdminContactos() {
                         </p>
                       )}
                     </td>
-                    <td className="px-4 py-3 hidden sm:table-cell text-gray-600">{p.name}</td>
-                    <td className="px-4 py-3 hidden md:table-cell text-gray-500">
-                      {GRADO[p.current_grade] ?? p.current_grade}
-                    </td>
                     <td className="px-4 py-3">
-                      <EstadoSelector
-                        value={p.estado}
+                      <button
+                        onClick={() => openDetail(p)}
                         disabled={busy}
-                        onChange={estado => changeEstado(p, estado)}
-                      />
+                        className={`text-xs font-semibold rounded-full px-2.5 py-1 border transition-colors disabled:opacity-60 hover:opacity-80
+                          ${est.bg} ${est.color} ${est.border}`}
+                      >
+                        {busy ? <Loader2 className="w-3 h-3 animate-spin inline" /> : est.label}
+                      </button>
                     </td>
                     <td className="px-4 py-3 hidden lg:table-cell text-gray-400 text-xs">
                       {formatDate(p.created_at)}
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex gap-1">
                         <button onClick={() => openDetail(p)}
                           className="p-1.5 rounded-md text-gray-400 hover:text-primary hover:bg-primary/5 transition-colors">
                           <ChevronRight className="w-4 h-4" />
@@ -266,12 +263,22 @@ export default function AdminContactos() {
             <div className="space-y-4 text-sm">
               <div>
                 <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Estado</p>
-                <EstadoSelector
-                  value={selected.estado}
-                  disabled={loadingId === selected.id}
-                  onChange={estado => changeEstado(selected, estado)}
-                  fullWidth
-                />
+                <div className="flex flex-wrap gap-1.5">
+                  {ESTADOS_PI.map(e => (
+                    <button
+                      key={e.value}
+                      type="button"
+                      disabled={loadingId === selected.id}
+                      onClick={() => changeEstado(selected, e.value)}
+                      className={`text-xs font-semibold rounded-full px-3 py-1.5 border transition-all disabled:opacity-60
+                        ${selected.estado === e.value
+                          ? `${e.bg} ${e.color} ${e.border}`
+                          : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50'}`}
+                    >
+                      {e.label}
+                    </button>
+                  ))}
+                </div>
               </div>
               <hr className="border-gray-100" />
               <InfoBlock title="Apoderado">
@@ -364,59 +371,3 @@ function InfoRow({ label, value, isEmail }: { label: string; value: string; isEm
   )
 }
 
-function EstadoSelector({
-  value, disabled, onChange, fullWidth,
-}: {
-  value: PreinscripcionEstado
-  disabled?: boolean
-  onChange: (e: PreinscripcionEstado) => void
-  fullWidth?: boolean
-}) {
-  const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
-  const current = ESTADO_MAP[value]
-
-  useEffect(() => {
-    if (!open) return
-    function handler(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [open])
-
-  return (
-    <div className={`relative ${fullWidth ? 'w-full' : 'inline-block'}`} ref={ref}>
-      <button
-        type="button"
-        disabled={disabled}
-        onClick={() => setOpen(v => !v)}
-        className={`text-xs font-semibold rounded-full px-3 py-1.5 border transition-all disabled:opacity-60
-          ${current.color} ${current.bg} ${current.border}
-          ${fullWidth ? 'w-full text-left flex items-center justify-between' : ''}`}
-      >
-        {current.label}
-        <span className="ml-1.5 opacity-50">▾</span>
-      </button>
-
-      {open && (
-        <div className={`absolute z-50 mt-1.5 bg-white rounded-xl shadow-xl border border-gray-200 p-2 flex flex-col gap-1
-          ${fullWidth ? 'left-0 right-0' : 'left-0 min-w-[180px]'}`}>
-          {ESTADOS_PI.map(e => (
-            <button
-              key={e.value}
-              type="button"
-              onClick={() => { onChange(e.value); setOpen(false) }}
-              className={`w-full text-left text-xs font-semibold px-3 py-2 rounded-lg border transition-colors
-                ${value === e.value
-                  ? `${e.bg} ${e.color} ${e.border}`
-                  : 'bg-transparent text-gray-600 border-transparent hover:bg-gray-50'}`}
-            >
-              {e.label}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
