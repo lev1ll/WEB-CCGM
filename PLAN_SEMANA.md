@@ -1,5 +1,5 @@
 # Plan de desarrollo — Escuela Gabriela Mistral
-**Última actualización: 30 marzo 2026**
+**Última actualización: 31 marzo 2026**
 > Sin fechas fijas — avanzar fase por fase según disponibilidad.
 
 ---
@@ -10,7 +10,7 @@ Lo técnico está prácticamente terminado. Lo que falta es contenido real (foto
 
 ---
 
-## FASE 0 — Responsividad móvil ⬜ PENDIENTE
+## FASE 0 — Responsividad móvil ✅ COMPLETADA
 > **Objetivo:** Que el admin y el sitio funcionen bien desde el celular.
 
 - [ ] Sidebar admin: colapsar correctamente en móvil (`md:` en vez de `lg:`)
@@ -23,10 +23,29 @@ Lo técnico está prácticamente terminado. Lo que falta es contenido real (foto
 
 ---
 
-## FASE 1 — Galería y documentos descargables ⬜ PENDIENTE
+## FASE 1 — Mejoras al sistema de noticias ⬜ PENDIENTE
+> **Objetivo:** Noticias más atractivas y fáciles de gestionar.
+
+### 1.1 Página pública
+- [ ] Noticia destacada (featured) arriba del grid — ancho completo
+- [ ] Añadir campo `destacada: boolean` a la tabla noticias + SQL
+- [ ] Cards más grandes: más foto, menos texto
+- [ ] Compartir en WhatsApp / copiar enlace desde el detalle
+
+### 1.2 Admin noticias
+- [ ] Toggle "Noticia destacada" en el editor
+- [ ] Preview antes de publicar (nueva tab)
+- [ ] Ordenar lista: más reciente / más antiguo / solo borradores
+
+### 1.3 Home
+- [ ] Sección "Últimas noticias" con las 3 más recientes + botón "Ver todas"
+
+---
+
+## FASE 2 — Galería y documentos descargables ⬜ PENDIENTE
 > **Objetivo:** Que el colegio pueda subir fotos y documentos sin tocar código.
 
-### 1.1 Galería de fotos pública
+### 2.1 Galería de fotos pública
 - [ ] Crear tabla `galerias` en Supabase (nombre, descripción, portada, created_at)
 - [ ] Crear tabla `galeria_fotos` (galeria_id, url, caption, orden)
 - [ ] SQL migración con RLS (anon select, authenticated insert/update/delete)
@@ -35,7 +54,7 @@ Lo técnico está prácticamente terminado. Lo que falta es contenido real (foto
 - [ ] Admin `/admin/galeria` — crear álbumes, subir fotos múltiples via Cloudinary, reordenar, eliminar
 - [ ] Enlace a galería en el navbar
 
-### 1.2 Documentos descargables
+### 2.2 Documentos descargables
 - [ ] Habilitar subida de PDF en Cloudinary (endpoint `/raw/upload`)
 - [ ] Crear tabla `documentos` (titulo, descripcion, categoria, url, updated_at)
   - Categorías: `reglamento | utiles | formularios | calendario`
@@ -45,10 +64,11 @@ Lo técnico está prácticamente terminado. Lo que falta es contenido real (foto
 
 ---
 
-## FASE 2 — Calendario escolar ⬜ PENDIENTE
+## FASE 3 — Calendario escolar ⬜ PENDIENTE
 > **Objetivo:** Que los apoderados encuentren las fechas importantes sin llamar al colegio.
+> **Nota:** Requiere revisar el diseño antes de implementar.
 
-### 2.1 Calendario público
+### 3.1 Calendario público
 - [ ] Crear tabla `calendario_eventos` (titulo, fecha, fecha_fin, tipo, descripcion)
   - Tipos: `feriado | reunion | acto | evaluacion | otro`
 - [ ] SQL migración con RLS
@@ -56,28 +76,9 @@ Lo técnico está prácticamente terminado. Lo que falta es contenido real (foto
 - [ ] Widget de próximos eventos en la Home (3–5 eventos más cercanos)
 - [ ] Enlace en navbar
 
-### 2.2 Admin calendario
+### 3.2 Admin calendario
 - [ ] Admin `/admin/calendario` — crear, editar, eliminar eventos
 - [ ] Selector de tipo con color, fechas de inicio/fin
-
----
-
-## FASE 3 — Mejoras al sistema de noticias ⬜ PENDIENTE
-> **Objetivo:** Noticias más atractivas y fáciles de gestionar.
-
-### 3.1 Página pública
-- [ ] Noticia destacada (featured) arriba del grid — ancho completo
-- [ ] Añadir campo `destacada: boolean` a la tabla noticias + SQL
-- [ ] Cards más grandes: más foto, menos texto
-- [ ] Compartir en WhatsApp / copiar enlace desde el detalle
-
-### 3.2 Admin noticias
-- [ ] Toggle "Noticia destacada" en el editor
-- [ ] Preview antes de publicar (nueva tab)
-- [ ] Ordenar lista: más reciente / más antiguo / solo borradores
-
-### 3.3 Home
-- [ ] Sección "Últimas noticias" con las 3 más recientes + botón "Ver todas"
 
 ---
 
