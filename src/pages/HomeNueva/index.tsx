@@ -227,9 +227,9 @@ function SobreNosotros() {
             {/* Stats grid */}
             <div className="grid grid-cols-3 gap-px bg-border rounded-2xl overflow-hidden shadow-sm">
               {STATS.map(s => (
-                <div key={s.label} className="bg-white py-10 px-6 text-center">
-                  <p className="text-5xl font-extrabold text-primary leading-none">{s.value}</p>
-                  <p className="text-sm text-muted-foreground mt-3 leading-tight">{s.label}</p>
+                <div key={s.label} className="bg-white py-6 sm:py-10 px-2 sm:px-6 text-center">
+                  <p className="text-3xl sm:text-5xl font-extrabold text-primary leading-none">{s.value}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground mt-2 sm:mt-3 leading-tight">{s.label}</p>
                 </div>
               ))}
             </div>
