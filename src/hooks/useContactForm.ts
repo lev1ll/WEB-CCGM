@@ -39,6 +39,18 @@ export function useContactForm<T extends Record<string, string>>(
       }
     }
     setErrors(newErrors)
+
+    // Scroll suave al primer campo con error
+    const firstError = (options.requiredFields ?? Object.keys(initialValues))
+      .find(key => typeof values[key as keyof T] === 'string' && (values[key as keyof T] as string).trim() === '')
+    if (firstError) {
+      setTimeout(() => {
+        const el = document.getElementById(firstError)
+        el?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        ;(el as HTMLElement | null)?.focus({ preventScroll: true })
+      }, 50)
+    }
+
     return Object.keys(newErrors).length === 0
   }
 
