@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import {
   Search, Mail, Phone, Trash2, Loader2,
@@ -226,16 +226,11 @@ export default function AdminContactos() {
                       {GRADO[p.current_grade] ?? p.current_grade}
                     </td>
                     <td className="px-4 py-3">
-                      <select
+                      <EstadoSelector
                         value={p.estado}
                         disabled={busy}
-                        onChange={e => changeEstado(p, e.target.value as PreinscripcionEstado)}
-                        className={`text-xs font-semibold rounded-full px-3 py-1 border appearance-none cursor-pointer disabled:opacity-60 ${est.color} ${est.bg} ${est.border}`}
-                      >
-                        {ESTADOS_PI.map(e => (
-                          <option key={e.value} value={e.value}>{e.label}</option>
-                        ))}
-                      </select>
+                        onChange={estado => changeEstado(p, estado)}
+                      />
                     </td>
                     <td className="px-4 py-3 hidden lg:table-cell text-gray-400 text-xs">
                       {formatDate(p.created_at)}
@@ -271,17 +266,12 @@ export default function AdminContactos() {
             <div className="space-y-4 text-sm">
               <div>
                 <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Estado</p>
-                <select
+                <EstadoSelector
                   value={selected.estado}
                   disabled={loadingId === selected.id}
-                  onChange={e => changeEstado(selected, e.target.value as PreinscripcionEstado)}
-                  className={`text-sm font-semibold rounded-lg px-4 py-2 border appearance-none cursor-pointer w-full disabled:opacity-60
-                    ${ESTADO_MAP[selected.estado].color} ${ESTADO_MAP[selected.estado].bg} ${ESTADO_MAP[selected.estado].border}`}
-                >
-                  {ESTADOS_PI.map(e => (
-                    <option key={e.value} value={e.value}>{e.label}</option>
-                  ))}
-                </select>
+                  onChange={estado => changeEstado(selected, estado)}
+                  fullWidth
+                />
               </div>
               <hr className="border-gray-100" />
               <InfoBlock title="Apoderado">
@@ -370,6 +360,63 @@ function InfoRow({ label, value, isEmail }: { label: string; value: string; isEm
       {isEmail
         ? <a href={`mailto:${value}`} className="text-primary hover:underline font-medium">{value}</a>
         : <span className="text-gray-800 font-medium">{value}</span>}
+    </div>
+  )
+}
+
+function EstadoSelector({
+  value, disabled, onChange, fullWidth,
+}: {
+  value: PreinscripcionEstado
+  disabled?: boolean
+  onChange: (e: PreinscripcionEstado) => void
+  fullWidth?: boolean
+}) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  const current = ESTADO_MAP[value]
+
+  useEffect(() => {
+    if (!open) return
+    function handler(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [open])
+
+  return (
+    <div className={`relative ${fullWidth ? 'w-full' : 'inline-block'}`} ref={ref}>
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={() => setOpen(v => !v)}
+        className={`text-xs font-semibold rounded-full px-3 py-1.5 border transition-all disabled:opacity-60
+          ${current.color} ${current.bg} ${current.border}
+          ${fullWidth ? 'w-full text-left flex items-center justify-between' : ''}`}
+      >
+        {current.label}
+        <span className="ml-1.5 opacity-50">▾</span>
+      </button>
+
+      {open && (
+        <div className={`absolute z-50 mt-1.5 bg-white rounded-xl shadow-xl border border-gray-200 p-2 flex flex-col gap-1
+          ${fullWidth ? 'left-0 right-0' : 'left-0 min-w-[180px]'}`}>
+          {ESTADOS_PI.map(e => (
+            <button
+              key={e.value}
+              type="button"
+              onClick={() => { onChange(e.value); setOpen(false) }}
+              className={`w-full text-left text-xs font-semibold px-3 py-2 rounded-lg border transition-colors
+                ${value === e.value
+                  ? `${e.bg} ${e.color} ${e.border}`
+                  : 'bg-transparent text-gray-600 border-transparent hover:bg-gray-50'}`}
+            >
+              {e.label}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
