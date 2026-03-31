@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import {
   Search, Mail, Phone, Trash2, Loader2,
   AlertCircle, GraduationCap, ChevronRight, StickyNote, Save, Check,
@@ -34,6 +35,7 @@ const GRADO: Record<string, string> = {
 
 export default function AdminContactos() {
   const { select, update, remove, isLoading, error } = useSupabaseQuery()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [items, setItems] = useState<Preinscripcion[]>([])
   const [search, setSearch] = useState('')
   const [filterEstado, setFilterEstado] = useState<PreinscripcionEstado | 'todos'>('todos')
@@ -46,6 +48,18 @@ export default function AdminContactos() {
   const [notasSaved, setNotasSaved] = useState(false)
 
   useEffect(() => { load() }, [])
+
+  // Auto-abrir contacto si viene desde el panel de notificaciones (?open=ID)
+  useEffect(() => {
+    const openId = searchParams.get('open')
+    if (openId && items.length > 0) {
+      const p = items.find(x => x.id === openId)
+      if (p) {
+        openDetail(p)
+        setSearchParams({}, { replace: true })
+      }
+    }
+  }, [searchParams, items])
 
   async function load() {
     const data = await select<Preinscripcion>('preinscripciones', {
@@ -138,7 +152,7 @@ export default function AdminContactos() {
       </div>
 
       {/* KPIs — clickeables para filtrar */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2">
+      <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-7 gap-1.5 sm:gap-2">
         {ESTADOS_PI.map(e => {
           const count = countBy(e.value)
           const active = filterEstado === e.value
@@ -146,13 +160,13 @@ export default function AdminContactos() {
             <button
               key={e.value}
               onClick={() => setFilterEstado(active ? 'todos' : e.value)}
-              className={`rounded-xl px-3 py-4 text-center transition-all hover:shadow-lg hover:scale-[1.03]
+              className={`rounded-xl px-1.5 py-2.5 sm:px-3 sm:py-4 text-center transition-all hover:shadow-lg hover:scale-[1.03]
                 ${active ? `${e.kpiBg} shadow-lg scale-[1.03]` : 'bg-white border border-gray-200 hover:border-transparent'}`}
             >
-              <p className={`text-3xl font-extrabold leading-none ${active ? e.kpiNumColor : 'text-gray-300'}`}>
+              <p className={`text-xl sm:text-3xl font-extrabold leading-none ${active ? e.kpiNumColor : 'text-gray-300'}`}>
                 {count}
               </p>
-              <p className={`text-[10px] font-semibold mt-2 leading-tight ${active ? e.kpiLabelColor : 'text-gray-400'}`}>
+              <p className={`text-[8px] sm:text-[10px] font-semibold mt-1.5 leading-tight ${active ? e.kpiLabelColor : 'text-gray-400'}`}>
                 {e.label}
               </p>
             </button>
@@ -179,7 +193,7 @@ export default function AdminContactos() {
       {!isLoading && filtered.length > 0 && (
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
-          <table className="w-full text-sm min-w-[540px]">
+          <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50 text-xs font-semibold text-gray-500 uppercase tracking-wide">
                 <th className="text-left px-4 py-3">Postulante</th>
@@ -198,6 +212,9 @@ export default function AdminContactos() {
                   <tr key={p.id} className="hover:bg-gray-50 transition-colors group">
                     <td className="px-4 py-3">
                       <p className="font-semibold text-gray-900">{p.child_name}</p>
+                      <p className="text-xs text-gray-500 mt-0.5 sm:hidden">
+                        {p.name} · {GRADO[p.current_grade] ?? p.current_grade}
+                      </p>
                       {p.notas && (
                         <p className="text-xs text-amber-600 flex items-center gap-1 mt-0.5">
                           <StickyNote className="w-3 h-3" /> Tiene notas

@@ -306,7 +306,7 @@ export default function AdminLayout() {
                       return (
                         <Link
                           key={p.id}
-                          to="/admin/contactos"
+                          to={`/admin/contactos?open=${p.id}`}
                           onClick={() => setPanelOpen(false)}
                           className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
                         >
