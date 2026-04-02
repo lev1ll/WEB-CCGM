@@ -1,11 +1,12 @@
 export const SCHOOL = {
   name: 'Escuela Gabriela Mistral',
-  shortName: 'EGM',
+  shortName: 'Escuela GM',
   rbd: '6691-5',
   rut: '65145906-0',
   address: 'General Urrutia N° 763',
   phone: '+56 9 9643 2865',
-  email: '',                                 // TODO: completar con email real
+  whatsapp: '+56996432865',
+  email: 'EscuelaGM@gmail.com',
   city: 'Nueva Imperial',
   region: 'Región de La Araucanía',
   director: 'Alejandro Montes Riquelme',

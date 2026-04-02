@@ -1,6 +1,5 @@
 import {
-  FileText,
-  CalendarCheck,
+  Phone,
   ClipboardList,
   CheckCircle2,
   ArrowRight,
@@ -11,7 +10,7 @@ import { AnimatedSection } from '@/components/shared/AnimatedSection'
 import { ADMISSION_STEPS } from '@/constants/admision'
 import { cn } from '@/lib/utils'
 
-const ICON_MAP = { FileText, CalendarCheck, ClipboardList, CheckCircle2 } as const
+const ICON_MAP = { Phone, ClipboardList, CheckCircle2 } as const
 type IconName = keyof typeof ICON_MAP
 
 // ── Variante 1: Círculos horizontales con línea conectora (original) ──
@@ -20,11 +19,11 @@ function PasosAdmisionV1() {
     <SectionWrapper>
       <SectionTitle
         title="Pasos del proceso"
-        subtitle="Cuatro pasos simples para que tu hijo forme parte de nuestra comunidad"
+        subtitle="Tres pasos simples para que tu hijo forme parte de nuestra comunidad"
       />
       <div className="mt-12 relative">
         <div className="hidden md:block absolute top-8 left-0 right-0 h-0.5 bg-border" />
-        <div className="grid md:grid-cols-4 gap-6">
+        <div className="grid md:grid-cols-3 gap-6">
           {ADMISSION_STEPS.map((step, i) => {
             const Icon = ICON_MAP[step.icon as IconName]
             return (
@@ -57,7 +56,7 @@ function PasosAdmisionV2() {
     <SectionWrapper>
       <SectionTitle
         title="Pasos del proceso"
-        subtitle="Cuatro pasos simples para que tu hijo forme parte de nuestra comunidad"
+        subtitle="Tres pasos simples para que tu hijo forme parte de nuestra comunidad"
       />
       <div className="mt-12 max-w-2xl mx-auto relative">
         <div className="absolute left-[1.875rem] top-4 bottom-4 w-0.5 bg-border" />
@@ -100,9 +99,9 @@ function PasosAdmisionV3() {
     <SectionWrapper>
       <SectionTitle
         title="Pasos del proceso"
-        subtitle="Cuatro pasos simples para que tu hijo forme parte de nuestra comunidad"
+        subtitle="Tres pasos simples para que tu hijo forme parte de nuestra comunidad"
       />
-      <div className="mt-12 grid md:grid-cols-4 gap-4">
+      <div className="mt-12 grid md:grid-cols-3 gap-4">
         {ADMISSION_STEPS.map((step, i) => {
           const Icon = ICON_MAP[step.icon as IconName]
           const isLast = i === ADMISSION_STEPS.length - 1

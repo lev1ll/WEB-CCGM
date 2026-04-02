@@ -1,4 +1,4 @@
-import { MapPin, Phone, Mail, Clock } from 'lucide-react'
+import { MapPin, Phone, Mail, Clock, Users } from 'lucide-react'
 import { SectionWrapper } from '@/components/shared/SectionWrapper'
 import { SectionTitle } from '@/components/shared/SectionTitle'
 import { AnimatedSection } from '@/components/shared/AnimatedSection'
@@ -16,7 +16,7 @@ const CONTACT_CARDS = [
     icon: Phone,
     label: 'Teléfono',
     value: SCHOOL.phone,
-    subvalue: 'Lun – Vie, 8:00 – 17:00 hrs',
+    subvalue: 'Lun–Jue 8:30–17:00 · Vie 8:30–14:00',
   },
   {
     icon: Mail,
@@ -26,9 +26,15 @@ const CONTACT_CARDS = [
   },
 ]
 
-const HORARIOS = [
-  { dia: 'Lunes – Viernes', horario: '8:00 – 17:00 hrs' },
-  { dia: 'Sábado y Domingo', horario: 'Cerrado' },
+const HORARIOS_SECRETARIA = [
+  { dia: 'Lunes – Jueves', horario: '8:30 – 17:00 hrs' },
+  { dia: 'Viernes',        horario: '8:30 – 14:00 hrs' },
+  { dia: 'Sáb y Dom',     horario: 'Cerrado'           },
+]
+
+const HORARIOS_PROFESORES = [
+  { dia: 'Lunes – Jueves', horario: 'Hasta 18:00 hrs' },
+  { dia: 'Viernes',        horario: 'Hasta 14:00 hrs' },
 ]
 
 // ── Variante 1: Cards en grid (original) ──────────────────────────────
@@ -66,7 +72,7 @@ function DatosContactoV1() {
             </div>
             <table className="w-full text-sm">
               <tbody>
-                {HORARIOS.map((h) => (
+                {HORARIOS_SECRETARIA.map((h) => (
                   <tr key={h.dia} className="border-b border-border last:border-0">
                     <td className="py-2 text-muted-foreground">{h.dia}</td>
                     <td className="py-2 text-right font-medium text-foreground">{h.horario}</td>
@@ -112,7 +118,7 @@ function DatosContactoV2() {
           <div className="mt-10 pt-8 border-t border-background/10 flex items-start gap-4">
             <Clock className="h-5 w-5 text-secondary mt-0.5 shrink-0" />
             <div className="flex gap-10">
-              {HORARIOS.map(h => (
+              {HORARIOS_SECRETARIA.map(h => (
                 <div key={h.dia}>
                   <p className="text-sm text-background/60">{h.dia}</p>
                   <p className="font-semibold text-background">{h.horario}</p>
@@ -146,18 +152,33 @@ function DatosContactoV3() {
               </div>
             )
           })}
-          {/* Horarios */}
+          {/* Horarios secretaría */}
           <div className="flex-1 flex flex-col items-center text-center p-8 gap-3">
             <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
               <Clock className="h-7 w-7 text-primary" />
             </div>
-            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Horarios</p>
-            {HORARIOS.map(h => (
+            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Atención apoderados</p>
+            {HORARIOS_SECRETARIA.map(h => (
               <div key={h.dia}>
                 <p className="text-xs text-muted-foreground">{h.dia}</p>
                 <p className="font-semibold text-foreground text-sm">{h.horario}</p>
               </div>
             ))}
+          </div>
+
+          {/* Horarios profesores */}
+          <div className="flex-1 flex flex-col items-center text-center p-8 gap-3">
+            <div className="w-14 h-14 rounded-2xl bg-secondary/15 flex items-center justify-center">
+              <Users className="h-7 w-7 text-secondary" />
+            </div>
+            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Llamadas a profesores</p>
+            {HORARIOS_PROFESORES.map(h => (
+              <div key={h.dia}>
+                <p className="text-xs text-muted-foreground">{h.dia}</p>
+                <p className="font-semibold text-foreground text-sm">{h.horario}</p>
+              </div>
+            ))}
+            <p className="text-[10px] text-muted-foreground/70 leading-tight">Solo días laborales<br/>al {SCHOOL.phone}</p>
           </div>
         </div>
       </AnimatedSection>

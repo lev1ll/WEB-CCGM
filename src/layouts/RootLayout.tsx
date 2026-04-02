@@ -22,8 +22,8 @@ export function RootLayout() {
       <ScrollToTop />
       <Navbar />
 
-      {/* pt-16 para compensar el Navbar fixed de h-16 */}
-      <main id="main-content" className="flex-1 pt-16">
+      {/* pt-20 para compensar el Navbar fixed de h-20 */}
+      <main id="main-content" className="flex-1 pt-20">
         <Outlet />
       </main>
 

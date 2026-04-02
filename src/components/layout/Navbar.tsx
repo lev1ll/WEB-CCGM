@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { Menu, X, GraduationCap } from 'lucide-react'
+import { Menu, X, GraduationCap, Mail, MessageCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
 import { NAV_LINKS } from '@/constants/navigation'
 import { SCHOOL } from '@/constants/school'
 
@@ -31,21 +30,19 @@ export function Navbar() {
       )}
     >
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
+        <div className="flex h-20 items-center justify-between">
           {/* Logo */}
           <NavLink to="/" className="flex items-center gap-2 font-bold text-foreground">
             <img
               src="/images/logo_gabriela_mistral.png"
-              alt={`Logo ${SCHOOL.shortName}`}
-              className="h-10 w-auto"
+              alt={`Logo ${SCHOOL.name}`}
+              className="h-14 w-auto"
               onError={(e) => {
-                // Fallback al ícono si no existe el logo todavía
                 e.currentTarget.style.display = 'none'
                 e.currentTarget.nextElementSibling?.classList.remove('hidden')
               }}
             />
-            <GraduationCap className="hidden h-7 w-7 text-primary" />
-            <span className="text-sm sm:text-base">{SCHOOL.shortName}</span>
+            <GraduationCap className="hidden h-8 w-8 text-primary" />
           </NavLink>
 
           {/* Desktop links */}
@@ -69,11 +66,32 @@ export function Navbar() {
             ))}
           </div>
 
-          {/* Desktop CTA */}
-          <div className="hidden md:block">
-            <Button asChild size="sm">
-              <NavLink to="/contacto">Contáctanos</NavLink>
-            </Button>
+          {/* Desktop CTA — correo + WhatsApp directo */}
+          <div className="hidden md:flex items-center gap-2">
+            <a
+              href={`https://mail.google.com/mail/?view=cm&to=${SCHOOL.email}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={`Escribir a ${SCHOOL.email}`}
+              className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl
+                         bg-[#EA4335]/10 hover:bg-[#EA4335]/20 transition-colors"
+            >
+              <Mail className="w-5 h-5 text-[#EA4335]" />
+              <span className="text-[10px] font-bold text-[#EA4335] leading-none">Correo</span>
+              <span className="text-[9px] text-[#EA4335]/70 leading-none">{SCHOOL.email}</span>
+            </a>
+            <a
+              href={`https://wa.me/${SCHOOL.whatsapp}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Contactar por WhatsApp"
+              className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl
+                         bg-[#25D366]/10 hover:bg-[#25D366]/20 transition-colors"
+            >
+              <MessageCircle className="w-5 h-5 text-[#25D366]" />
+              <span className="text-[10px] font-bold text-[#25D366] leading-none">WhatsApp</span>
+              <span className="text-[9px] text-[#25D366]/70 leading-none">{SCHOOL.phone}</span>
+            </a>
           </div>
 
           {/* Mobile hamburger */}
@@ -109,10 +127,29 @@ export function Navbar() {
                   {link.label}
                 </NavLink>
               ))}
-              <div className="pt-2 px-4">
-                <Button asChild className="w-full">
-                  <NavLink to="/contacto">Contáctanos</NavLink>
-                </Button>
+              <div className="pt-2 px-4 flex gap-2">
+                <a
+                  href={`https://mail.google.com/mail/?view=cm&to=${SCHOOL.email}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex flex-col items-center gap-0.5 py-3 rounded-xl
+                             bg-[#EA4335]/10 hover:bg-[#EA4335]/20 transition-colors"
+                >
+                  <Mail className="w-5 h-5 text-[#EA4335]" />
+                  <span className="text-[11px] font-bold text-[#EA4335]">Correo</span>
+                  <span className="text-[10px] text-[#EA4335]/70">{SCHOOL.email}</span>
+                </a>
+                <a
+                  href={`https://wa.me/${SCHOOL.whatsapp}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex flex-col items-center gap-0.5 py-3 rounded-xl
+                             bg-[#25D366]/10 hover:bg-[#25D366]/20 transition-colors"
+                >
+                  <MessageCircle className="w-5 h-5 text-[#25D366]" />
+                  <span className="text-[11px] font-bold text-[#25D366]">WhatsApp</span>
+                  <span className="text-[10px] text-[#25D366]/70">{SCHOOL.phone}</span>
+                </a>
               </div>
             </div>
           </div>

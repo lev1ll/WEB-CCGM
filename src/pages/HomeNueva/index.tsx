@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowRight, ChevronLeft, ChevronRight, MessageCircle,
   BookOpen, GraduationCap, Instagram, Facebook, Calendar,
+  ExternalLink,
 } from 'lucide-react'
 import { SCHOOL } from '@/constants/school'
 import { useSupabaseQuery } from '@/hooks/useSupabaseQuery'
@@ -66,7 +67,7 @@ function Hero() {
 
   return (
     <section
-      className="relative h-[calc(100svh-64px)] min-h-[580px] overflow-hidden"
+      className="relative h-[calc(100svh-124px)] min-h-[520px] overflow-hidden"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
@@ -164,12 +165,15 @@ function Hero() {
               en valores en el corazón de La Araucanía.
             </p>
             <div className="flex flex-wrap gap-3">
-              <Link to="/admision"
+              <a
+                href="https://registropublicodigital.mineduc.gob.cl/rpd-app-registro-apoderado/login"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90
                            text-white font-bold px-5 py-2.5 rounded-xl transition-colors text-sm">
                 <MessageCircle className="w-4 h-4" />
-                Pre-inscripción 2026
-              </Link>
+                Postular en Anótate
+              </a>
               <Link to="/nosotros"
                 className="inline-flex items-center gap-2 border border-white/20
                            hover:border-white/40 text-white/60 hover:text-white
@@ -181,6 +185,45 @@ function Hero() {
         </div>
       </div>
     </section>
+  )
+}
+
+// ── 1b. FRANJA ACCESO APODERADOS ──────────────────────────────────────
+function FranjaAcceso() {
+  return (
+    <div className="sticky top-20 z-40 bg-[#0F0D0C] border-b border-white/8 shadow-lg">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
+          <span className="text-[10px] font-bold tracking-[0.2em] text-white/40 uppercase shrink-0">
+            Acceso apoderados
+          </span>
+          <div className="flex flex-wrap gap-2">
+            <a
+              href="https://registropublicodigital.mineduc.gob.cl/rpd-app-registro-apoderado/login"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg
+                         bg-secondary text-[#0F0D0C] text-xs font-bold
+                         hover:bg-secondary/85 transition-colors"
+            >
+              <ExternalLink className="w-3 h-3 shrink-0" />
+              Anótate — Matrícula MINEDUC
+            </a>
+            <a
+              href="https://apoderados.redcollege.net/login"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg
+                         border border-white/20 text-white/80 text-xs font-bold
+                         hover:bg-white/8 hover:border-white/40 transition-colors"
+            >
+              <ExternalLink className="w-3 h-3 shrink-0" />
+              RedCollege — Intranet apoderados
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -476,16 +519,19 @@ function CTAFinal() {
           </p>
 
           <div className="mt-10 flex flex-wrap gap-4 justify-center">
-            <Link to="/admision"
+            <a
+              href="https://registropublicodigital.mineduc.gob.cl/rpd-app-registro-apoderado/login"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-primary text-white
                          font-bold px-8 py-4 rounded-xl hover:bg-primary/90 transition-colors">
               <MessageCircle className="w-5 h-5" />
-              Iniciar pre-inscripción
-            </Link>
+              Postular en Anótate
+            </a>
             <Link to="/contacto"
               className="inline-flex items-center gap-2 bg-secondary text-[#1C1814]
                          font-semibold px-8 py-4 rounded-xl hover:bg-secondary/80 transition-colors">
-              Hacer una consulta <ArrowRight className="w-4 h-4" />
+              Contacto <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         </motion.div>
@@ -498,6 +544,7 @@ function CTAFinal() {
 export function HomeNueva() {
   return (
     <>
+      <FranjaAcceso />
       <Hero />
       <SobreNosotros />
       <Ciclos />

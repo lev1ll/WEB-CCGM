@@ -1,31 +1,24 @@
 export const ADMISSION_STEPS = [
   {
     step: 1,
-    icon: 'FileText',
-    title: 'Pre-inscripción',
+    icon: 'ClipboardList',
+    title: 'Anótate en la lista',
     description:
-      'Completa el formulario de pre-inscripción en línea con los datos del alumno y la familia. Sin costo y sin compromiso.',
+      'Ingresa a la plataforma oficial Anótate del MINEDUC y regístrate en la lista de postulantes. Es gratuito y sin compromiso.',
   },
   {
     step: 2,
-    icon: 'CalendarCheck',
-    title: 'Entrevista familiar',
+    icon: 'Phone',
+    title: 'Te contactamos',
     description:
-      'El equipo directivo agenda una entrevista con los apoderados y el postulante para conocerse y responder preguntas.',
+      'Una vez inscrito en la lista, nuestro equipo se comunicará contigo para coordinar la visita y entregarte toda la información.',
   },
   {
     step: 3,
-    icon: 'ClipboardList',
-    title: 'Evaluación diagnóstica',
-    description:
-      'El alumno realiza una evaluación para conocer su nivel actual y asegurar la mejor integración al curso.',
-  },
-  {
-    step: 4,
     icon: 'CheckCircle2',
     title: 'Matrícula',
     description:
-      'Una vez aceptado, se completa la documentación requerida y se formaliza la matrícula para el año escolar.',
+      'Vienes a la escuela con los documentos requeridos y formalizas la matrícula para el año escolar.',
   },
 ] as const
 
