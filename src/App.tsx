@@ -21,6 +21,7 @@ import RecursosPage from '@/pages/Recursos'
 import { ErrorBoundary } from '@/components/shared/ErrorBoundary'
 import { VariantProvider } from '@/context/VariantContext'
 import { HomeNueva } from '@/pages/HomeNueva'
+import { NotFoundPage } from '@/pages/NotFound'
 
 export default function App() {
   return (
@@ -53,6 +54,9 @@ export default function App() {
             <Route path="admin/galeria" element={<AdminGaleria />} />
             <Route path="admin/documentos" element={<AdminDocumentos />} />
           </Route>
+
+          {/* ── 404 — sin layout, pantalla completa propia ── */}
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </ErrorBoundary>
     </BrowserRouter>
