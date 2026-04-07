@@ -1,0 +1,11 @@
+{
+  "functions": {
+    "api/noticias/[slug].ts": {
+      "includeFiles": "dist/index.html"
+    }
+  },
+  "rewrites": [
+    { "source": "/noticias/:slug", "destination": "/api/noticias/:slug" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
