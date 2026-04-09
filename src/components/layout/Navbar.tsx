@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { Menu, X, GraduationCap, Mail, MessageCircle } from 'lucide-react'
+import { Menu, X, Mail, MessageCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { NAV_LINKS } from '@/constants/navigation'
 import { SCHOOL } from '@/constants/school'
+import { LogoCCGM } from '@/components/shared/LogoCCGM'
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -32,17 +33,16 @@ export function Navbar() {
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-20 items-center justify-between">
           {/* Logo */}
-          <NavLink to="/" className="flex items-center gap-2 font-bold text-foreground">
-            <img
-              src="/images/logo_gabriela_mistral.png"
-              alt={`Logo ${SCHOOL.name}`}
-              className="h-14 w-auto"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none'
-                e.currentTarget.nextElementSibling?.classList.remove('hidden')
-              }}
-            />
-            <GraduationCap className="hidden h-8 w-8 text-primary" />
+          <NavLink to="/" className="flex items-center gap-3">
+            <LogoCCGM showText={false} className="h-14 w-14 shrink-0" />
+            <div className="leading-tight">
+              <p className="text-[11px] font-bold tracking-[0.18em] text-muted-foreground uppercase">
+                Colegio Cristiano
+              </p>
+              <p className="font-bold text-lg text-foreground" style={{ fontFamily: "'Dancing Script', cursive" }}>
+                Gabriela Mistral
+              </p>
+            </div>
           </NavLink>
 
           {/* Desktop links */}
