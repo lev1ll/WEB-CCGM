@@ -412,49 +412,48 @@ function FranjaIdentidad() {
 // ── 5. BENEFICIOS ────────────────────────────────────────────────────
 function BeneficiosHome() {
   return (
-    <section className="bg-[#0F0D0C] py-20 md:py-28">
+    <section className="bg-[#FAF7F2] py-20 md:py-28">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-14 gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12 gap-4">
           <div>
-            <p className="text-[11px] font-bold tracking-[0.25em] text-secondary uppercase mb-3">
+            <p className="text-[11px] font-bold tracking-[0.25em] text-primary uppercase mb-3">
               ¿Qué ofrecemos?
             </p>
-            <h2 className="text-4xl sm:text-5xl font-extrabold text-white leading-tight tracking-tight">
+            <h2 className="text-4xl sm:text-5xl font-extrabold text-foreground leading-tight tracking-tight">
               Todo lo que tu hijo<br />
-              <span className="text-secondary">merece</span>
+              <span className="text-primary">merece</span>
             </h2>
           </div>
           <Link
             to="/admision"
-            className="inline-flex items-center gap-2 text-secondary/70 hover:text-secondary
+            className="inline-flex items-center gap-2 text-primary/70 hover:text-primary
                        transition-colors text-sm font-semibold shrink-0"
           >
             Ver proceso de admisión <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Chips */}
+        <div className="flex flex-wrap gap-3">
           {BENEFICIOS.map((b, i) => {
             const Icon = BENEFICIO_ICON_MAP[b.icon as BeneficioIconName]
             return (
               <motion.div
                 key={b.title}
-                className="group rounded-2xl border border-white/8 bg-white/[0.03]
-                           hover:bg-white/[0.06] hover:border-secondary/30 p-6 transition-all"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-3 bg-white border border-border
+                           rounded-2xl px-5 py-3.5 shadow-sm hover:shadow-md
+                           hover:border-primary/30 transition-all cursor-default"
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.06 }}
+                transition={{ delay: i * 0.05 }}
               >
-                <div className="w-10 h-10 rounded-xl bg-secondary/15 group-hover:bg-secondary/25
-                                flex items-center justify-center mb-4 transition-colors">
-                  <Icon className="w-5 h-5 text-secondary" />
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                  <Icon className="w-4 h-4 text-primary" />
                 </div>
-                <h3 className="font-bold text-white leading-tight mb-2 text-sm">{b.title}</h3>
-                <p className="text-xs text-white/45 leading-relaxed">{b.desc}</p>
+                <span className="font-semibold text-sm text-foreground">{b.title}</span>
               </motion.div>
             )
           })}

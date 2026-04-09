@@ -72,21 +72,27 @@ export function Navbar() {
               href={`https://mail.google.com/mail/?view=cm&to=${SCHOOL.email}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-3 py-2 rounded-xl
-                         bg-[#EA4335] hover:bg-[#EA4335]/85 text-white font-bold text-xs transition-colors"
+              className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl
+                         bg-[#EA4335] hover:bg-[#EA4335]/85 text-white transition-colors"
             >
-              <Mail className="w-4 h-4 shrink-0" />
-              Correo
+              <div className="flex items-center gap-1.5">
+                <Mail className="w-4 h-4 shrink-0" />
+                <span className="font-bold text-xs">Correo</span>
+              </div>
+              <span className="text-[9px] text-white/80 leading-none">{SCHOOL.email}</span>
             </a>
             <a
               href={`https://wa.me/${SCHOOL.whatsapp}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-3 py-2 rounded-xl
-                         bg-[#25D366] hover:bg-[#25D366]/85 text-white font-bold text-xs transition-colors"
+              className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl
+                         bg-[#25D366] hover:bg-[#25D366]/85 text-white transition-colors"
             >
-              <MessageCircle className="w-4 h-4 shrink-0" />
-              WhatsApp
+              <div className="flex items-center gap-1.5">
+                <MessageCircle className="w-4 h-4 shrink-0" />
+                <span className="font-bold text-xs">WhatsApp</span>
+              </div>
+              <span className="text-[9px] text-white/80 leading-none">{SCHOOL.phone}</span>
             </a>
           </div>
 
