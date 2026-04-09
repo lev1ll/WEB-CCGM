@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { ScrollToTop } from '@/components/shared/ScrollToTop'
 import { RootLayout } from '@/layouts/RootLayout'
 import AdminLayout from '@/layouts/AdminLayout'
 import { NosotrosPage } from '@/pages/Nosotros'
@@ -23,6 +24,7 @@ import { NotFoundPage } from '@/pages/NotFound'
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <ErrorBoundary>
         <Routes>
           {/* ── Sitio público ── */}
