@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link, Navigate } from 'react-router-dom'
 import { Calendar, ChevronRight, ArrowLeft, Share2, Copy, Check } from 'lucide-react'
+import DOMPurify from 'dompurify'
 import { useSupabaseQuery } from '@/hooks/useSupabaseQuery'
 import { Badge } from '@/components/ui/badge'
 import { AnimatedSection } from '@/components/shared/AnimatedSection'
@@ -256,7 +257,7 @@ function BlockRenderer({ bloque }: { bloque: Bloque }) {
             prose-strong:text-foreground
             prose-ul:text-muted-foreground prose-ol:text-muted-foreground
             prose-blockquote:border-primary prose-blockquote:text-muted-foreground"
-          dangerouslySetInnerHTML={{ __html: c.html }}
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(c.html) }}
         />
       )
     }

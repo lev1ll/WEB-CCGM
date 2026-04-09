@@ -2,24 +2,52 @@ import { useState } from 'react'
 import { GraduationCap, Eye, EyeOff } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 
+const MAX_ATTEMPTS = 5
+const LOCKOUT_MS = 5 * 60 * 1000 // 5 minutos
+
 export default function AdminLoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [attempts, setAttempts] = useState(0)
+  const [lockedUntil, setLockedUntil] = useState<number | null>(null)
+
+  const isLocked = lockedUntil !== null && Date.now() < lockedUntil
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    if (isLocked) return
+
+    const cleanEmail = email.trim().toLowerCase()
+    const cleanPassword = password.trim()
+
+    if (!cleanEmail || !cleanPassword) {
+      setError('Completa todos los campos.')
+      return
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      setError('Ingresa un correo válido.')
+      return
+    }
     if (!supabase) {
       setError('Supabase no configurado.')
       return
     }
+
     setIsLoading(true)
     setError(null)
-    const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
+    const { error: authError } = await supabase.auth.signInWithPassword({ email: cleanEmail, password: cleanPassword })
     if (authError) {
-      setError('Credenciales incorrectas. Verifica tu correo y contraseña.')
+      const next = attempts + 1
+      setAttempts(next)
+      if (next >= MAX_ATTEMPTS) {
+        setLockedUntil(Date.now() + LOCKOUT_MS)
+        setError(`Demasiados intentos. Espera 5 minutos.`)
+      } else {
+        setError(`Credenciales incorrectas. (${next}/${MAX_ATTEMPTS} intentos)`)
+      }
     }
     setIsLoading(false)
   }
@@ -89,10 +117,10 @@ export default function AdminLoginPage() {
 
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || isLocked}
               className="w-full py-2.5 px-4 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 disabled:opacity-60 transition-colors"
             >
-              {isLoading ? 'Ingresando...' : 'Ingresar'}
+              {isLoading ? 'Ingresando...' : isLocked ? 'Bloqueado temporalmente' : 'Ingresar'}
             </button>
           </form>
         </div>

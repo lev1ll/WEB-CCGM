@@ -16,6 +16,8 @@ import NoticiaEditorPage from '@/pages/Admin/Noticias/Editor'
 import AdminTrabajadores from '@/pages/Admin/Trabajadores'
 import AdminGaleria from '@/pages/Admin/Galeria'
 import AdminDocumentos from '@/pages/Admin/Documentos'
+import AdminHero from '@/pages/Admin/Hero'
+import AdminAcademias from '@/pages/Admin/Academias'
 import RecursosPage from '@/pages/Recursos'
 import { ErrorBoundary } from '@/components/shared/ErrorBoundary'
 import { HomeNueva } from '@/pages/HomeNueva'
@@ -50,6 +52,8 @@ export default function App() {
             <Route path="admin/trabajadores" element={<AdminTrabajadores />} />
             <Route path="admin/galeria" element={<AdminGaleria />} />
             <Route path="admin/documentos" element={<AdminDocumentos />} />
+            <Route path="admin/hero" element={<AdminHero />} />
+            <Route path="admin/academias" element={<AdminAcademias />} />
           </Route>
 
           {/* ── 404 — sin layout, pantalla completa propia ── */}

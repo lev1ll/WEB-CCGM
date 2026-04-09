@@ -15,6 +15,7 @@ import {
 import { SCHOOL } from '@/constants/school'
 import { BENEFICIOS } from '@/constants/admision'
 import { useSupabaseQuery } from '@/hooks/useSupabaseQuery'
+import { supabase } from '@/lib/supabase'
 import type { Noticia } from '@/types/noticias.types'
 import { formatDate } from '@/lib/utils'
 
@@ -24,7 +25,8 @@ const BENEFICIO_ICON_MAP = {
 type BeneficioIconName = keyof typeof BENEFICIO_ICON_MAP
 
 // ── Datos ──────────────────────────────────────────────────────────────
-const FOTOS = [
+// Fallback usado mientras carga o si la tabla hero_slides está vacía
+const FOTOS_FALLBACK = [
   { src: '/images/hero-escuela.jpg.jpg',                                                              alt: 'Escuela Gabriela Mistral' },
   { src: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=1400&auto=format&fit=crop', alt: 'Alumnos en clases'        },
   { src: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1400&auto=format&fit=crop', alt: 'Lectura y aprendizaje'    },
@@ -62,9 +64,22 @@ const CICLOS = [
 function Hero() {
   const [current, setCurrent] = useState(0)
   const [paused,  setPaused]  = useState(false)
+  const [fotos, setFotos] = useState(FOTOS_FALLBACK)
 
-  const next = useCallback(() => setCurrent(c => (c + 1) % FOTOS.length), [])
-  const prev = useCallback(() => setCurrent(c => (c - 1 + FOTOS.length) % FOTOS.length), [])
+  useEffect(() => {
+    if (!supabase) return
+    supabase
+      .from('hero_slides')
+      .select('src,alt,orden')
+      .eq('activo', true)
+      .order('orden', { ascending: true })
+      .then(({ data }) => {
+        if (data && data.length > 0) setFotos(data.map(d => ({ src: d.src, alt: d.alt })))
+      })
+  }, [])
+
+  const next = useCallback(() => setCurrent(c => (c + 1) % fotos.length), [fotos.length])
+  const prev = useCallback(() => setCurrent(c => (c - 1 + fotos.length) % fotos.length), [fotos.length])
 
   useEffect(() => {
     if (paused) return
@@ -82,8 +97,8 @@ function Hero() {
       <AnimatePresence mode="sync">
         <motion.img
           key={current}
-          src={FOTOS[current].src}
-          alt={FOTOS[current].alt}
+          src={fotos[current].src}
+          alt={fotos[current].alt}
           className="absolute inset-0 h-full w-full object-cover"
           initial={{ opacity: 0, scale: 1.04 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -97,7 +112,7 @@ function Hero() {
 
       {/* ── Dots esquina superior derecha ── */}
       <div className="absolute top-6 right-4 sm:right-6 lg:right-8 z-20 flex gap-2 items-center">
-        {FOTOS.map((_, i) => (
+        {fotos.map((_, i) => (
           <button key={i} onClick={() => setCurrent(i)} aria-label={`Foto ${i + 1}`}
             className={`rounded-full transition-all duration-300
               ${i === current ? 'w-6 h-2 bg-white' : 'w-2 h-2 bg-white/35 hover:bg-white/60'}`} />

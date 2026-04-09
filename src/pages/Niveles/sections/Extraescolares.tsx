@@ -4,6 +4,7 @@ import { Trophy, Dumbbell, Music, Calculator, Recycle, Globe, ChevronLeft, Chevr
 import { SectionWrapper } from '@/components/shared/SectionWrapper'
 import { SectionTitle } from '@/components/shared/SectionTitle'
 import { EXTRAESCOLARES, CYCLE_LABELS } from '@/constants/niveles'
+import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
 
 const ICON_MAP = { Trophy, Dumbbell, Music, Calculator, Recycle, Globe } as const
@@ -22,6 +23,21 @@ const ACADEMIA_STYLE: Record<string, { bg: string; text: string; description: st
 export function Extraescolares() {
   const [current, setCurrent] = useState(0)
   const [paused, setPaused] = useState(false)
+  const [academiaFotos, setAcademiaFotos] = useState<Record<string, string>>({})
+
+  useEffect(() => {
+    if (!supabase) return
+    supabase
+      .from('academia_fotos')
+      .select('academia,src')
+      .then(({ data }) => {
+        if (data) {
+          const map: Record<string, string> = {}
+          data.forEach(d => { map[d.academia] = d.src })
+          setAcademiaFotos(map)
+        }
+      })
+  }, [])
 
   const next = useCallback(() => setCurrent(c => (c + 1) % EXTRAESCOLARES.length), [])
   const prev = useCallback(() => setCurrent(c => (c - 1 + EXTRAESCOLARES.length) % EXTRAESCOLARES.length), [])
@@ -59,15 +75,24 @@ export function Extraescolares() {
               transition={{ duration: 0.35, ease: 'easeInOut' }}
               className={cn('relative flex flex-col sm:flex-row min-h-[320px]', style.bg)}
             >
-              {/* Lado izquierdo — imagen / placeholder */}
-              <div className="relative sm:w-2/5 flex items-center justify-center py-14 px-8">
-                {/* Patrón decorativo de fondo */}
-                <div className="absolute inset-0 opacity-10"
-                  style={{ backgroundImage: 'radial-gradient(circle, white 1.5px, transparent 1.5px)', backgroundSize: '20px 20px' }} />
+              {/* Lado izquierdo — foto real o placeholder de color */}
+              <div className="relative sm:w-2/5 flex items-center justify-center py-14 px-8 overflow-hidden">
+                {academiaFotos[academia.name] ? (
+                  <img
+                    src={academiaFotos[academia.name]}
+                    alt={academia.name}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="absolute inset-0 opacity-10"
+                    style={{ backgroundImage: 'radial-gradient(circle, white 1.5px, transparent 1.5px)', backgroundSize: '20px 20px' }} />
+                )}
                 <div className="relative z-10 flex flex-col items-center gap-4">
-                  <div className="w-24 h-24 rounded-3xl bg-white/20 flex items-center justify-center">
-                    <Icon className="w-12 h-12 text-white" />
-                  </div>
+                  {!academiaFotos[academia.name] && (
+                    <div className="w-24 h-24 rounded-3xl bg-white/20 flex items-center justify-center">
+                      <Icon className="w-12 h-12 text-white" />
+                    </div>
+                  )}
                   {/* Chip de ciclo */}
                   <span className={cn(
                     'text-xs font-bold rounded-full px-3 py-1',

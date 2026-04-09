@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { Outlet, NavLink, useLocation, Navigate, Link } from 'react-router-dom'
-import { LayoutDashboard, Newspaper, Users, LogOut, Bell, UserPlus, X, GraduationCap, Loader2, Images, FileText } from 'lucide-react'
+import { LayoutDashboard, Newspaper, Users, LogOut, Bell, UserPlus, X, GraduationCap, Loader2, Images, FileText, ImagePlay, Trophy } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
 
@@ -40,6 +40,8 @@ const NAV_ITEMS = [
   { to: '/admin/trabajadores', label: 'Equipo', icon: GraduationCap, exact: false },
   { to: '/admin/galeria', label: 'Galería', icon: Images, exact: false },
   { to: '/admin/documentos', label: 'Documentos', icon: FileText, exact: false },
+  { to: '/admin/hero', label: 'Hero (portada)', icon: ImagePlay, exact: false },
+  { to: '/admin/academias', label: 'Academias', icon: Trophy, exact: false },
 ]
 
 function playChime() {
