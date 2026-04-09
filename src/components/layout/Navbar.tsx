@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { Menu, X, Mail, MessageCircle } from 'lucide-react'
+import { Menu, X, Mail, MessageCircle, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { NAV_LINKS } from '@/constants/navigation'
 import { SCHOOL } from '@/constants/school'
@@ -152,6 +152,33 @@ export function Navbar() {
                   <MessageCircle className="w-5 h-5 text-white" />
                   <span className="text-[11px] font-bold text-white">WhatsApp</span>
                 </a>
+              </div>
+
+              {/* Acceso apoderados — solo mobile */}
+              <div className="pt-2 px-4 border-t border-border mt-2">
+                <p className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase mb-2">
+                  Acceso apoderados
+                </p>
+                <div className="flex flex-col gap-1.5">
+                  <a
+                    href="https://registropublicodigital.mineduc.gob.cl/rpd-app-registro-apoderado/login"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-secondary/10 text-secondary text-xs font-bold hover:bg-secondary/20 transition-colors"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                    Anótate — Matrícula MINEDUC
+                  </a>
+                  <a
+                    href="https://apoderados.redcollege.net/login"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-muted text-muted-foreground text-xs font-bold hover:bg-muted/70 transition-colors"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                    RedCollege — Intranet apoderados
+                  </a>
+                </div>
               </div>
             </div>
           </div>

@@ -182,7 +182,7 @@ function Hero() {
           <motion.div className="lg:max-w-xs shrink-0"
             initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.85 }}>
-            <p className="text-sm text-white/50 leading-relaxed mb-5">
+            <p className="hidden md:block text-sm text-white/50 leading-relaxed mb-5">
               46 años educando con fe, excelencia académica y formación
               en valores en el corazón de La Araucanía.
             </p>
@@ -213,7 +213,7 @@ function Hero() {
 // ── 1b. FRANJA ACCESO APODERADOS ──────────────────────────────────────
 function FranjaAcceso() {
   return (
-    <div className="sticky top-20 z-40 bg-[#0F0D0C] border-b border-white/8 shadow-lg">
+    <div className="hidden md:block sticky top-20 z-40 bg-[#0F0D0C] border-b border-white/8 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5">
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
           <span className="text-[10px] font-bold tracking-[0.2em] text-white/40 uppercase shrink-0">
