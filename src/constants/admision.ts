@@ -78,6 +78,49 @@ export const ADMISSION_CALENDAR = [
   },
 ] as const
 
+export const BENEFICIOS = [
+  {
+    icon: 'BadgeCheck',
+    title: 'Matrícula y escolaridad gratuita',
+    desc: 'Sin costos de matrícula ni mensualidades. Educación de calidad completamente gratuita para todos.',
+  },
+  {
+    icon: 'Bus',
+    title: 'Transporte escolar propio',
+    desc: 'Moderna locomoción escolar para facilitar el acceso desde distintos sectores de la comuna.',
+  },
+  {
+    icon: 'Trophy',
+    title: 'Becas para alumnos destacados',
+    desc: 'Beca Gabriel Mistral (alto rendimiento) y Beca Mi Notebook (permanencia escolar).',
+  },
+  {
+    icon: 'HeartHandshake',
+    title: 'Equipo de apoyo especializado',
+    desc: 'Educadoras diferenciales, psicóloga, fonoaudióloga y psicopedagogas permanentes en la escuela.',
+  },
+  {
+    icon: 'Palette',
+    title: 'Academias artísticas, deportivas e inglés',
+    desc: 'Danza, fútbol, polideportivo, manualidades, inglés y matemática extracurricular.',
+  },
+  {
+    icon: 'Clock',
+    title: 'Jornada escolar completa',
+    desc: 'JEC de 1° a 8° básico. Primer ciclo con horario diferido y asistentes de aula.',
+  },
+  {
+    icon: 'Heart',
+    title: 'Formación cristiana y valórica',
+    desc: 'Valores, fe y principios que forman personas íntegras y comprometidas con su comunidad.',
+  },
+  {
+    icon: 'Monitor',
+    title: 'Infraestructura tecnológica',
+    desc: 'Laboratorio de computación moderno y circuito cerrado de televisión en todo el establecimiento.',
+  },
+] as const
+
 export const ADMISSION_FAQ = [
   {
     question: '¿Para qué niveles hay cupos disponibles?',

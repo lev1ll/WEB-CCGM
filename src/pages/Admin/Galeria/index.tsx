@@ -60,7 +60,6 @@ export default function AdminGaleria() {
     // marcar todas como uploading
     setPending(prev => prev.map(p => ({ ...p, uploading: true, error: null })))
 
-    const results: GaleriaItem[] = []
     const updated = [...pending]
 
     for (let i = 0; i < updated.length; i++) {

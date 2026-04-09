@@ -114,7 +114,7 @@ export default function AdminNoticiasPage() {
                       <div className="flex items-center gap-2">
                         <p className="font-medium text-gray-900 line-clamp-1">{n.titulo}</p>
                         {n.destacada && (
-                          <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500 shrink-0" title="Destacada" />
+                          <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500 shrink-0" aria-label="Destacada" />
                         )}
                       </div>
                       <p className="text-xs text-gray-400 font-mono">/noticias/{n.slug}</p>

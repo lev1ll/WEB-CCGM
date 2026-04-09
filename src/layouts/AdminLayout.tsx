@@ -152,12 +152,8 @@ export default function AdminLayout() {
         }
       )
       .subscribe()
-    return () => { supabase.removeChannel(channel) }
+    return () => { supabase!.removeChannel(channel) }
   }, [session, dismissToast])
-
-  function clearNotifications() {
-    setNewPostulaciones(0)
-  }
 
   if (isLoading) {
     return (

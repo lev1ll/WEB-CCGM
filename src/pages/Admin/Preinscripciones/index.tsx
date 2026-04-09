@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import {
   Search, User, Mail, Phone, GraduationCap, MessageSquare,
-  Calendar, ChevronRight, Loader2, AlertCircle, StickyNote, Save,
+  ChevronRight, Loader2, AlertCircle, StickyNote, Save,
 } from 'lucide-react'
 import { useSupabaseQuery } from '@/hooks/useSupabaseQuery'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -33,8 +33,6 @@ const GRADO_LABEL: Record<string, string> = {
   '5basico': '5° Básico', '6basico': '6° Básico', '7basico': '7° Básico', '8basico': '8° Básico',
 }
 
-// ── Estados que se usan como columnas kanban ──────────────────────────────
-const COLUMNAS: PreinscripcionEstado[] = ['pendiente', 'llamar_mas_tarde', 'no_contesta', 'entrevista_agendada', 'contactado', 'matriculado', 'descartado']
 
 export default function AdminPreinscripciones() {
   const { select, update, isLoading, error } = useSupabaseQuery()

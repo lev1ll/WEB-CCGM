@@ -77,7 +77,6 @@ export default function AdminDocumentos() {
     setConfirmDelete(null)
   }
 
-  const catLabel = (cat: string) => CATEGORIAS.find(c => c.value === cat)?.label ?? cat
 
   // Agrupar por categoría
   const grouped = CATEGORIAS.map(cat => ({
