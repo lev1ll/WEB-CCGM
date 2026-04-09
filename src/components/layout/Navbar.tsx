@@ -88,16 +88,6 @@ export function Navbar() {
               <MessageCircle className="w-4 h-4 shrink-0" />
               WhatsApp
             </a>
-            <a
-              href={`https://wa.me/${SCHOOL.whatsapp2}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-3 py-2 rounded-xl
-                         bg-[#25D366] hover:bg-[#25D366]/85 text-white font-bold text-xs transition-colors"
-            >
-              <MessageCircle className="w-4 h-4 shrink-0" />
-              WhatsApp 2
-            </a>
           </div>
 
           {/* Mobile hamburger */}
@@ -153,16 +143,6 @@ export function Navbar() {
                 >
                   <MessageCircle className="w-5 h-5 text-white" />
                   <span className="text-[11px] font-bold text-white">WhatsApp</span>
-                </a>
-                <a
-                  href={`https://wa.me/${SCHOOL.whatsapp2}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl
-                             bg-[#25D366] hover:bg-[#25D366]/85 transition-colors"
-                >
-                  <MessageCircle className="w-5 h-5 text-white" />
-                  <span className="text-[11px] font-bold text-white">WhatsApp 2</span>
                 </a>
               </div>
             </div>

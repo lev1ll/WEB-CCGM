@@ -93,7 +93,7 @@ function Hero() {
       </AnimatePresence>
 
       {/* ── Degradado ── */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-black/10" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent" />
 
       {/* ── Dots esquina superior derecha ── */}
       <div className="absolute top-6 right-4 sm:right-6 lg:right-8 z-20 flex gap-2 items-center">
@@ -149,7 +149,7 @@ function Hero() {
           {/* Título — slogan real del PEI */}
           <div className="max-w-2xl">
             <motion.h1
-              className="text-3xl sm:text-4xl xl:text-5xl font-extrabold
+              className="text-xl sm:text-2xl xl:text-3xl font-extrabold
                          text-white leading-[1.15] tracking-tight"
               initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.4 }}
