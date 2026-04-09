@@ -92,7 +92,7 @@ export function Navbar() {
                 <MessageCircle className="w-4 h-4 shrink-0" />
                 <span className="font-bold text-xs">WhatsApp</span>
               </div>
-              <span className="text-[9px] text-white/80 leading-none">{SCHOOL.phone}</span>
+              <span className="text-[9px] text-white/80 leading-none">{SCHOOL.whatsappDisplay}</span>
             </a>
           </div>
 
