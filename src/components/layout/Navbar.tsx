@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { Menu, X, Mail } from 'lucide-react'
+import { Menu, X, Mail, MessageCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { NAV_LINKS } from '@/constants/navigation'
 import { SCHOOL } from '@/constants/school'
@@ -66,19 +66,37 @@ export function Navbar() {
             ))}
           </div>
 
-          {/* Desktop CTA — correo + WhatsApp directo */}
+          {/* Desktop CTA — correo + WhatsApp */}
           <div className="hidden md:flex items-center gap-2">
             <a
               href={`https://mail.google.com/mail/?view=cm&to=${SCHOOL.email}`}
               target="_blank"
               rel="noopener noreferrer"
-              title={`Escribir a ${SCHOOL.email}`}
-              className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl
-                         bg-[#EA4335]/10 hover:bg-[#EA4335]/20 transition-colors"
+              className="flex items-center gap-2 px-3 py-2 rounded-xl
+                         bg-[#EA4335] hover:bg-[#EA4335]/85 text-white font-bold text-xs transition-colors"
             >
-              <Mail className="w-5 h-5 text-[#EA4335]" />
-              <span className="text-[10px] font-bold text-[#EA4335] leading-none">Correo</span>
-              <span className="text-[9px] text-[#EA4335]/70 leading-none">{SCHOOL.email}</span>
+              <Mail className="w-4 h-4 shrink-0" />
+              Correo
+            </a>
+            <a
+              href={`https://wa.me/${SCHOOL.whatsapp}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-3 py-2 rounded-xl
+                         bg-[#25D366] hover:bg-[#25D366]/85 text-white font-bold text-xs transition-colors"
+            >
+              <MessageCircle className="w-4 h-4 shrink-0" />
+              WhatsApp
+            </a>
+            <a
+              href={`https://wa.me/${SCHOOL.whatsapp2}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-3 py-2 rounded-xl
+                         bg-[#25D366] hover:bg-[#25D366]/85 text-white font-bold text-xs transition-colors"
+            >
+              <MessageCircle className="w-4 h-4 shrink-0" />
+              WhatsApp 2
             </a>
           </div>
 
@@ -120,12 +138,31 @@ export function Navbar() {
                   href={`https://mail.google.com/mail/?view=cm&to=${SCHOOL.email}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 flex flex-col items-center gap-0.5 py-3 rounded-xl
-                             bg-[#EA4335]/10 hover:bg-[#EA4335]/20 transition-colors"
+                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl
+                             bg-[#EA4335] hover:bg-[#EA4335]/85 transition-colors"
                 >
-                  <Mail className="w-5 h-5 text-[#EA4335]" />
-                  <span className="text-[11px] font-bold text-[#EA4335]">Correo</span>
-                  <span className="text-[10px] text-[#EA4335]/70">{SCHOOL.email}</span>
+                  <Mail className="w-5 h-5 text-white" />
+                  <span className="text-[11px] font-bold text-white">Correo</span>
+                </a>
+                <a
+                  href={`https://wa.me/${SCHOOL.whatsapp}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl
+                             bg-[#25D366] hover:bg-[#25D366]/85 transition-colors"
+                >
+                  <MessageCircle className="w-5 h-5 text-white" />
+                  <span className="text-[11px] font-bold text-white">WhatsApp</span>
+                </a>
+                <a
+                  href={`https://wa.me/${SCHOOL.whatsapp2}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl
+                             bg-[#25D366] hover:bg-[#25D366]/85 transition-colors"
+                >
+                  <MessageCircle className="w-5 h-5 text-white" />
+                  <span className="text-[11px] font-bold text-white">WhatsApp 2</span>
                 </a>
               </div>
             </div>
