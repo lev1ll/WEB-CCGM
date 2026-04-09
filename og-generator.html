@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Plus+Jakarta+Sans:wght@500;800&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 1200px;
+      height: 630px;
+      overflow: hidden;
+      background: #CC2200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .card { display: flex; align-items: center; gap: 60px; }
+    svg { width: 260px; height: 260px; flex-shrink: 0; }
+    .text { color: white; }
+    .eyebrow {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 12px;
+    }
+    .name {
+      font-family: 'Dancing Script', cursive;
+      font-size: 80px;
+      font-weight: 700;
+      line-height: 1.05;
+      color: white;
+    }
+    .name span { color: #F0C030; }
+    .divider { width: 60px; height: 4px; background: #F0C030; border-radius: 2px; margin: 20px 0; }
+    .sub { font-size: 20px; color: rgba(255,255,255,0.6); font-weight: 500; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <!-- Mismo emblema que el navbar -->
+    <svg viewBox="75 118 270 278" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="210" cy="255" r="132" fill="none" stroke="#C9A227" stroke-width="8"/>
+      <rect x="110" y="158" width="138" height="132" fill="#1C1814"/>
+      <rect x="182" y="228" width="124" height="108" fill="#F0C030"/>
+      <rect x="103" y="265" width="96" height="84" fill="#CC2200"/>
+      <text x="118" y="223" font-family="'Dancing Script', Georgia, serif" font-weight="700" font-size="52" fill="#F0C030">Gabriela</text>
+      <text x="186" y="310" font-family="'Dancing Script', Georgia, serif" font-weight="700" font-size="50" fill="#1C1814">Mistral</text>
+    </svg>
+
+    <!-- Texto -->
+    <div class="text">
+      <div class="eyebrow">Colegio Cristiano</div>
+      <div class="name"><span>Gabriela</span><br/>Mistral</div>
+      <div class="divider"></div>
+      <div class="sub">Nueva Imperial · Desde 1980</div>
+      <div class="sub" style="margin-top:6px; font-size:17px;">Educación básica completa 1° a 8°</div>
+    </div>
+  </div>
+</body>
+</html>
