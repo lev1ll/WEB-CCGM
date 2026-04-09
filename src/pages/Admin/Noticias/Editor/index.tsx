@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Save, ArrowLeft, Eye } from 'lucide-react'
+import { Save, ArrowLeft, Eye, Send } from 'lucide-react'
 import { useSupabaseQuery } from '@/hooks/useSupabaseQuery'
 import MetadataForm, { type MetadataValues } from './MetadataForm'
 import BlockList from './BlockList'
@@ -64,7 +64,7 @@ export default function NoticiaEditorPage() {
     load()
   }, [id])
 
-  async function handleSave() {
+  async function handleSave(publicar?: boolean) {
     if (!metadata.titulo.trim()) {
       setSaveError('El título es obligatorio.')
       return
@@ -85,7 +85,7 @@ export default function NoticiaEditorPage() {
       fecha_evento: metadata.fecha_evento || null,
       imagen_portada: metadata.imagen_portada || null,
       resumen: metadata.resumen || null,
-      publicado: metadata.publicado,
+      publicado: publicar !== undefined ? publicar : metadata.publicado,
       destacada: metadata.destacada,
     }
     const { success, id: savedId, error } = await upsert('noticias', payload)
@@ -153,12 +153,20 @@ export default function NoticiaEditorPage() {
           </a>
         )}
         <button
-          onClick={handleSave}
+          onClick={() => handleSave(false)}
           disabled={saving}
-          className="flex items-center gap-2 px-5 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 disabled:opacity-60 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm font-semibold hover:bg-gray-50 disabled:opacity-60 transition-colors"
         >
           <Save className="w-4 h-4" />
-          {saving ? 'Guardando...' : 'Guardar'}
+          {saving ? 'Guardando...' : 'Guardar borrador'}
+        </button>
+        <button
+          onClick={() => handleSave(true)}
+          disabled={saving}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 disabled:opacity-60 transition-colors"
+        >
+          <Send className="w-4 h-4" />
+          {saving ? 'Guardando...' : 'Publicar'}
         </button>
       </div>
 

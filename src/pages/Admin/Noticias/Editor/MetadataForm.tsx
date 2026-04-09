@@ -22,6 +22,7 @@ interface Props {
 export default function MetadataForm({ values, onChange }: Props) {
   const [slugIsAutomatic, setSlugIsAutomatic] = useState(true)
   const [uploadingPortada, setUploadingPortada] = useState(false)
+  const [portadaError, setPortadaError] = useState<string | null>(null)
   const portadaRef = useRef<HTMLInputElement>(null)
 
   function handleTituloChange(titulo: string) {
@@ -39,11 +40,12 @@ export default function MetadataForm({ values, onChange }: Props) {
     const file = e.target.files?.[0]
     if (!file) return
     setUploadingPortada(true)
+    setPortadaError(null)
     try {
       const url = await uploadToCloudinary(file)
       onChange({ ...values, imagen_portada: url })
     } catch {
-      // silently fail — user sees no image
+      setPortadaError('No se pudo subir la imagen. Intenta de nuevo.')
     } finally {
       setUploadingPortada(false)
     }
@@ -151,11 +153,19 @@ export default function MetadataForm({ values, onChange }: Props) {
           </button>
         )}
         <input ref={portadaRef} type="file" accept="image/*" className="hidden" onChange={handlePortadaUpload} />
+        {portadaError && (
+          <p className="text-xs text-red-600 bg-red-50 rounded px-3 py-2 mt-1">{portadaError}</p>
+        )}
       </div>
 
       {/* Resumen */}
       <div>
-        <label className="block text-xs font-medium text-gray-700 mb-1">Resumen</label>
+        <div className="flex items-center justify-between mb-1">
+          <label className="block text-xs font-medium text-gray-700">Resumen</label>
+          <span className={`text-xs font-medium ${values.resumen.length > 150 ? 'text-orange-500' : 'text-gray-400'}`}>
+            {values.resumen.length} / 150
+          </span>
+        </div>
         <textarea
           value={values.resumen}
           onChange={e => onChange({ ...values, resumen: e.target.value })}
