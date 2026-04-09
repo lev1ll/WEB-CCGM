@@ -49,7 +49,7 @@ export default function NoticiasGrid({ items, isLoading, filter, onFilterChange 
   }
 
   return (
-    <section className="py-16 md:py-24 bg-background">
+    <section className="pt-8 pb-16 md:pb-24 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Filtros */}
