@@ -80,18 +80,6 @@ export function Navbar() {
               <span className="text-[10px] font-bold text-[#EA4335] leading-none">Correo</span>
               <span className="text-[9px] text-[#EA4335]/70 leading-none">{SCHOOL.email}</span>
             </a>
-            <a
-              href={`https://wa.me/${SCHOOL.whatsapp}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Contactar por WhatsApp"
-              className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl
-                         bg-[#25D366]/10 hover:bg-[#25D366]/20 transition-colors"
-            >
-              <MessageCircle className="w-5 h-5 text-[#25D366]" />
-              <span className="text-[10px] font-bold text-[#25D366] leading-none">WhatsApp</span>
-              <span className="text-[9px] text-[#25D366]/70 leading-none">{SCHOOL.phone}</span>
-            </a>
           </div>
 
           {/* Mobile hamburger */}
@@ -138,17 +126,6 @@ export function Navbar() {
                   <Mail className="w-5 h-5 text-[#EA4335]" />
                   <span className="text-[11px] font-bold text-[#EA4335]">Correo</span>
                   <span className="text-[10px] text-[#EA4335]/70">{SCHOOL.email}</span>
-                </a>
-                <a
-                  href={`https://wa.me/${SCHOOL.whatsapp}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 flex flex-col items-center gap-0.5 py-3 rounded-xl
-                             bg-[#25D366]/10 hover:bg-[#25D366]/20 transition-colors"
-                >
-                  <MessageCircle className="w-5 h-5 text-[#25D366]" />
-                  <span className="text-[11px] font-bold text-[#25D366]">WhatsApp</span>
-                  <span className="text-[10px] text-[#25D366]/70">{SCHOOL.phone}</span>
                 </a>
               </div>
             </div>
