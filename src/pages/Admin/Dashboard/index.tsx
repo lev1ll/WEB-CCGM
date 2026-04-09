@@ -2,39 +2,19 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FileText, Users, Newspaper, ArrowRight, TrendingUp, PhoneMissed, CalendarCheck } from 'lucide-react'
 import { useSupabaseQuery } from '@/hooks/useSupabaseQuery'
-import type { Preinscripcion, Noticia } from '@/types/noticias.types'
+import type { Noticia } from '@/types/noticias.types'
 import { formatDate } from '@/lib/utils'
-
-const ESTADO_LABEL: Record<string, string> = {
-  pendiente:           'Pendiente',
-  llamar_mas_tarde:    'Llamar más tarde',
-  no_contesta:         'No contesta',
-  entrevista_agendada: 'Entrevista agendada',
-  contactado:          'Contactado',
-  matriculado:         'Matriculado',
-  descartado:          'Descartado',
-}
-
-const ESTADO_STYLE: Record<string, { bg: string; color: string }> = {
-  pendiente:           { bg: 'bg-slate-200',   color: 'text-slate-800'  },
-  llamar_mas_tarde:    { bg: 'bg-orange-200',  color: 'text-orange-900' },
-  no_contesta:         { bg: 'bg-red-200',     color: 'text-red-900'    },
-  entrevista_agendada: { bg: 'bg-purple-200',  color: 'text-purple-900' },
-  contactado:          { bg: 'bg-blue-200',    color: 'text-blue-900'   },
-  matriculado:         { bg: 'bg-green-200',   color: 'text-green-900'  },
-  descartado:          { bg: 'bg-gray-200',    color: 'text-gray-700'   },
-}
 
 export default function AdminDashboard() {
   const { select } = useSupabaseQuery()
-  const [preinscripciones, setPreinscripciones] = useState<Preinscripcion[]>([])
+  const [preinscripciones, setPreinscripciones] = useState<{ estado: string }[]>([])
   const [noticias, setNoticias] = useState<Noticia[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     async function load() {
       const [pi, news] = await Promise.all([
-        select<Preinscripcion>('preinscripciones', { order: { column: 'created_at', ascending: false } }),
+        select<{ estado: string }>('preinscripciones', { select: 'estado' }),
         select<Noticia>('noticias', { filter: { publicado: true } }),
       ])
       setPreinscripciones(pi)
@@ -50,8 +30,6 @@ export default function AdminDashboard() {
   const pendientes = count('pendiente') + count('llamar_mas_tarde') + count('no_contesta')
   const enProceso = count('entrevista_agendada') + count('contactado')
   const conversionRate = total > 0 ? Math.round((matriculados / total) * 100) : 0
-
-  const recientes = preinscripciones.slice(0, 6)
 
   return (
     <div className="space-y-6">
@@ -124,71 +102,6 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
-        {/* Últimas postulaciones */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Últimas postulaciones</h2>
-            <Link to="/admin/contactos" className="text-xs text-primary hover:underline flex items-center gap-1">
-              Ver todas <ArrowRight className="w-3 h-3" />
-            </Link>
-          </div>
-          {isLoading ? (
-            <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="h-10 bg-gray-100 rounded-lg animate-pulse" />)}</div>
-          ) : recientes.length === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-6">No hay postulaciones aún.</p>
-          ) : (
-            <div className="space-y-2">
-              {recientes.map(p => {
-                const st = ESTADO_STYLE[p.estado] ?? { bg: 'bg-gray-100', color: 'text-gray-600' }
-                return (
-                  <div key={p.id} className="flex items-start justify-between gap-2 py-2.5 border-b border-gray-50 last:border-0">
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold text-gray-900 truncate">{p.child_name}</p>
-                      <p className="text-xs text-gray-400 truncate">{p.name} · {formatDate(p.created_at)}</p>
-                    </div>
-                    <span className={`shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full ${st.bg} ${st.color}`}>
-                      {ESTADO_LABEL[p.estado] ?? p.estado}
-                    </span>
-                  </div>
-                )
-              })}
-            </div>
-          )}
-        </div>
-
-        {/* Distribución por estado */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4">Distribución por estado</h2>
-          {isLoading ? (
-            <div className="space-y-3">{[1,2,3,4].map(i => <div key={i} className="h-8 bg-gray-100 rounded-lg animate-pulse" />)}</div>
-          ) : total === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-6">Sin datos aún.</p>
-          ) : (
-            <div className="space-y-2.5">
-              {Object.entries(ESTADO_LABEL).map(([val, label]) => {
-                const n = count(val)
-                if (n === 0) return null
-                const pct = Math.round((n / total) * 100)
-                const st = ESTADO_STYLE[val] ?? { bg: 'bg-gray-200', color: 'text-gray-700' }
-                return (
-                  <div key={val}>
-                    <div className="flex items-center justify-between text-xs mb-1">
-                      <span className="font-medium text-gray-700">{label}</span>
-                      <span className="text-gray-400">{n} ({pct}%)</span>
-                    </div>
-                    <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
-                      <div
-                        className={`h-full rounded-full ${st.bg}`}
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          )}
-        </div>
-
         {/* Noticias publicadas */}
         <div className="bg-white rounded-xl border border-gray-200 p-6 lg:col-span-2">
           <div className="flex items-center justify-between mb-4">
