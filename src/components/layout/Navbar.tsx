@@ -52,6 +52,7 @@ export function Navbar() {
                 key={link.href}
                 to={link.href}
                 end={link.href === '/'}
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                 className={({ isActive }) =>
                   cn(
                     'px-3 py-2 rounded-md text-sm font-medium transition-colors',
@@ -117,6 +118,7 @@ export function Navbar() {
                   key={link.href}
                   to={link.href}
                   end={link.href === '/'}
+                  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   className={({ isActive }) =>
                     cn(
                       'px-4 py-3 rounded-md text-sm font-medium transition-colors',
