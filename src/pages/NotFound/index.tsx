@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowLeft, GraduationCap } from 'lucide-react'
-import { SCHOOL } from '@/constants/school'
+import { ArrowLeft } from 'lucide-react'
+import { LogoCCGM } from '@/components/shared/LogoCCGM'
 
 export function NotFoundPage() {
   return (
@@ -14,17 +14,8 @@ export function NotFoundPage() {
         transition={{ duration: 0.5 }}
         className="mb-12"
       >
-        <Link to="/" className="inline-flex items-center gap-2">
-          <img
-            src="/images/logo_gabriela_mistral.png"
-            alt={SCHOOL.name}
-            className="h-12 w-auto"
-            onError={(e) => {
-              e.currentTarget.style.display = 'none'
-              e.currentTarget.nextElementSibling?.classList.remove('hidden')
-            }}
-          />
-          <GraduationCap className="hidden h-8 w-8 text-secondary" />
+        <Link to="/">
+          <LogoCCGM variant="color" className="h-28 w-auto" />
         </Link>
       </motion.div>
 

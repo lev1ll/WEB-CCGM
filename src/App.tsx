@@ -10,7 +10,6 @@ import NoticiasPage from '@/pages/Noticias'
 import NoticiaDetallePage from '@/pages/Noticias/NoticiaDetalle'
 import AdminLoginPage from '@/pages/Admin/Login'
 import AdminDashboard from '@/pages/Admin/Dashboard'
-import AdminContactos from '@/pages/Admin/Contactos'
 import AdminNoticiasPage from '@/pages/Admin/Noticias'
 import NoticiaEditorPage from '@/pages/Admin/Noticias/Editor'
 import AdminTrabajadores from '@/pages/Admin/Trabajadores'
@@ -19,6 +18,8 @@ import AdminDocumentos from '@/pages/Admin/Documentos'
 import AdminHero from '@/pages/Admin/Hero'
 import AdminAcademias from '@/pages/Admin/Academias'
 import RecursosPage from '@/pages/Recursos'
+import CalendarioPage from '@/pages/Calendario'
+import AdminCalendario from '@/pages/Admin/Calendario'
 import { ErrorBoundary } from '@/components/shared/ErrorBoundary'
 import { HomeNueva } from '@/pages/HomeNueva'
 import { NotFoundPage } from '@/pages/NotFound'
@@ -39,13 +40,13 @@ export default function App() {
             <Route path="noticias" element={<ErrorBoundary><NoticiasPage /></ErrorBoundary>} />
             <Route path="noticias/:slug" element={<ErrorBoundary><NoticiaDetallePage /></ErrorBoundary>} />
             <Route path="recursos" element={<ErrorBoundary><RecursosPage /></ErrorBoundary>} />
+            <Route path="calendario" element={<ErrorBoundary><CalendarioPage /></ErrorBoundary>} />
           </Route>
 
           {/* ── Panel Admin (layout separado, auth-guardado) ── */}
           <Route element={<AdminLayout />}>
             <Route path="admin/login" element={<AdminLoginPage />} />
             <Route path="admin" element={<AdminDashboard />} />
-            <Route path="admin/contactos" element={<AdminContactos />} />
             <Route path="admin/noticias" element={<AdminNoticiasPage />} />
             <Route path="admin/noticias/nueva" element={<NoticiaEditorPage />} />
             <Route path="admin/noticias/:id/editar" element={<NoticiaEditorPage />} />
@@ -54,6 +55,7 @@ export default function App() {
             <Route path="admin/documentos" element={<AdminDocumentos />} />
             <Route path="admin/hero" element={<AdminHero />} />
             <Route path="admin/academias" element={<AdminAcademias />} />
+            <Route path="admin/calendario" element={<AdminCalendario />} />
           </Route>
 
           {/* ── 404 — sin layout, pantalla completa propia ── */}
