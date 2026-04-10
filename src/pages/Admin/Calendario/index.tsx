@@ -231,13 +231,13 @@ export default function AdminCalendario() {
                   const extra = evs.length - 3
 
                   return (
-                    <button
+                    <div
                       key={day}
                       onClick={() => openNew(dateStr)}
                       title="Click para agregar evento en este día"
                       className={`
                         h-20 lg:h-24 flex flex-col items-start justify-start p-1.5
-                        border-r border-b border-gray-50 transition-colors text-left
+                        border-r border-b border-gray-50 transition-colors
                         ${isWeekend ? 'bg-gray-50/60' : ''}
                         hover:bg-primary/5 cursor-pointer group
                       `}
@@ -271,7 +271,7 @@ export default function AdminCalendario() {
                           <span className="text-[9px] text-gray-400 font-medium pl-1">+{extra} más</span>
                         )}
                       </div>
-                    </button>
+                    </div>
                   )
                 })}
               </div>

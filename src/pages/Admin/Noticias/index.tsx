@@ -6,14 +6,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import type { Noticia } from '@/types/noticias.types'
 import { formatDate } from '@/lib/utils'
 
-type SortMode = 'reciente' | 'antiguo' | 'borradores'
+type SortMode = 'todas' | 'publicadas' | 'borradores'
 
 export default function AdminNoticiasPage() {
   const { select, update, remove, isLoading } = useSupabaseQuery()
   const [items, setItems] = useState<Noticia[]>([])
   const [deleteTarget, setDeleteTarget] = useState<Noticia | null>(null)
   const [deleting, setDeleting] = useState(false)
-  const [sort, setSort] = useState<SortMode>('reciente')
+  const [sort, setSort] = useState<SortMode>('todas')
 
   useEffect(() => { load() }, [])
 
@@ -35,11 +35,12 @@ export default function AdminNoticiasPage() {
   }
 
   const sorted = [...items]
-    .filter(n => sort === 'borradores' ? !n.publicado : true)
-    .sort((a, b) => {
-      if (sort === 'antiguo') return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    .filter(n => {
+      if (sort === 'publicadas') return n.publicado
+      if (sort === 'borradores') return !n.publicado
+      return true
     })
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
 
   async function handleDelete() {
     if (!deleteTarget) return
@@ -52,33 +53,36 @@ export default function AdminNoticiasPage() {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="flex items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Noticias y Eventos</h1>
           <p className="text-sm text-gray-500 mt-1">Gestiona el contenido publicado en el sitio</p>
         </div>
-        <div className="flex items-center gap-2">
-          {/* Ordenar */}
-          <div className="flex rounded-lg border border-gray-200 overflow-hidden text-xs font-semibold">
-            {(['reciente', 'antiguo', 'borradores'] as SortMode[]).map(s => (
-              <button
-                key={s}
-                onClick={() => setSort(s)}
-                className={`px-3 py-2 capitalize transition-colors
-                  ${sort === s ? 'bg-gray-900 text-white' : 'bg-white text-gray-500 hover:bg-gray-50'}`}
-              >
-                {s === 'reciente' ? 'Recientes' : s === 'antiguo' ? 'Antiguos' : 'Borradores'}
-              </button>
-            ))}
-          </div>
-          <Link
-            to="/admin/noticias/nueva"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors"
+        <Link
+          to="/admin/noticias/nueva"
+          className="flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors"
+        >
+          <Plus className="w-4 h-4" />
+          Nueva
+        </Link>
+      </div>
+
+      {/* Tabs filtro */}
+      <div className="flex rounded-lg border border-gray-200 overflow-hidden text-xs font-semibold w-full sm:w-auto">
+        {([
+          { value: 'todas',     label: 'Todas' },
+          { value: 'publicadas', label: 'Publicadas' },
+          { value: 'borradores', label: 'Borradores' },
+        ] as { value: SortMode; label: string }[]).map(({ value, label }) => (
+          <button
+            key={value}
+            onClick={() => setSort(value)}
+            className={`flex-1 sm:flex-none px-4 py-2.5 transition-colors
+              ${sort === value ? 'bg-gray-900 text-white' : 'bg-white text-gray-500 hover:bg-gray-50'}`}
           >
-            <Plus className="w-4 h-4" />
-            Nueva
-          </Link>
-        </div>
+            {label}
+          </button>
+        ))}
       </div>
 
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
@@ -111,13 +115,15 @@ export default function AdminNoticiasPage() {
                 {sorted.map(n => (
                   <tr key={n.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium text-gray-900 line-clamp-1">{n.titulo}</p>
-                        {n.destacada && (
-                          <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500 shrink-0" aria-label="Destacada" />
-                        )}
-                      </div>
-                      <p className="text-xs text-gray-400 font-mono">/noticias/{n.slug}</p>
+                      <Link to={`/admin/noticias/${n.id}/editar`} className="group/title">
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium text-gray-900 line-clamp-1 group-hover/title:text-primary transition-colors">{n.titulo}</p>
+                          {n.destacada && (
+                            <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500 shrink-0" aria-label="Destacada" />
+                          )}
+                        </div>
+                        <p className="text-xs text-gray-400 font-mono">/noticias/{n.slug}</p>
+                      </Link>
                     </td>
                     <td className="px-4 py-3 hidden sm:table-cell">
                       <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold capitalize
@@ -153,7 +159,7 @@ export default function AdminNoticiasPage() {
                         </button>
                         <Link
                           to={`/admin/noticias/${n.id}/editar`}
-                          className="p-1.5 text-gray-400 hover:text-primary hover:bg-primary/10 rounded-md transition-colors"
+                          className="hidden sm:block p-1.5 text-gray-400 hover:text-primary hover:bg-primary/10 rounded-md transition-colors"
                           title="Editar"
                         >
                           <Pencil className="w-4 h-4" />

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Save, ArrowLeft, Eye, Send } from 'lucide-react'
+import { Save, ArrowLeft, Eye, Send, Trash2, Loader2 } from 'lucide-react'
 import { useSupabaseQuery } from '@/hooks/useSupabaseQuery'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import MetadataForm, { type MetadataValues } from './MetadataForm'
 import BlockList from './BlockList'
 import type { LocalBloque, Bloque, BloqueContenidoMap, BloqueType } from '@/types/noticias.types'
@@ -20,13 +21,15 @@ const DEFAULT_METADATA: MetadataValues = {
 export default function NoticiaEditorPage() {
   const { id } = useParams<{ id?: string }>()
   const navigate = useNavigate()
-  const { upsert, removeWhere, bulkInsert, select } = useSupabaseQuery()
+  const { upsert, removeWhere, bulkInsert, select, remove } = useSupabaseQuery()
 
   const [metadata, setMetadata] = useState<MetadataValues>(DEFAULT_METADATA)
   const [bloques, setBloques] = useState<LocalBloque[]>([])
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(!!id)
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
     if (!id) return
@@ -118,6 +121,14 @@ export default function NoticiaEditorPage() {
     navigate('/admin/noticias')
   }
 
+  async function handleDelete() {
+    if (!id) return
+    setDeleting(true)
+    await removeWhere('noticias_bloques', 'noticia_id', id)
+    await remove('noticias', id)
+    navigate('/admin/noticias')
+  }
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -129,45 +140,60 @@ export default function NoticiaEditorPage() {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         <button
           onClick={() => navigate('/admin/noticias')}
-          className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors"
+          className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors flex-shrink-0"
           title="Volver"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <div className="flex-1">
-          <h1 className="text-xl font-bold text-gray-900">
+        <div className="flex-1 min-w-0">
+          <h1 className="hidden sm:block text-xl font-bold text-gray-900 leading-tight">
             {id ? 'Editar noticia' : 'Nueva noticia'}
           </h1>
         </div>
-        {metadata.slug && metadata.publicado && (
-          <a
-            href={`/noticias/${metadata.slug}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-100 transition-colors"
+        {/* Botones — agrupados para que nunca se separen en mobile */}
+        <div className="flex items-center gap-1 flex-shrink-0">
+          {id && (
+            <button
+              onClick={() => setConfirmDelete(true)}
+              className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+              title="Eliminar noticia"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          )}
+          {metadata.slug && metadata.publicado && (
+            <a
+              href={`/noticias/${metadata.slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors"
+              title="Ver en el sitio"
+            >
+              <Eye className="w-4 h-4" />
+            </a>
+          )}
+          <button
+            onClick={() => handleSave(false)}
+            disabled={saving}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm font-semibold hover:bg-gray-50 disabled:opacity-60 transition-colors"
+            title="Guardar borrador"
           >
-            <Eye className="w-4 h-4" /> Ver
-          </a>
-        )}
-        <button
-          onClick={() => handleSave(false)}
-          disabled={saving}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm font-semibold hover:bg-gray-50 disabled:opacity-60 transition-colors"
-        >
-          <Save className="w-4 h-4" />
-          {saving ? 'Guardando...' : 'Guardar borrador'}
-        </button>
-        <button
-          onClick={() => handleSave(true)}
-          disabled={saving}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 disabled:opacity-60 transition-colors"
-        >
-          <Send className="w-4 h-4" />
-          {saving ? 'Guardando...' : 'Publicar'}
-        </button>
+            <Save className="w-4 h-4" />
+            <span className="hidden sm:inline">{saving ? 'Guardando...' : 'Borrador'}</span>
+          </button>
+          <button
+            onClick={() => handleSave(true)}
+            disabled={saving}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 disabled:opacity-60 transition-colors"
+          >
+            <Send className="w-4 h-4" />
+            <span className="hidden sm:inline">{saving ? 'Guardando...' : 'Publicar'}</span>
+            <span className="sm:hidden">Pub.</span>
+          </button>
+        </div>
       </div>
 
       {saveError && (
@@ -188,6 +214,31 @@ export default function NoticiaEditorPage() {
           <MetadataForm values={metadata} onChange={setMetadata} />
         </div>
       </div>
+
+      {/* Confirm delete */}
+      <Dialog open={confirmDelete} onOpenChange={open => !open && setConfirmDelete(false)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader><DialogTitle>¿Eliminar noticia?</DialogTitle></DialogHeader>
+          <p className="text-sm text-gray-600">
+            <strong>"{metadata.titulo}"</strong> será eliminada permanentemente junto con todos sus bloques.
+          </p>
+          <div className="flex gap-2 mt-2">
+            <button
+              onClick={() => setConfirmDelete(false)}
+              className="flex-1 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={handleDelete}
+              disabled={deleting}
+              className="flex-1 py-2 rounded-lg bg-red-500 text-white text-sm font-semibold hover:bg-red-600 transition-colors disabled:opacity-50"
+            >
+              {deleting ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : 'Eliminar'}
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

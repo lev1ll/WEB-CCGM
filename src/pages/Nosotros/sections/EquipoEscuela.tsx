@@ -55,7 +55,7 @@ export function EquipoEscuela() {
                 </h3>
               </AnimatedSection>
 
-              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
                 {miembros.map((miembro, i) => (
                   <AnimatedSection key={miembro.id} direction="up" delay={i * 0.07}>
                     <motion.div whileHover={{ y: -4, transition: { type: 'spring', stiffness: 400, damping: 20 } }}>
