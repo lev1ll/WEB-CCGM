@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Outlet, NavLink, useLocation, Navigate } from 'react-router-dom'
 import { LayoutDashboard, Newspaper, LogOut, GraduationCap, Images, FileText, ImagePlay, Trophy, CalendarDays } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
+import { LogoCCGM } from '@/components/shared/LogoCCGM'
 
 const NAV_ITEMS = [
   { to: '/admin',            label: 'Dashboard',      icon: LayoutDashboard, exact: true  },
@@ -50,12 +51,7 @@ export default function AdminLayout() {
       `}>
         {/* Logo */}
         <div className="flex items-center gap-3 px-6 py-5 border-b border-gray-100">
-          <img
-            src="/images/logo_gabriela_mistral.png"
-            alt="Logo CCGM"
-            className="h-10 w-auto flex-shrink-0"
-            onError={e => { e.currentTarget.style.display = 'none' }}
-          />
+          <LogoCCGM showText={false} className="h-10 w-10 shrink-0" />
           <div>
             <p className="text-sm font-semibold text-gray-900 leading-tight">CCGM</p>
             <p className="text-xs text-gray-500">Panel Admin</p>
