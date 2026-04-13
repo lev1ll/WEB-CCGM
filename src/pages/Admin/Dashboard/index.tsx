@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Newspaper, Images, FileText, GraduationCap, ImagePlay, Trophy,
-  ArrowRight, CheckCircle, AlertCircle,
+  ArrowRight, CheckCircle, AlertCircle, CalendarDays,
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { formatDate } from '@/lib/utils'
@@ -17,6 +17,7 @@ interface Stats {
   trabajadores: number
   heroSlides: number
   academiaFotos: number
+  proximosEventos: number
 }
 
 export default function AdminDashboard() {
@@ -26,6 +27,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     async function load() {
       if (!supabase) return
+      const today = new Date().toISOString().slice(0, 10)
       const [
         { count: notPub },
         { count: notBor },
@@ -35,6 +37,7 @@ export default function AdminDashboard() {
         { count: trab },
         { count: hero },
         { count: acad },
+        { count: eventos },
       ] = await Promise.all([
         supabase.from('noticias').select('*', { count: 'exact', head: true }).eq('publicado', true),
         supabase.from('noticias').select('*', { count: 'exact', head: true }).eq('publicado', false),
@@ -44,6 +47,7 @@ export default function AdminDashboard() {
         supabase.from('trabajadores').select('*', { count: 'exact', head: true }),
         supabase.from('hero_slides').select('*', { count: 'exact', head: true }).eq('activo', true),
         supabase.from('academia_fotos').select('*', { count: 'exact', head: true }),
+        supabase.from('calendario_eventos').select('*', { count: 'exact', head: true }).gte('fecha_inicio', today),
       ])
       setStats({
         noticiasPublicadas: notPub ?? 0,
@@ -54,6 +58,7 @@ export default function AdminDashboard() {
         trabajadores:       trab ?? 0,
         heroSlides:         hero ?? 0,
         academiaFotos:      acad ?? 0,
+        proximosEventos:    eventos ?? 0,
       })
       setIsLoading(false)
     }
@@ -103,6 +108,15 @@ export default function AdminDashboard() {
           value={stats?.trabajadores}
           sub="miembros registrados"
           href="/admin/trabajadores"
+          isLoading={isLoading}
+        />
+        <StatCard
+          icon={<CalendarDays className="w-5 h-5" />}
+          iconBg="bg-primary"
+          label="Próximos eventos"
+          value={stats?.proximosEventos}
+          sub="en el calendario escolar"
+          href="/admin/calendario"
           isLoading={isLoading}
         />
       </div>
