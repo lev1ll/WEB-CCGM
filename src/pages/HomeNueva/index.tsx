@@ -7,7 +7,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  ArrowRight, ChevronLeft, ChevronRight, MessageCircle,
+  ArrowRight, MessageCircle,
   BookOpen, GraduationCap, Instagram, Facebook, Calendar,
   ExternalLink, BadgeCheck, Bus, Trophy, HeartHandshake,
   Palette, Clock, Heart, Monitor,
@@ -111,7 +111,7 @@ function Hero() {
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent" />
 
       {/* ── Dots esquina superior derecha ── */}
-      <div className="absolute top-6 right-4 sm:right-6 lg:right-8 z-20 flex gap-2 items-center">
+      <div className="absolute top-6 right-4 sm:right-6 lg:right-8 z-30 flex gap-2 items-center">
         {fotos.map((_, i) => (
           <button key={i} onClick={() => setCurrent(i)} aria-label={`Foto ${i + 1}`}
             className={`rounded-full transition-all duration-300
@@ -120,7 +120,7 @@ function Hero() {
       </div>
 
       {/* ── Eyebrow superior ── */}
-      <motion.div className="absolute top-6 left-0 right-0 z-20 px-4 sm:px-6 lg:px-8"
+      <motion.div className="absolute top-6 left-0 right-0 z-30 px-4 sm:px-6 lg:px-8"
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
         <div className="flex items-center gap-3">
           <div className="h-px w-10 bg-secondary" />
@@ -143,22 +143,14 @@ function Hero() {
         </div>
       )}
 
-      {/* ── Flechas laterales ── */}
-      <button onClick={prev} aria-label="Anterior"
-        className="absolute left-5 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full
-                   bg-black/40 hover:bg-black/65 backdrop-blur-sm flex items-center
-                   justify-center transition-all hover:scale-105 border border-white/10">
-        <ChevronLeft className="w-5 h-5 text-white" />
-      </button>
-      <button onClick={next} aria-label="Siguiente"
-        className="absolute right-5 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full
-                   bg-black/40 hover:bg-black/65 backdrop-blur-sm flex items-center
-                   justify-center transition-all hover:scale-105 border border-white/10">
-        <ChevronRight className="w-5 h-5 text-white" />
-      </button>
+      {/* ── Zonas de click laterales (sin flechas visibles) ── */}
+      <button onClick={prev} aria-label="Foto anterior"
+        className="absolute left-0 top-0 w-1/2 h-full z-10 cursor-pointer" />
+      <button onClick={next} aria-label="Foto siguiente"
+        className="absolute right-0 top-0 w-1/2 h-full z-10 cursor-pointer" />
 
       {/* ── Contenido inferior ── */}
-      <div className="absolute bottom-0 left-0 right-0 z-10 px-4 sm:px-6 lg:px-8 pb-8">
+      <div className="absolute bottom-0 left-0 right-0 z-30 px-4 sm:px-6 lg:px-8 pb-8">
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
 
           {/* Título — slogan real del PEI */}

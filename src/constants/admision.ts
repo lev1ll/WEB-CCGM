@@ -18,7 +18,7 @@ export const ADMISSION_STEPS = [
     icon: 'CheckCircle2',
     title: 'Matrícula',
     description:
-      'Vienes a la escuela con los documentos requeridos y formalizas la matrícula para el año escolar.',
+      'Vienes a la escuela con los documentos requeridos y formalizas la matrícula de forma gratuita para el año escolar.',
   },
 ] as const
 
@@ -42,39 +42,6 @@ export const ADMISSION_REQUIREMENTS = [
       'Informe PIE o de atención diferenciada si el alumno tiene NEE (si aplica)',
       'Carta de retiro del establecimiento de origen',
     ],
-  },
-] as const
-
-export const ADMISSION_CALENDAR = [
-  {
-    period: 'Apertura de pre-inscripciones',
-    dateRange: 'Septiembre 2025',
-    description: 'Disponible el formulario de pre-inscripción en línea para el año 2026.',
-    isActive: false,
-  },
-  {
-    period: 'Entrevistas familiares',
-    dateRange: 'Octubre – Noviembre 2025',
-    description: 'Agendamiento y realización de entrevistas con familias postulantes.',
-    isActive: true,
-  },
-  {
-    period: 'Evaluaciones diagnósticas',
-    dateRange: 'Noviembre 2025',
-    description: 'Aplicación de evaluaciones a los postulantes citados.',
-    isActive: false,
-  },
-  {
-    period: 'Comunicación de resultados',
-    dateRange: 'Noviembre – Diciembre 2025',
-    description: 'Notificación a las familias sobre el resultado del proceso de admisión.',
-    isActive: false,
-  },
-  {
-    period: 'Período de matrícula',
-    dateRange: 'Diciembre 2025 – Enero 2026',
-    description: 'Firma de documentación y formalización de la matrícula para el año escolar 2026.',
-    isActive: false,
   },
 ] as const
 
@@ -125,12 +92,12 @@ export const ADMISSION_FAQ = [
   {
     question: '¿Para qué niveles hay cupos disponibles?',
     answer:
-      'La Escuela Gabriela Mistral atiende desde 1° hasta 8° Año Básico (educación básica completa). Los cupos varían según el nivel y la disponibilidad de cada año. Te recomendamos inscribirte con anticipación para asegurar un lugar.',
+      'La Escuela Gabriela Mistral atiende desde 1° hasta 8° Año Básico (educación básica completa). Aceptamos alumnos durante todo el año según disponibilidad de cupos en cada nivel. Contáctanos directamente para consultar cupos en el nivel que necesitas.',
   },
   {
     question: '¿El proceso de admisión tiene algún costo?',
     answer:
-      'La pre-inscripción y la entrevista familiar son completamente gratuitas. Solo al momento de formalizar la matrícula se cobra el monto correspondiente, el cual se informa en la entrevista familiar.',
+      'No. La matrícula y la escolaridad son completamente gratuitas. No hay mensualidades ni cobros de ningún tipo. La Escuela Gabriela Mistral es un establecimiento particular subvencionado acogido al régimen de gratuidad.',
   },
   {
     question: '¿Aceptan alumnos con necesidades educativas especiales (NEE)?',
@@ -148,8 +115,8 @@ export const ADMISSION_FAQ = [
       'Sí. A través de los programas de apoyo del Estado y la gestión de la Corporación Educacional GM, apoyamos a estudiantes vulnerables con alimentación (JUNAEB), transporte de acercamiento y otros beneficios. Consulta en secretaría para más información según tu situación.',
   },
   {
-    question: '¿Puedo inscribir a mi hijo fuera del período de admisión?',
+    question: '¿Puedo inscribir a mi hijo en cualquier momento del año?',
     answer:
-      'Las admisiones fuera de período se evalúan caso a caso según la disponibilidad de cupos en cada nivel. Contáctanos directamente al +56 9 9643 2865 o visítanos en General Urrutia N° 763, Nueva Imperial.',
+      'Sí. Aceptamos alumnos durante todo el año según disponibilidad de cupos en cada nivel. No es necesario esperar un período específico de admisión. Contáctanos al +56 9 9643 2865 o visítanos en General Urrutia N° 763, Nueva Imperial.',
   },
 ] as const
