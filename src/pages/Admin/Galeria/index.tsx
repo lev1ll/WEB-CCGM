@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { Plus, Trash2, Loader2, AlertCircle, Upload, Check, Youtube, Play } from 'lucide-react'
+import { Plus, Trash2, Loader2, AlertCircle, Upload, Check, Youtube, Play, ChevronLeft, ChevronRight } from 'lucide-react'
+
+const PAGE_SIZE = 24
 import { useSupabaseQuery } from '@/hooks/useSupabaseQuery'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { uploadToCloudinary, extractYouTubeId } from '@/lib/utils'
@@ -32,13 +34,15 @@ export default function AdminGaleria() {
   const [savedCaption, setSavedCaption] = useState<string | null>(null)
   const [pending, setPending] = useState<PendingPhoto[]>([])
   const [videoForm, setVideoForm] = useState<VideoForm | null>(null)
+  const [page, setPage] = useState(0)
   const fileRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => { load() }, [])
 
-  async function load() {
+  async function load(resetPage = false) {
     const data = await select<GaleriaItem>('galeria', { order: { column: 'created_at', ascending: false } })
     setItems(data)
+    if (resetPage) setPage(0)
     const map: Record<string, string> = {}
     data.forEach(d => { map[d.id] = d.caption ?? '' })
     setCaptions(map)
@@ -77,7 +81,7 @@ export default function AdminGaleria() {
       setPending([...updated])
     }
     setPending(prev => prev.filter(p => p.error !== null))
-    await load()
+    await load(true)
   }
 
   async function handleAddVideo() {
@@ -98,7 +102,7 @@ export default function AdminGaleria() {
     })
     if (r.success) {
       setVideoForm(null)
-      await load()
+      await load(true)
     } else {
       setVideoForm(v => v ? { ...v, saving: false, error: r.error ?? 'Error al guardar' } : null)
     }
@@ -146,6 +150,9 @@ export default function AdminGaleria() {
     fotosCount > 0 && `${fotosCount} foto${fotosCount !== 1 ? 's' : ''}`,
     videosCount > 0 && `${videosCount} video${videosCount !== 1 ? 's' : ''}`,
   ].filter(Boolean).join(' · ') || '0 elementos'
+
+  const totalPages = Math.ceil(items.length / PAGE_SIZE)
+  const pageItems = items.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)
 
   return (
     <div className="space-y-5">
@@ -300,8 +307,8 @@ export default function AdminGaleria() {
 
       {/* Items subidos */}
       {items.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-          {items.map(item => (
+        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
+          {pageItems.map(item => (
             <div key={item.id} className="rounded-xl overflow-hidden border border-gray-200 bg-white">
               <div className="relative aspect-square overflow-hidden">
                 <img src={item.url} alt={item.caption ?? ''} className="w-full h-full object-cover" />
@@ -362,6 +369,39 @@ export default function AdminGaleria() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Paginación */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 pt-2">
+          <button
+            onClick={() => setPage(p => Math.max(0, p - 1))}
+            disabled={page === 0}
+            className="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-30 transition-colors"
+          >
+            <ChevronLeft className="w-4 h-4 text-gray-600" />
+          </button>
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i}
+              onClick={() => setPage(i)}
+              className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
+                i === page
+                  ? 'bg-primary text-white'
+                  : 'border border-gray-200 text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              {i + 1}
+            </button>
+          ))}
+          <button
+            onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+            disabled={page === totalPages - 1}
+            className="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-30 transition-colors"
+          >
+            <ChevronRight className="w-4 h-4 text-gray-600" />
+          </button>
         </div>
       )}
 
