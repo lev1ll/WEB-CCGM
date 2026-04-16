@@ -9,24 +9,33 @@ interface Props {
   onConfirm: (file: File) => void
   onCancel: () => void
   uploading?: boolean
+  aspect?: number           // default 1 (cuadrado)
+  cropShape?: 'rect' | 'round'  // default 'round'
+  outputSize?: number       // tamaño del lado mayor del canvas (default 400)
 }
 
-async function getCroppedFile(imageSrc: string, croppedAreaPixels: Area): Promise<File> {
+async function getCroppedFile(imageSrc: string, croppedAreaPixels: Area, outputSize = 400, aspect = 1): Promise<File> {
   const image = new Image()
+  image.crossOrigin = 'anonymous'
   image.src = imageSrc
   await new Promise<void>(resolve => { image.onload = () => resolve() })
 
   const canvas = document.createElement('canvas')
-  const size = 400
-  canvas.width = size
-  canvas.height = size
+  // Mantener la proporción del área recortada en el canvas de salida
+  if (aspect >= 1) {
+    canvas.width  = outputSize
+    canvas.height = Math.round(outputSize / aspect)
+  } else {
+    canvas.height = outputSize
+    canvas.width  = Math.round(outputSize * aspect)
+  }
   const ctx = canvas.getContext('2d')!
 
   ctx.drawImage(
     image,
     croppedAreaPixels.x, croppedAreaPixels.y,
     croppedAreaPixels.width, croppedAreaPixels.height,
-    0, 0, size, size
+    0, 0, canvas.width, canvas.height
   )
 
   return new Promise((resolve, reject) => {
@@ -37,7 +46,7 @@ async function getCroppedFile(imageSrc: string, croppedAreaPixels: Area): Promis
   })
 }
 
-export default function CropModal({ imageSrc, onConfirm, onCancel, uploading }: Props) {
+export default function CropModal({ imageSrc, onConfirm, onCancel, uploading, aspect = 1, cropShape = 'round', outputSize = 400 }: Props) {
   const [crop, setCrop] = useState({ x: 0, y: 0 })
   const [zoom, setZoom] = useState(1)
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null)
@@ -48,13 +57,16 @@ export default function CropModal({ imageSrc, onConfirm, onCancel, uploading }: 
 
   async function handleConfirm() {
     if (!croppedAreaPixels) return
-    const file = await getCroppedFile(imageSrc, croppedAreaPixels)
+    const file = await getCroppedFile(imageSrc, croppedAreaPixels, outputSize, aspect)
     onConfirm(file)
   }
 
+  // Para aspect ratios anchos (landscape) usar menos alto; para portrait más alto
+  const cropAreaHeight = aspect >= 1 ? 56 : 72  // en unidades tailwind ×4px → 224 o 288px
+
   return (
     <Dialog open onOpenChange={open => !open && onCancel()}>
-      <DialogContent className="max-w-sm">
+      <DialogContent className={aspect > 1 ? 'max-w-lg' : 'max-w-sm'}>
         <DialogHeader>
           <DialogTitle>Ajustar foto</DialogTitle>
         </DialogHeader>
@@ -62,14 +74,14 @@ export default function CropModal({ imageSrc, onConfirm, onCancel, uploading }: 
         <p className="text-xs text-gray-500 -mt-1">Arrastra para reencuadrar · usa el zoom para acercar</p>
 
         {/* Crop area */}
-        <div className="relative w-full h-72 bg-gray-900 rounded-xl overflow-hidden">
+        <div className={`relative w-full bg-gray-900 rounded-xl overflow-hidden`} style={{ height: `${cropAreaHeight * 4}px` }}>
           <Cropper
             image={imageSrc}
             crop={crop}
             zoom={zoom}
-            aspect={1}
-            cropShape="round"
-            showGrid={false}
+            aspect={aspect}
+            cropShape={cropShape}
+            showGrid={cropShape === 'rect'}
             onCropChange={setCrop}
             onZoomChange={setZoom}
             onCropComplete={onCropComplete}

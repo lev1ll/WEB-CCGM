@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Plus, Trash2, Loader2, Upload, ChevronUp, ChevronDown, Eye, EyeOff } from 'lucide-react'
 import { useSupabaseQuery } from '@/hooks/useSupabaseQuery'
 import { uploadToCloudinary } from '@/lib/utils'
+import CropModal from '@/components/shared/CropModal'
 
 const MAX_SLIDES = 5
 
@@ -48,6 +49,8 @@ export default function AdminHero() {
   const isFull = slides.length + pending.length >= MAX_SLIDES
   const [savingAlt, setSavingAlt] = useState<string | null>(null)
   const [alts, setAlts] = useState<Record<string, string>>({})
+  const [cropSrc, setCropSrc] = useState<string | null>(null)
+  const [cropUploading, setCropUploading] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => { load() }, [])
@@ -65,8 +68,8 @@ export default function AdminHero() {
   }
 
   function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(e.target.files ?? [])
-    if (!files.length) return
+    const file = e.target.files?.[0]
+    if (!file) return
     e.target.value = ''
     const slots = MAX_SLIDES - slides.length - pending.length
     if (slots <= 0) {
@@ -74,15 +77,28 @@ export default function AdminHero() {
       return
     }
     setActionError(null)
-    const newPending: PendingSlide[] = files.slice(0, slots).map(file => ({
+    // Abrir CropModal para reencuadrar antes de agregar a pending
+    const url = URL.createObjectURL(file)
+    setCropSrc(url)
+  }
+
+  function handleCropConfirm(croppedFile: File) {
+    if (cropSrc) URL.revokeObjectURL(cropSrc)
+    setCropSrc(null)
+    const newPending: PendingSlide = {
       tempId: `${Date.now()}-${Math.random()}`,
-      file,
-      previewUrl: URL.createObjectURL(file),
+      file: croppedFile,
+      previewUrl: URL.createObjectURL(croppedFile),
       alt: '',
       uploading: false,
       error: null,
-    }))
-    setPending(prev => [...prev, ...newPending])
+    }
+    setPending(prev => [...prev, newPending])
+  }
+
+  function handleCropCancel() {
+    if (cropSrc) URL.revokeObjectURL(cropSrc)
+    setCropSrc(null)
   }
 
   async function uploadPending(tempId: string) {
@@ -169,7 +185,7 @@ export default function AdminHero() {
         >
           <Plus className="w-4 h-4" /> Agregar foto {slides.length + pending.length}/{MAX_SLIDES}
         </button>
-        <input ref={fileRef} type="file" accept="image/*" multiple className="hidden" onChange={handleFileSelect} />
+        <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFileSelect} />
       </div>
 
       {actionError && (
@@ -339,6 +355,19 @@ export default function AdminHero() {
             )
           })}
         </div>
+      )}
+
+      {/* CropModal al seleccionar imagen */}
+      {cropSrc && (
+        <CropModal
+          imageSrc={cropSrc}
+          aspect={16 / 9}
+          cropShape="rect"
+          outputSize={1600}
+          uploading={cropUploading}
+          onConfirm={handleCropConfirm}
+          onCancel={handleCropCancel}
+        />
       )}
 
       {/* Confirm delete modal */}

@@ -3,6 +3,7 @@ import { Loader2, Upload, Trash2, Monitor, Dumbbell, TreePine, UtensilsCrossed, 
 import { supabase } from '@/lib/supabase'
 import { uploadToCloudinary } from '@/lib/utils'
 import { INSTALACIONES } from '@/constants/instalaciones'
+import CropModal from '@/components/shared/CropModal'
 
 const ICON_MAP = { Monitor, Dumbbell, TreePine, UtensilsCrossed, School } as const
 type IconName = keyof typeof ICON_MAP
@@ -13,6 +14,9 @@ export default function AdminInstalaciones() {
   const [uploading, setUploading] = useState<string | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [cropSrc, setCropSrc] = useState<string | null>(null)
+  const [cropTarget, setCropTarget] = useState<string | null>(null)
+  const [cropUploading, setCropUploading] = useState(false)
   const fileRefs = useRef<Record<string, HTMLInputElement | null>>({})
 
   useEffect(() => { load() }, [])
@@ -27,23 +31,43 @@ export default function AdminInstalaciones() {
     setLoading(false)
   }
 
-  async function handleUpload(id: string, e: React.ChangeEvent<HTMLInputElement>) {
+  function handleFileSelect(id: string, e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
     e.target.value = ''
+    // Abrir CropModal para reencuadrar
+    const url = URL.createObjectURL(file)
+    setCropTarget(id)
+    setCropSrc(url)
+  }
+
+  async function handleCropConfirm(croppedFile: File) {
+    if (!cropTarget) return
+    const id = cropTarget
+    if (cropSrc) URL.revokeObjectURL(cropSrc)
+    setCropSrc(null)
+    setCropTarget(null)
+    setCropUploading(true)
     setUploading(id)
     setError(null)
     try {
-      const url = await uploadToCloudinary(file)
+      const url = await uploadToCloudinary(croppedFile)
       await supabase!
         .from('instalacion_fotos')
         .upsert({ instalacion: id, src: url, updated_at: new Date().toISOString() }, { onConflict: 'instalacion' })
       await load()
     } catch {
-      setError(`Error al subir la foto.`)
+      setError('Error al subir la foto.')
     } finally {
       setUploading(null)
+      setCropUploading(false)
     }
+  }
+
+  function handleCropCancel() {
+    if (cropSrc) URL.revokeObjectURL(cropSrc)
+    setCropSrc(null)
+    setCropTarget(null)
   }
 
   async function handleDelete(id: string) {
@@ -132,13 +156,26 @@ export default function AdminInstalaciones() {
                     type="file"
                     accept="image/*"
                     className="hidden"
-                    onChange={e => handleUpload(id, e)}
+                    onChange={e => handleFileSelect(id, e)}
                   />
                 </div>
               </div>
             )
           })}
         </div>
+      )}
+
+      {/* CropModal al seleccionar imagen */}
+      {cropSrc && (
+        <CropModal
+          imageSrc={cropSrc}
+          aspect={4 / 3}
+          cropShape="rect"
+          outputSize={1200}
+          uploading={cropUploading}
+          onConfirm={handleCropConfirm}
+          onCancel={handleCropCancel}
+        />
       )}
 
       {/* Confirm delete */}
