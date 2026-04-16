@@ -85,6 +85,8 @@ export interface GaleriaItem {
   caption: string | null
   orden: number
   created_at: string
+  tipo?: 'foto' | 'video'
+  video_url?: string | null
 }
 
 export type DocumentoCategoria = 'lista_utiles' | 'reglamento' | 'calendario' | 'circular' | 'otro'

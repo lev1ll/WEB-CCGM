@@ -78,7 +78,9 @@ export default function AdminHero() {
     setPending(prev => prev.map(p => p.tempId === tempId ? { ...p, uploading: true, error: null } : p))
     try {
       const url = await uploadToCloudinary(item.file)
-      const nextOrden = slides.length + pending.filter(p => !p.uploading && p.tempId !== tempId).length
+      // Obtener el máximo orden actual desde la BD para no depender del estado React
+      const existing = await select<HeroSlide>('hero_slides', { order: { column: 'orden', ascending: false }, limit: 1 })
+      const nextOrden = existing.length > 0 ? existing[0].orden + 1 : 0
       await upsert('hero_slides', {
         src: url,
         alt: item.alt || 'Imagen del carrusel',
@@ -119,10 +121,12 @@ export default function AdminHero() {
     const idx = slides.findIndex(s => s.id === slide.id)
     const swapIdx = dir === 'up' ? idx - 1 : idx + 1
     if (swapIdx < 0 || swapIdx >= slides.length) return
-    const swap = slides[swapIdx]
+
+    // Intercambiar posiciones usando índices secuenciales (no los valores orden
+    // existentes, que pueden ser duplicados y harían que el swap no cambie nada)
     await Promise.all([
-      update('hero_slides', slide.id, { orden: swap.orden }),
-      update('hero_slides', swap.id, { orden: slide.orden }),
+      update('hero_slides', slides[idx].id,     { orden: swapIdx }),
+      update('hero_slides', slides[swapIdx].id, { orden: idx }),
     ])
     await load()
   }

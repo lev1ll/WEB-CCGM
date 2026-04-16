@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { Plus, Trash2, Loader2, AlertCircle, Upload, Check } from 'lucide-react'
+import { Plus, Trash2, Loader2, AlertCircle, Upload, Check, Youtube, Play } from 'lucide-react'
 import { useSupabaseQuery } from '@/hooks/useSupabaseQuery'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { uploadToCloudinary } from '@/lib/utils'
+import { uploadToCloudinary, extractYouTubeId } from '@/lib/utils'
 import type { GaleriaItem } from '@/types/noticias.types'
 
 interface PendingPhoto {
@@ -14,18 +14,24 @@ interface PendingPhoto {
   error: string | null
 }
 
+interface VideoForm {
+  url: string
+  caption: string
+  saving: boolean
+  error: string | null
+}
+
 export default function AdminGaleria() {
   const { select, upsert, update, remove, isLoading, error } = useSupabaseQuery()
   const [items, setItems] = useState<GaleriaItem[]>([])
   const [actionError, setActionError] = useState<string | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<GaleriaItem | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
-  // captions en edición: id -> valor actual
   const [captions, setCaptions] = useState<Record<string, string>>({})
   const [savingCaption, setSavingCaption] = useState<string | null>(null)
   const [savedCaption, setSavedCaption] = useState<string | null>(null)
-  // fotos pendientes de subir
   const [pending, setPending] = useState<PendingPhoto[]>([])
+  const [videoForm, setVideoForm] = useState<VideoForm | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => { load() }, [])
@@ -33,7 +39,6 @@ export default function AdminGaleria() {
   async function load() {
     const data = await select<GaleriaItem>('galeria', { order: { column: 'created_at', ascending: false } })
     setItems(data)
-    // inicializar captions
     const map: Record<string, string> = {}
     data.forEach(d => { map[d.id] = d.caption ?? '' })
     setCaptions(map)
@@ -57,16 +62,13 @@ export default function AdminGaleria() {
   async function uploadPending() {
     if (pending.length === 0) return
     setActionError(null)
-    // marcar todas como uploading
     setPending(prev => prev.map(p => ({ ...p, uploading: true, error: null })))
-
     const updated = [...pending]
-
     for (let i = 0; i < updated.length; i++) {
       const p = updated[i]
       try {
         const url = await uploadToCloudinary(p.file)
-        const r = await upsert('galeria', { url, caption: p.caption.trim(), orden: 0 })
+        const r = await upsert('galeria', { url, caption: p.caption.trim(), tipo: 'foto', orden: 0 })
         if (!r.success) throw new Error(r.error ?? 'Error al guardar')
         updated[i] = { ...p, uploading: false }
       } catch (err) {
@@ -74,10 +76,32 @@ export default function AdminGaleria() {
       }
       setPending([...updated])
     }
-
-    // limpiar los exitosos
     setPending(prev => prev.filter(p => p.error !== null))
     await load()
+  }
+
+  async function handleAddVideo() {
+    if (!videoForm) return
+    const videoId = extractYouTubeId(videoForm.url.trim())
+    if (!videoId) {
+      setVideoForm(v => v ? { ...v, error: 'URL de YouTube inválida. Usa youtube.com/watch?v=... o youtu.be/...' } : null)
+      return
+    }
+    const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
+    setVideoForm(v => v ? { ...v, saving: true, error: null } : null)
+    const r = await upsert('galeria', {
+      url: thumbnailUrl,
+      video_url: videoForm.url.trim(),
+      tipo: 'video',
+      caption: videoForm.caption.trim(),
+      orden: 0,
+    })
+    if (r.success) {
+      setVideoForm(null)
+      await load()
+    } else {
+      setVideoForm(v => v ? { ...v, saving: false, error: r.error ?? 'Error al guardar' } : null)
+    }
   }
 
   function removePending(tempId: string) {
@@ -115,26 +139,89 @@ export default function AdminGaleria() {
   }
 
   const anyUploading = pending.some(p => p.uploading)
+  const fotosCount = items.filter(i => i.tipo !== 'video').length
+  const videosCount = items.filter(i => i.tipo === 'video').length
+
+  const countLabel = [
+    fotosCount > 0 && `${fotosCount} foto${fotosCount !== 1 ? 's' : ''}`,
+    videosCount > 0 && `${videosCount} video${videosCount !== 1 ? 's' : ''}`,
+  ].filter(Boolean).join(' · ') || '0 elementos'
 
   return (
     <div className="space-y-5">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Galería</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{items.length} foto{items.length !== 1 ? 's' : ''}</p>
+          <p className="text-sm text-gray-500 mt-0.5">{countLabel}</p>
         </div>
-        <button
-          onClick={() => fileRef.current?.click()}
-          className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors"
-        >
-          <Plus className="w-4 h-4" /> Agregar fotos
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => fileRef.current?.click()}
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors"
+          >
+            <Plus className="w-4 h-4" /> Agregar fotos
+          </button>
+          <button
+            onClick={() => setVideoForm(f => f ? null : { url: '', caption: '', saving: false, error: null })}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-colors border ${
+              videoForm
+                ? 'bg-red-50 border-red-200 text-red-600 hover:bg-red-100'
+                : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
+            }`}
+          >
+            <Youtube className="w-4 h-4" /> {videoForm ? 'Cancelar' : 'Agregar video'}
+          </button>
+        </div>
         <input ref={fileRef} type="file" accept="image/*" multiple className="hidden" onChange={handleFileSelect} />
       </div>
 
       {(actionError || error) && (
         <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
           <AlertCircle className="w-4 h-4 shrink-0" /> {actionError || error}
+        </div>
+      )}
+
+      {/* Formulario agregar video */}
+      {videoForm && (
+        <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-3">
+          <p className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+            <Youtube className="w-4 h-4 text-red-500" /> Agregar video de YouTube
+          </p>
+          <div className="space-y-2">
+            <input
+              type="url"
+              value={videoForm.url}
+              onChange={e => setVideoForm(v => v ? { ...v, url: e.target.value, error: null } : null)}
+              onKeyDown={e => e.key === 'Enter' && handleAddVideo()}
+              placeholder="https://www.youtube.com/watch?v=... o https://youtu.be/..."
+              disabled={videoForm.saving}
+              className="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary/40 disabled:opacity-50"
+            />
+            <input
+              type="text"
+              value={videoForm.caption}
+              onChange={e => setVideoForm(v => v ? { ...v, caption: e.target.value } : null)}
+              onKeyDown={e => e.key === 'Enter' && handleAddVideo()}
+              placeholder="Descripción (opcional)"
+              disabled={videoForm.saving}
+              className="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary/40 disabled:opacity-50"
+            />
+          </div>
+          {videoForm.error && (
+            <p className="text-xs text-red-500 flex items-center gap-1">
+              <AlertCircle className="w-3.5 h-3.5" /> {videoForm.error}
+            </p>
+          )}
+          <div className="flex gap-2">
+            <button
+              onClick={handleAddVideo}
+              disabled={videoForm.saving || !videoForm.url.trim()}
+              className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-primary/90 disabled:opacity-50 transition-colors"
+            >
+              {videoForm.saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+              {videoForm.saving ? 'Guardando...' : 'Agregar video'}
+            </button>
+          </div>
         </div>
       )}
 
@@ -211,15 +298,39 @@ export default function AdminGaleria() {
         </div>
       )}
 
-      {/* Fotos subidas */}
+      {/* Items subidos */}
       {items.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           {items.map(item => (
             <div key={item.id} className="rounded-xl overflow-hidden border border-gray-200 bg-white">
-              <div className="aspect-square overflow-hidden">
+              <div className="relative aspect-square overflow-hidden">
                 <img src={item.url} alt={item.caption ?? ''} className="w-full h-full object-cover" />
+                {item.tipo === 'video' && (
+                  <>
+                    <div className="absolute inset-0 bg-black/20" />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-full bg-red-600/90 flex items-center justify-center shadow-lg">
+                        <Play className="w-5 h-5 text-white fill-white ml-0.5" />
+                      </div>
+                    </div>
+                    <span className="absolute top-1.5 left-1.5 bg-red-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide">
+                      YouTube
+                    </span>
+                  </>
+                )}
               </div>
               <div className="p-2 space-y-2">
+                {item.tipo === 'video' && item.video_url && (
+                  <a
+                    href={item.video_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-[10px] text-red-500 hover:text-red-600 font-medium truncate"
+                  >
+                    <Youtube className="w-3 h-3 shrink-0" />
+                    <span className="truncate">Ver en YouTube</span>
+                  </a>
+                )}
                 {/* Caption */}
                 <div className="flex gap-1.5">
                   <input
@@ -257,9 +368,20 @@ export default function AdminGaleria() {
       <Dialog open={!!confirmDelete} onOpenChange={open => !open && setConfirmDelete(null)}>
         {confirmDelete && (
           <DialogContent className="max-w-sm">
-            <DialogHeader><DialogTitle>¿Eliminar foto?</DialogTitle></DialogHeader>
-            <div className="rounded-lg overflow-hidden border border-gray-200 mb-4">
+            <DialogHeader>
+              <DialogTitle>
+                {confirmDelete.tipo === 'video' ? '¿Eliminar video?' : '¿Eliminar foto?'}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="relative rounded-lg overflow-hidden border border-gray-200 mb-4">
               <img src={confirmDelete.url} alt="" className="w-full h-40 object-cover" />
+              {confirmDelete.tipo === 'video' && (
+                <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-full bg-red-600/90 flex items-center justify-center">
+                    <Play className="w-5 h-5 text-white fill-white ml-0.5" />
+                  </div>
+                </div>
+              )}
             </div>
             <div className="flex gap-2">
               <button onClick={() => setConfirmDelete(null)}

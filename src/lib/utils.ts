@@ -16,13 +16,17 @@ export function slugify(text: string): string {
     .replace(/-+/g, '-')
 }
 
+export function extractYouTubeId(url: string): string | null {
+  if (!url) return null
+  const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|shorts\/|embed\/))([a-zA-Z0-9_-]{11})/)
+  return m ? m[1] : null
+}
+
 export function toEmbedUrl(url: string): string | null {
   if (!url) return null
-  // YouTube: youtu.be/ID o youtube.com/watch?v=ID
-  const ytShort = url.match(/youtu\.be\/([^?&]+)/)
-  if (ytShort) return `https://www.youtube.com/embed/${ytShort[1]}`
-  const ytLong = url.match(/youtube\.com\/watch\?v=([^&]+)/)
-  if (ytLong) return `https://www.youtube.com/embed/${ytLong[1]}`
+  // YouTube: youtu.be/ID, youtube.com/watch?v=ID, youtube.com/shorts/ID
+  const ytId = extractYouTubeId(url)
+  if (ytId) return `https://www.youtube.com/embed/${ytId}`
   // Vimeo: vimeo.com/ID
   const vimeo = url.match(/vimeo\.com\/(\d+)/)
   if (vimeo) return `https://player.vimeo.com/video/${vimeo[1]}`

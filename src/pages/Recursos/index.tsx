@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Images, FileText, Download, X, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
+import { Images, FileText, Download, X, ChevronLeft, ChevronRight, Loader2, Play } from 'lucide-react'
 import { useSupabaseQuery } from '@/hooks/useSupabaseQuery'
 import { SectionWrapper } from '@/components/shared/SectionWrapper'
 import { AnimatedSection } from '@/components/shared/AnimatedSection'
+import { extractYouTubeId } from '@/lib/utils'
 import type { GaleriaItem, Documento, DocumentoCategoria } from '@/types/noticias.types'
 
 const CATEGORIAS: { value: DocumentoCategoria; label: string; emoji: string }[] = [
@@ -53,6 +54,9 @@ export default function RecursosPage() {
     items: docs.filter(d => d.categoria === cat.value),
   })).filter(g => g.items.length > 0)
 
+  const currentItem = lightbox !== null ? fotos[lightbox] : null
+  const isVideo = currentItem?.tipo === 'video'
+
   return (
     <>
       {/* Hero */}
@@ -61,7 +65,7 @@ export default function RecursosPage() {
           <AnimatedSection direction="up">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">Recursos</h1>
             <p className="text-white/70 text-lg max-w-xl mx-auto">
-              Galería de fotos y documentos descargables para la comunidad escolar
+              Galería de fotos y videos, y documentos descargables para la comunidad escolar
             </p>
           </AnimatedSection>
         </div>
@@ -114,7 +118,7 @@ export default function RecursosPage() {
       </SectionWrapper>
 
       {/* Lightbox */}
-      {lightbox !== null && fotos[lightbox] && (
+      {lightbox !== null && currentItem && (
         <div
           className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
           onClick={() => setLightbox(null)}
@@ -135,14 +139,29 @@ export default function RecursosPage() {
             </button>
           )}
 
-          <div className="max-w-5xl max-h-[90vh] px-16" onClick={e => e.stopPropagation()}>
-            <img
-              src={fotos[lightbox].url}
-              alt={fotos[lightbox].caption ?? ''}
-              className="max-w-full max-h-[80vh] object-contain rounded-lg"
-            />
-            {fotos[lightbox].caption && (
-              <p className="text-white/70 text-sm text-center mt-3">{fotos[lightbox].caption}</p>
+          <div
+            className={`px-14 sm:px-16 w-full ${isVideo ? 'max-w-4xl' : 'max-w-5xl'}`}
+            onClick={e => e.stopPropagation()}
+          >
+            {isVideo ? (
+              <div className="w-full aspect-video rounded-lg overflow-hidden shadow-2xl">
+                <iframe
+                  src={`https://www.youtube.com/embed/${extractYouTubeId(currentItem.video_url ?? '')}?autoplay=1`}
+                  className="w-full h-full"
+                  allow="autoplay; encrypted-media; fullscreen"
+                  allowFullScreen
+                  title={currentItem.caption ?? 'Video'}
+                />
+              </div>
+            ) : (
+              <img
+                src={currentItem.url}
+                alt={currentItem.caption ?? ''}
+                className="max-w-full max-h-[80vh] object-contain rounded-lg mx-auto block"
+              />
+            )}
+            {currentItem.caption && (
+              <p className="text-white/70 text-sm text-center mt-3">{currentItem.caption}</p>
             )}
             <p className="text-white/40 text-xs text-center mt-1">{lightbox + 1} / {fotos.length}</p>
           </div>
@@ -178,7 +197,7 @@ function GaleriaTab({ fotos, onOpen }: { fotos: GaleriaItem[]; onOpen: (i: numbe
           <button
             key={foto.id}
             onClick={() => onOpen(i)}
-            className="break-inside-avoid w-full block rounded-xl overflow-hidden border border-border hover:opacity-90 transition-opacity"
+            className="break-inside-avoid w-full block rounded-xl overflow-hidden border border-border hover:opacity-90 transition-opacity relative group"
           >
             <img
               src={foto.url}
@@ -186,6 +205,13 @@ function GaleriaTab({ fotos, onOpen }: { fotos: GaleriaItem[]; onOpen: (i: numbe
               loading="lazy"
               className="w-full h-auto object-cover"
             />
+            {foto.tipo === 'video' && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors">
+                <div className="w-12 h-12 rounded-full bg-red-600/90 flex items-center justify-center shadow-lg">
+                  <Play className="w-6 h-6 text-white fill-white ml-0.5" />
+                </div>
+              </div>
+            )}
           </button>
         ))}
       </div>
