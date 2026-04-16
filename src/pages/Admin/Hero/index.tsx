@@ -36,7 +36,6 @@ export default function AdminHero() {
   const [savingAlt, setSavingAlt] = useState<string | null>(null)
   const [alts, setAlts] = useState<Record<string, string>>({})
   const [cropSrc, setCropSrc] = useState<string | null>(null)
-  const [cropUploading, setCropUploading] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => { load() }, [])
@@ -314,7 +313,6 @@ export default function AdminHero() {
           aspect={16 / 9}
           cropShape="rect"
           outputSize={1600}
-          uploading={cropUploading}
           onConfirm={handleCropConfirm}
           onCancel={handleCropCancel}
         />
