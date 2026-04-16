@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Outlet, NavLink, useLocation, Navigate } from 'react-router-dom'
-import { LayoutDashboard, Newspaper, LogOut, GraduationCap, Images, FileText, ImagePlay, Trophy, CalendarDays } from 'lucide-react'
+import { LayoutDashboard, Newspaper, LogOut, GraduationCap, Images, FileText, ImagePlay, Trophy, CalendarDays, Building2 } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { LogoCCGM } from '@/components/shared/LogoCCGM'
 
@@ -11,8 +11,9 @@ const NAV_ITEMS = [
   { to: '/admin/galeria',    label: 'Galería',         icon: Images,          exact: false },
   { to: '/admin/documentos', label: 'Documentos',      icon: FileText,        exact: false },
   { to: '/admin/hero',       label: 'Hero (portada)',  icon: ImagePlay,       exact: false },
-  { to: '/admin/academias',  label: 'Academias',       icon: Trophy,          exact: false },
-  { to: '/admin/calendario', label: 'Calendario',      icon: CalendarDays,    exact: false },
+  { to: '/admin/academias',      label: 'Academias',       icon: Trophy,      exact: false },
+  { to: '/admin/instalaciones',  label: 'Instalaciones',   icon: Building2,   exact: false },
+  { to: '/admin/calendario',     label: 'Calendario',      icon: CalendarDays, exact: false },
 ]
 
 export default function AdminLayout() {

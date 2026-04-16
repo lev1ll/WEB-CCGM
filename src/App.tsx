@@ -17,6 +17,7 @@ import AdminGaleria from '@/pages/Admin/Galeria'
 import AdminDocumentos from '@/pages/Admin/Documentos'
 import AdminHero from '@/pages/Admin/Hero'
 import AdminAcademias from '@/pages/Admin/Academias'
+import AdminInstalaciones from '@/pages/Admin/Instalaciones'
 import RecursosPage from '@/pages/Recursos'
 import CalendarioPage from '@/pages/Calendario'
 import AdminCalendario from '@/pages/Admin/Calendario'
@@ -55,6 +56,7 @@ export default function App() {
             <Route path="admin/documentos" element={<AdminDocumentos />} />
             <Route path="admin/hero" element={<AdminHero />} />
             <Route path="admin/academias" element={<AdminAcademias />} />
+            <Route path="admin/instalaciones" element={<AdminInstalaciones />} />
             <Route path="admin/calendario" element={<AdminCalendario />} />
           </Route>
 

@@ -1,15 +1,31 @@
+import { useEffect, useState } from 'react'
 import { Monitor, Dumbbell, TreePine, UtensilsCrossed, School } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { SectionWrapper } from '@/components/shared/SectionWrapper'
 import { SectionTitle } from '@/components/shared/SectionTitle'
 import { AnimatedSection } from '@/components/shared/AnimatedSection'
 import { INSTALACIONES } from '@/constants/instalaciones'
+import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
 
 const ICON_MAP = { Monitor, Dumbbell, TreePine, UtensilsCrossed, School } as const
 type IconName = keyof typeof ICON_MAP
 
 export function Instalaciones() {
+  const [fotosDB, setFotosDB] = useState<Record<string, string>>({})
+
+  useEffect(() => {
+    if (!supabase) return
+    supabase
+      .from('instalacion_fotos')
+      .select('instalacion,src')
+      .then(({ data }) => {
+        const map: Record<string, string> = {}
+        ;(data ?? []).forEach((d: { instalacion: string; src: string }) => { map[d.instalacion] = d.src })
+        setFotosDB(map)
+      })
+  }, [])
+
   return (
     <SectionWrapper variant="secondary">
       <SectionTitle
@@ -20,7 +36,9 @@ export function Instalaciones() {
       <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {INSTALACIONES.map((item, i) => {
           const Icon = ICON_MAP[item.icon as IconName]
-          const isWide = i === 0 // primera foto más grande
+          const isWide = i === 0
+          // Foto de Supabase si existe, si no la local predeterminada
+          const imageSrc = fotosDB[item.id] ?? item.image
 
           return (
             <AnimatedSection
@@ -37,11 +55,10 @@ export function Instalaciones() {
                 {/* Imagen */}
                 <div className="relative h-52 overflow-hidden bg-muted">
                   <img
-                    src={item.image}
+                    src={imageSrc}
                     alt={item.name}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     onError={(e) => {
-                      // Placeholder mientras no hay foto real
                       e.currentTarget.style.display = 'none'
                       e.currentTarget.nextElementSibling?.classList.remove('hidden')
                     }}
