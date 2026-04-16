@@ -6,26 +6,12 @@ import CropModal from '@/components/shared/CropModal'
 
 const MAX_SLIDES = 5
 
-// 9 posiciones (3×3) — fila: vertical, col: horizontal
-const POSITIONS = [
-  { v: 'top',    h: 'left',   value: 'top left'      },
-  { v: 'top',    h: 'center', value: 'top center'    },
-  { v: 'top',    h: 'right',  value: 'top right'     },
-  { v: 'center', h: 'left',   value: 'center left'   },
-  { v: 'center', h: 'center', value: 'center'        },
-  { v: 'center', h: 'right',  value: 'center right'  },
-  { v: 'bottom', h: 'left',   value: 'bottom left'   },
-  { v: 'bottom', h: 'center', value: 'bottom center' },
-  { v: 'bottom', h: 'right',  value: 'bottom right'  },
-]
-
 interface HeroSlide {
   id: string
   src: string
   alt: string
   orden: number
   activo: boolean
-  object_position: string
   created_at: string
 }
 
@@ -77,7 +63,6 @@ export default function AdminHero() {
       return
     }
     setActionError(null)
-    // Abrir CropModal para reencuadrar antes de agregar a pending
     const url = URL.createObjectURL(file)
     setCropSrc(url)
   }
@@ -114,7 +99,6 @@ export default function AdminHero() {
         alt: item.alt || 'Imagen del carrusel',
         orden: nextOrden,
         activo: true,
-        object_position: 'center',
       })
       setPending(prev => prev.filter(p => p.tempId !== tempId))
       URL.revokeObjectURL(item.previewUrl)
@@ -162,12 +146,6 @@ export default function AdminHero() {
     await update('hero_slides', slide.id, { alt: alts[slide.id] ?? slide.alt })
     setSavingAlt(null)
     await load()
-  }
-
-  async function savePosition(slide: HeroSlide, position: string) {
-    // Optimistic update
-    setSlides(prev => prev.map(s => s.id === slide.id ? { ...s, object_position: position } : s))
-    await update('hero_slides', slide.id, { object_position: position })
   }
 
   return (
@@ -254,106 +232,78 @@ export default function AdminHero() {
         </div>
       ) : (
         <div className="space-y-3">
-          {slides.map((slide, idx) => {
-            const currentPos = slide.object_position ?? 'center'
-            return (
-              <div
-                key={slide.id}
-                className={`flex gap-3 items-start bg-white rounded-xl border p-3 transition-opacity ${!slide.activo ? 'opacity-50' : 'border-gray-200'}`}
-              >
-                {/* Preview con posición aplicada */}
-                <div className="relative w-28 h-20 rounded-lg overflow-hidden shrink-0 border border-gray-100">
-                  <img
-                    src={slide.src}
-                    alt={slide.alt}
-                    className="w-full h-full object-cover"
-                    style={{ objectPosition: currentPos }}
-                  />
-                </div>
-
-                {/* Alt + posición */}
-                <div className="flex-1 min-w-0 space-y-2">
-                  <input
-                    type="text"
-                    value={alts[slide.id] ?? slide.alt}
-                    onChange={e => setAlts(prev => ({ ...prev, [slide.id]: e.target.value }))}
-                    onBlur={() => saveAlt(slide)}
-                    placeholder="Descripción"
-                    className="w-full text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary/30"
-                  />
-                  {savingAlt === slide.id && <p className="text-xs text-primary">Guardando...</p>}
-
-                  {/* Selector de posición 3×3 */}
-                  <div>
-                    <p className="text-[10px] text-gray-400 mb-1 font-medium uppercase tracking-wide">Foco de imagen</p>
-                    <div className="grid grid-cols-3 gap-0.5 w-fit">
-                      {POSITIONS.map(pos => {
-                        const active = currentPos === pos.value
-                        return (
-                          <button
-                            key={pos.value}
-                            onClick={() => savePosition(slide, pos.value)}
-                            title={pos.value}
-                            className={`w-6 h-6 rounded transition-all ${
-                              active
-                                ? 'bg-primary shadow-sm'
-                                : 'bg-gray-100 hover:bg-gray-200'
-                            }`}
-                          >
-                            <span className={`block w-2 h-2 rounded-full mx-auto ${active ? 'bg-white' : 'bg-gray-400'}`} />
-                          </button>
-                        )
-                      })}
-                    </div>
-                    <p className="text-[10px] text-gray-400 mt-1">
-                      Posición {idx + 1} de {slides.length} · foco: <span className="font-medium text-gray-500">{currentPos}</span>
-                    </p>
-                  </div>
-                </div>
-
-                {/* Mover arriba/abajo */}
-                <div className="flex flex-col gap-1 shrink-0">
-                  <button
-                    onClick={() => moveSlide(slide, 'up')}
-                    disabled={idx === 0}
-                    className="p-1.5 rounded hover:bg-gray-100 disabled:opacity-30 transition-colors"
-                    title="Subir"
-                  >
-                    <ChevronUp className="w-4 h-4 text-gray-500" />
-                  </button>
-                  <button
-                    onClick={() => moveSlide(slide, 'down')}
-                    disabled={idx === slides.length - 1}
-                    className="p-1.5 rounded hover:bg-gray-100 disabled:opacity-30 transition-colors"
-                    title="Bajar"
-                  >
-                    <ChevronDown className="w-4 h-4 text-gray-500" />
-                  </button>
-                </div>
-
-                {/* Ojo + eliminar */}
-                <div className="flex flex-col gap-1 shrink-0">
-                  <button
-                    onClick={() => toggleActivo(slide)}
-                    className="p-1.5 rounded hover:bg-gray-100 transition-colors"
-                    title={slide.activo ? 'Ocultar' : 'Mostrar'}
-                  >
-                    {slide.activo
-                      ? <Eye className="w-4 h-4 text-green-500" />
-                      : <EyeOff className="w-4 h-4 text-gray-400" />
-                    }
-                  </button>
-                  <button
-                    onClick={() => setConfirmDelete(slide)}
-                    className="p-1.5 rounded hover:bg-red-50 transition-colors"
-                    title="Eliminar"
-                  >
-                    <Trash2 className="w-4 h-4 text-red-400" />
-                  </button>
-                </div>
+          {slides.map((slide, idx) => (
+            <div
+              key={slide.id}
+              className={`flex gap-3 items-center bg-white rounded-xl border p-3 transition-opacity ${!slide.activo ? 'opacity-50' : 'border-gray-200'}`}
+            >
+              {/* Preview */}
+              <div className="relative w-28 h-16 rounded-lg overflow-hidden shrink-0 border border-gray-100">
+                <img
+                  src={slide.src}
+                  alt={slide.alt}
+                  className="w-full h-full object-cover"
+                />
               </div>
-            )
-          })}
+
+              {/* Alt text */}
+              <div className="flex-1 min-w-0 space-y-1.5">
+                <input
+                  type="text"
+                  value={alts[slide.id] ?? slide.alt}
+                  onChange={e => setAlts(prev => ({ ...prev, [slide.id]: e.target.value }))}
+                  onBlur={() => saveAlt(slide)}
+                  placeholder="Descripción"
+                  className="w-full text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                />
+                <p className="text-xs text-gray-400">
+                  Posición {idx + 1} de {slides.length}
+                  {savingAlt === slide.id && <span className="text-primary ml-2">Guardando...</span>}
+                </p>
+              </div>
+
+              {/* Mover arriba/abajo */}
+              <div className="flex flex-col gap-1 shrink-0">
+                <button
+                  onClick={() => moveSlide(slide, 'up')}
+                  disabled={idx === 0}
+                  className="p-1.5 rounded hover:bg-gray-100 disabled:opacity-30 transition-colors"
+                  title="Subir"
+                >
+                  <ChevronUp className="w-4 h-4 text-gray-500" />
+                </button>
+                <button
+                  onClick={() => moveSlide(slide, 'down')}
+                  disabled={idx === slides.length - 1}
+                  className="p-1.5 rounded hover:bg-gray-100 disabled:opacity-30 transition-colors"
+                  title="Bajar"
+                >
+                  <ChevronDown className="w-4 h-4 text-gray-500" />
+                </button>
+              </div>
+
+              {/* Ojo + eliminar */}
+              <div className="flex flex-col gap-1 shrink-0">
+                <button
+                  onClick={() => toggleActivo(slide)}
+                  className="p-1.5 rounded hover:bg-gray-100 transition-colors"
+                  title={slide.activo ? 'Ocultar' : 'Mostrar'}
+                >
+                  {slide.activo
+                    ? <Eye className="w-4 h-4 text-green-500" />
+                    : <EyeOff className="w-4 h-4 text-gray-400" />
+                  }
+                </button>
+                <button
+                  onClick={() => setConfirmDelete(slide)}
+                  className="p-1.5 rounded hover:bg-red-50 transition-colors"
+                  title="Eliminar"
+                >
+                  <Trash2 className="w-4 h-4 text-red-400" />
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

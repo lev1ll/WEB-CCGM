@@ -27,10 +27,10 @@ type BeneficioIconName = keyof typeof BENEFICIO_ICON_MAP
 // ── Datos ──────────────────────────────────────────────────────────────
 // Fallback usado mientras carga o si la tabla hero_slides está vacía
 const FOTOS_FALLBACK = [
-  { src: '/images/hero-escuela.jpg.jpg',                                                              alt: 'Escuela Gabriela Mistral', object_position: 'center' },
-  { src: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=1400&auto=format&fit=crop', alt: 'Alumnos en clases',         object_position: 'center' },
-  { src: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1400&auto=format&fit=crop', alt: 'Lectura y aprendizaje',     object_position: 'center' },
-  { src: 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=1400&auto=format&fit=crop',    alt: 'Vida deportiva',            object_position: 'center' },
+  { src: '/images/hero-escuela.jpg.jpg',                                                              alt: 'Escuela Gabriela Mistral' },
+  { src: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=1400&auto=format&fit=crop', alt: 'Alumnos en clases'         },
+  { src: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1400&auto=format&fit=crop', alt: 'Lectura y aprendizaje'     },
+  { src: 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=1400&auto=format&fit=crop',    alt: 'Vida deportiva'            },
 ]
 
 const STATS = [
@@ -70,11 +70,11 @@ function Hero() {
     if (!supabase) return
     supabase
       .from('hero_slides')
-      .select('src,alt,orden,object_position')
+      .select('src,alt,orden')
       .eq('activo', true)
       .order('orden', { ascending: true })
       .then(({ data }) => {
-        if (data && data.length > 0) setFotos(data.map(d => ({ src: d.src, alt: d.alt, object_position: d.object_position ?? 'center' })))
+        if (data && data.length > 0) setFotos(data.map(d => ({ src: d.src, alt: d.alt })))
       })
   }, [])
 
@@ -100,7 +100,6 @@ function Hero() {
           src={fotos[current].src}
           alt={fotos[current].alt}
           className="absolute inset-0 h-full w-full object-cover"
-          style={{ objectPosition: fotos[current].object_position ?? 'center' }}
           initial={{ opacity: 0, scale: 1.04 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0 }}
