@@ -78,8 +78,9 @@ function Hero() {
       })
   }, [])
 
-  const next = useCallback(() => setCurrent(c => (c + 1) % fotos.length), [fotos.length])
-  const prev = useCallback(() => setCurrent(c => (c - 1 + fotos.length) % fotos.length), [fotos.length])
+  const len  = fotos?.length ?? 1
+  const next = useCallback(() => setCurrent(c => (c + 1) % len), [len])
+  const prev = useCallback(() => setCurrent(c => (c - 1 + len) % len), [len])
 
   useEffect(() => {
     if (paused) return
