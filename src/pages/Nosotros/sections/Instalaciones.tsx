@@ -70,16 +70,13 @@ export function Instalaciones() {
                 </div>
 
                 {/* Contenido */}
-                <div className="p-5">
-                  <div className="flex items-center gap-3 mb-2">
+                <div className="p-4">
+                  <div className="flex items-center gap-3">
                     <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                       <Icon className="h-4 w-4 text-primary" />
                     </div>
                     <h3 className="font-bold text-foreground">{item.name}</h3>
                   </div>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {item.description}
-                  </p>
                 </div>
               </motion.div>
             </AnimatedSection>
