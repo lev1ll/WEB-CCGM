@@ -64,17 +64,17 @@ const CICLOS = [
 function Hero() {
   const [current, setCurrent] = useState(0)
   const [paused,  setPaused]  = useState(false)
-  const [fotos, setFotos] = useState(FOTOS_FALLBACK)
+  const [fotos, setFotos] = useState<{ src: string; alt: string }[] | null>(null)
 
   useEffect(() => {
-    if (!supabase) return
+    if (!supabase) { setFotos(FOTOS_FALLBACK); return }
     supabase
       .from('hero_slides')
       .select('src,alt,orden')
       .eq('activo', true)
       .order('orden', { ascending: true })
       .then(({ data }) => {
-        if (data && data.length > 0) setFotos(data.map(d => ({ src: d.src, alt: d.alt })))
+        setFotos(data && data.length > 0 ? data.map(d => ({ src: d.src, alt: d.alt })) : FOTOS_FALLBACK)
       })
   }, [])
 
@@ -86,6 +86,10 @@ function Hero() {
     const t = setInterval(next, 5000)
     return () => clearInterval(t)
   }, [paused, next])
+
+  if (!fotos) return (
+    <section className="relative h-[calc(100svh-124px)] min-h-[520px] overflow-hidden bg-[#0F0D0C]" />
+  )
 
   return (
     <section
