@@ -55,6 +55,7 @@ export function Instalaciones() {
                 {/* Imagen */}
                 <div className="relative h-52 overflow-hidden bg-muted">
                   <img
+                    key={imageSrc}
                     src={imageSrc}
                     alt={item.name}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"

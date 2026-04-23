@@ -24,7 +24,8 @@ export default function AdminInstalaciones() {
   async function load() {
     if (!supabase) return
     setLoading(true)
-    const { data } = await supabase.from('instalacion_fotos').select('instalacion,src')
+    const { data, error: dbError } = await supabase.from('instalacion_fotos').select('instalacion,src')
+    if (dbError) setError(`Error al cargar fotos: ${dbError.message}`)
     const map: Record<string, string> = {}
     ;(data ?? []).forEach((d: { instalacion: string; src: string }) => { map[d.instalacion] = d.src })
     setFotos(map)
@@ -52,12 +53,14 @@ export default function AdminInstalaciones() {
     setError(null)
     try {
       const url = await uploadToCloudinary(croppedFile)
-      await supabase!
+      const { error: dbError } = await supabase!
         .from('instalacion_fotos')
         .upsert({ instalacion: id, src: url, updated_at: new Date().toISOString() }, { onConflict: 'instalacion' })
+      if (dbError) throw dbError
       await load()
-    } catch {
-      setError('Error al subir la foto.')
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : (err as { message?: string })?.message ?? 'Error desconocido'
+      setError(`Error al guardar la foto: ${msg}`)
     } finally {
       setUploading(null)
       setCropUploading(false)

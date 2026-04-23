@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 import Cropper from 'react-easy-crop'
 import type { Area } from 'react-easy-crop'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Loader2, ZoomIn, ZoomOut } from 'lucide-react'
 
 interface Props {
@@ -71,7 +71,7 @@ export default function CropModal({ imageSrc, onConfirm, onCancel, uploading, as
           <DialogTitle>Ajustar foto</DialogTitle>
         </DialogHeader>
 
-        <p className="text-xs text-gray-500 -mt-1">Arrastra para reencuadrar · usa el zoom para acercar</p>
+        <DialogDescription className="text-xs -mt-1">Arrastra para reencuadrar · usa el zoom para acercar</DialogDescription>
 
         {/* Crop area */}
         <div className={`relative w-full bg-gray-900 rounded-xl overflow-hidden`} style={{ height: `${cropAreaHeight * 4}px` }}>
