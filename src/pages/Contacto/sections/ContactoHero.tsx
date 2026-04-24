@@ -1,4 +1,5 @@
 import { MapPin, Phone, Mail, Clock, Users } from 'lucide-react'
+import { useState } from 'react'
 import { SectionWrapper } from '@/components/shared/SectionWrapper'
 import { AnimatedSection } from '@/components/shared/AnimatedSection'
 import { SCHOOL } from '@/constants/school'
@@ -33,13 +34,15 @@ const HORARIOS_PROF = [
 ]
 
 export function ContactoHero() {
+  const [mapActive, setMapActive] = useState(false)
+
   return (
     <SectionWrapper>
       <div className="grid lg:grid-cols-[3fr_2fr] gap-8 items-start">
 
         {/* ── Google Maps ── */}
         <AnimatedSection direction="left" delay={0.05}>
-          <div className="rounded-2xl overflow-hidden border border-border shadow-md w-full" style={{ height: 540 }}>
+          <div className="relative rounded-2xl overflow-hidden border border-border shadow-md w-full" style={{ height: 540 }}>
             <iframe
               title="Ubicación Escuela Gabriela Mistral"
               src="https://maps.google.com/maps?q=Escuela+Gabriela+Mistral+General+Urrutia+763+Nueva+Imperial+Chile&t=&z=16&ie=UTF8&iwloc=&output=embed"
@@ -50,6 +53,19 @@ export function ContactoHero() {
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
             />
+            {/* Overlay de activación */}
+            {!mapActive && (
+              <div
+                className="absolute inset-0 bg-black/10 flex items-center justify-center cursor-pointer group"
+                onClick={() => setMapActive(true)}
+              >
+                <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-5 py-3 flex items-center gap-2 shadow-lg
+                                group-hover:bg-white transition-colors">
+                  <MapPin className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-semibold text-gray-800">Haz clic para interactuar con el mapa</span>
+                </div>
+              </div>
+            )}
           </div>
         </AnimatedSection>
 
