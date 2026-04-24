@@ -565,8 +565,6 @@ function ZonaEditor({ zona, onBack }: { zona: Zona; onBack: () => void }) {
 
 // ── Tab Fotos de buses ────────────────────────────────────────────
 
-type FotoBus = { slot: 1 | 2; src: string; alt: string }
-
 const SLOTS: { slot: 1 | 2; label: string }[] = [
   { slot: 1, label: 'Bus foto 1' },
   { slot: 2, label: 'Bus foto 2' },
