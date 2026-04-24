@@ -105,7 +105,9 @@ export function MapaTransporte() {
               zoom={11}
               style={{ height: '100%', width: '100%' }}
               zoomControl
-              scrollWheelZoom={false}
+              scrollWheelZoom
+              zoomSnap={0.5}
+              zoomDelta={0.5}
             >
               <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
