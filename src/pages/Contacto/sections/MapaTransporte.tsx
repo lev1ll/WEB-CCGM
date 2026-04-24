@@ -1,11 +1,12 @@
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 import { MapContainer, TileLayer, Polyline, Circle, Marker, Popup, useMap } from 'react-leaflet'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { SectionWrapper } from '@/components/shared/SectionWrapper'
 import { SectionTitle } from '@/components/shared/SectionTitle'
 import { AnimatedSection } from '@/components/shared/AnimatedSection'
-import { Bus, MapPin } from 'lucide-react'
+import { Bus, MapPin, ChevronLeft, ChevronRight } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
 
 // Fix Leaflet default icon (Vite strips assets)
 delete (L.Icon.Default.prototype as any)._getIconUrl
@@ -15,67 +16,22 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 })
 
-// Coordenadas clave
+// ── Tipos ─────────────────────────────────────────────────────────
+type Chip = { icon: 'Bus' | 'MapPin'; text: string }
+type RutaBus = { id: string; nombre: string; color: string; puntos: [number, number][] }
+type ZonaCobertura = { id: string; nombre: string; descripcion: string; latitud: number; longitud: number; radio_metros: number }
+type FotoBus = { slot: number; src: string; alt: string }
+
+// ── Fallbacks hardcodeados (por si la DB está vacía) ──────────────
 const ESCUELA: [number, number] = [-38.7428, -72.9521]
 const CENTRO_IMPERIAL: [number, number] = [-38.7398, -72.9492]
-const LILY: [number, number] = [-38.7661195, -72.7751037]
 
-// Ruta real S-40 obtenida desde OSRM (OpenStreetMap routing)
-const RUTA: [number, number][] = [
-  [-38.742785, -72.952101],
-  [-38.742679, -72.948843],
-  [-38.748392, -72.948508],
-  [-38.748499, -72.946100],
-  [-38.749190, -72.945037],
-  [-38.749438, -72.943101],
-  [-38.749706, -72.940544],
-  [-38.750415, -72.938910],
-  [-38.751047, -72.937067],
-  [-38.752464, -72.932658],
-  [-38.754107, -72.927441],
-  [-38.755122, -72.924250],
-  [-38.756008, -72.922389],
-  [-38.757740, -72.918911],
-  [-38.757949, -72.917947],
-  [-38.757569, -72.912077],
-  [-38.757494, -72.909616],
-  [-38.758133, -72.907321],
-  [-38.759569, -72.902583],
-  [-38.761062, -72.897616],
-  [-38.762879, -72.891601],
-  [-38.764229, -72.887140],
-  [-38.765895, -72.881633],
-  [-38.767054, -72.877861],
-  [-38.767818, -72.874625],
-  [-38.769612, -72.869277],
-  [-38.769821, -72.866598],
-  [-38.769414, -72.863937],
-  [-38.768794, -72.860517],
-  [-38.767801, -72.854906],
-  [-38.767089, -72.850880],
-  [-38.766878, -72.847395],
-  [-38.765908, -72.842111],
-  [-38.765182, -72.839805],
-  [-38.764769, -72.837702],
-  [-38.764182, -72.833840],
-  [-38.764237, -72.831737],
-  [-38.764708, -72.829091],
-  [-38.765696, -72.825112],
-  [-38.766957, -72.818195],
-  [-38.768067, -72.815547],
-  [-38.768385, -72.812566],
-  [-38.768480, -72.810312],
-  [-38.768070, -72.807436],
-  [-38.767233, -72.801758],
-  [-38.766401, -72.796333],
-  [-38.765883, -72.792881],
-  [-38.765773, -72.791574],
-  [-38.766073, -72.786663],
-  [-38.766504, -72.780338],
-  LILY,
+const FALLBACK_CHIPS: Chip[] = [
+  { icon: 'Bus', text: 'Toda Nueva Imperial' },
+  { icon: 'MapPin', text: 'Hasta Supermercado Lily, Labranza' },
 ]
 
-// Icono personalizado para escuela
+// ── Icono escuela ─────────────────────────────────────────────────
 const iconEscuela = L.divIcon({
   className: '',
   html: `<div style="
@@ -88,85 +44,111 @@ const iconEscuela = L.divIcon({
   iconAnchor: [18, 18],
 })
 
-
-function FitBounds() {
+function FitBounds({ puntos }: { puntos: [number, number][] }) {
   const map = useMap()
   useEffect(() => {
-    map.fitBounds(L.latLngBounds(RUTA), { padding: [40, 40] })
-  }, [map])
+    if (puntos.length > 1) map.fitBounds(L.latLngBounds(puntos), { padding: [40, 40] })
+  }, [map, puntos])
   return null
 }
 
-const LEYENDA = [
-  { color: '#2563eb', label: 'Ruta del bus (ida y vuelta)' },
-  { color: '#3b82f680', label: 'Zonas de cobertura' },
-]
+const ICON_COMPONENTS = { Bus, MapPin }
 
 export function MapaTransporte() {
+  const [titulo, setTitulo] = useState('Servicio de movilización escolar')
+  const [subtitulo, setSubtitulo] = useState('Cubrimos toda Nueva Imperial y llegamos hasta la primera zona de Labranza')
+  const [chips, setChips] = useState<Chip[]>(FALLBACK_CHIPS)
+  const [rutas, setRutas] = useState<RutaBus[]>([])
+  const [zonas, setZonas] = useState<ZonaCobertura[]>([])
+  const [fotos, setFotos] = useState<FotoBus[]>([])
+  const [loaded, setLoaded] = useState(false)
+
+  useEffect(() => {
+    if (!supabase) { setLoaded(true); return }
+    Promise.all([
+      supabase.from('config_movilizacion').select('titulo,subtitulo,chips').eq('id', 1).single(),
+      supabase.from('rutas_bus').select('id,nombre,color,puntos').eq('activo', true).order('orden'),
+      supabase.from('zonas_cobertura').select('id,nombre,descripcion,latitud,longitud,radio_metros').eq('activo', true).order('orden'),
+      supabase.from('movilizacion_fotos').select('slot,src,alt').order('slot'),
+    ]).then(([cfg, ruts, zon, fots]) => {
+      if (cfg.data) {
+        setTitulo(cfg.data.titulo)
+        setSubtitulo(cfg.data.subtitulo)
+        if (Array.isArray(cfg.data.chips) && cfg.data.chips.length > 0) setChips(cfg.data.chips)
+      }
+      if (ruts.data && ruts.data.length > 0) setRutas(ruts.data as RutaBus[])
+      if (zon.data && zon.data.length > 0) setZonas(zon.data as ZonaCobertura[])
+      if (fots.data && fots.data.length > 0) setFotos(fots.data as FotoBus[])
+      setLoaded(true)
+    })
+  }, [])
+
+  // Todos los puntos de todas las rutas (para FitBounds)
+  const todosPuntos = rutas.flatMap(r => r.puntos)
+  const mapCenter: [number, number] = todosPuntos.length > 0 ? todosPuntos[Math.floor(todosPuntos.length / 2)] : CENTRO_IMPERIAL
+
+  const LEYENDA = [
+    { color: '#2563eb', label: 'Ruta del bus (ida y vuelta)' },
+    { color: '#3b82f680', label: 'Zonas de cobertura' },
+  ]
+
   return (
     <SectionWrapper variant="secondary">
-      <SectionTitle
-        title="Servicio de movilización escolar"
-        subtitle="Cubrimos toda Nueva Imperial y llegamos hasta la primera zona de Labranza"
-      />
+      <SectionTitle title={titulo} subtitle={subtitulo} />
 
       <AnimatedSection direction="up" delay={0.1} className="mt-10 space-y-4">
         {/* Mapa */}
         <div className="rounded-2xl overflow-hidden border border-border shadow-md" style={{ height: 480 }}>
-          <MapContainer
-            center={CENTRO_IMPERIAL}
-            zoom={11}
-            style={{ height: '100%', width: '100%' }}
-            zoomControl
-            scrollWheelZoom={false}
-          >
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            />
-            <FitBounds />
-
-            {/* Cobertura Imperial */}
-            <Circle
-              center={CENTRO_IMPERIAL}
-              radius={2200}
-              pathOptions={{ color: '#2563eb', fillColor: '#3b82f6', fillOpacity: 0.12, weight: 1.5, dashArray: '6 4' }}
-            />
-
-            {/* Ruta principal */}
-            <Polyline
-              positions={RUTA}
-              pathOptions={{ color: '#2563eb', weight: 5, opacity: 0.85, lineCap: 'round', lineJoin: 'round' }}
-            />
-            {/* Sombra/halo para efecto activo */}
-            <Polyline
-              positions={RUTA}
-              pathOptions={{ color: '#93c5fd', weight: 10, opacity: 0.3, lineCap: 'round' }}
-            />
-
-            {/* Marker escuela */}
-            <Marker position={ESCUELA} icon={iconEscuela}>
-              <Popup>
-                <strong>Escuela Gabriela Mistral</strong><br />
-                General Urrutia 763, Nueva Imperial
-              </Popup>
-            </Marker>
-
-            {/* Cobertura Labranza — zona Supermercado Lily */}
-            <Circle
-              center={LILY}
-              radius={800}
-              pathOptions={{ color: '#2563eb', fillColor: '#3b82f6', fillOpacity: 0.12, weight: 1.5, dashArray: '6 4' }}
+          {loaded && (
+            <MapContainer
+              center={mapCenter}
+              zoom={11}
+              style={{ height: '100%', width: '100%' }}
+              zoomControl
+              scrollWheelZoom={false}
             >
-              <Popup>
-                <strong>Zona Labranza</strong><br />
-                Hasta Supermercado Lily
-              </Popup>
-            </Circle>
-          </MapContainer>
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+              />
+              {todosPuntos.length > 1 && <FitBounds puntos={todosPuntos} />}
+
+              {/* Rutas */}
+              {rutas.flatMap(r =>
+                r.puntos.length > 1 ? [
+                  <Polyline key={`${r.id}-main`} positions={r.puntos} pathOptions={{ color: r.color, weight: 5, opacity: 0.85, lineCap: 'round', lineJoin: 'round' }} />,
+                  <Polyline key={`${r.id}-halo`} positions={r.puntos} pathOptions={{ color: '#93c5fd', weight: 10, opacity: 0.3, lineCap: 'round' }} />,
+                ] : []
+              )}
+
+              {/* Zonas de cobertura */}
+              {zonas.map(z => (
+                <Circle
+                  key={z.id}
+                  center={[z.latitud, z.longitud]}
+                  radius={z.radio_metros}
+                  pathOptions={{ color: '#2563eb', fillColor: '#3b82f6', fillOpacity: 0.12, weight: 1.5, dashArray: '6 4' }}
+                >
+                  {z.descripcion && (
+                    <Popup>
+                      <strong>{z.nombre}</strong><br />{z.descripcion}
+                    </Popup>
+                  )}
+                </Circle>
+              ))}
+
+              {/* Marker escuela */}
+              <Marker position={ESCUELA} icon={iconEscuela}>
+                <Popup>
+                  <strong>Escuela Gabriela Mistral</strong><br />
+                  General Urrutia 763, Nueva Imperial
+                </Popup>
+              </Marker>
+            </MapContainer>
+          )}
         </div>
 
-        {/* Leyenda + info */}
+        {/* Leyenda + chips */}
         <div className="flex flex-wrap gap-4 items-start justify-between">
           <div className="flex flex-wrap gap-4">
             {LEYENDA.map((item) => (
@@ -177,12 +159,69 @@ export function MapaTransporte() {
             ))}
           </div>
           <div className="flex flex-wrap gap-3">
-            <Chip icon={<Bus className="h-3.5 w-3.5" />} text="Toda Nueva Imperial" />
-            <Chip icon={<MapPin className="h-3.5 w-3.5" />} text="Hasta Supermercado Lily, Labranza" />
+            {chips.map((chip, i) => {
+              const Icon = ICON_COMPONENTS[chip.icon]
+              return <Chip key={i} icon={<Icon className="h-3.5 w-3.5" />} text={chip.text} />
+            })}
           </div>
         </div>
+
+        {/* Carrusel de fotos de buses */}
+        {fotos.length > 0 && <BusCarousel fotos={fotos} />}
       </AnimatedSection>
     </SectionWrapper>
+  )
+}
+
+function BusCarousel({ fotos }: { fotos: FotoBus[] }) {
+  const [current, setCurrent] = useState(0)
+
+  useEffect(() => {
+    if (fotos.length < 2) return
+    const id = setInterval(() => setCurrent(c => (c + 1) % fotos.length), 4000)
+    return () => clearInterval(id)
+  }, [fotos.length])
+
+  const prev = () => setCurrent(c => (c - 1 + fotos.length) % fotos.length)
+  const next = () => setCurrent(c => (c + 1) % fotos.length)
+
+  return (
+    <div className="relative rounded-2xl overflow-hidden border border-border shadow-md bg-black" style={{ height: 300 }}>
+      {fotos.map((f, i) => (
+        <img
+          key={f.slot}
+          src={f.src}
+          alt={f.alt}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${i === current ? 'opacity-100' : 'opacity-0'}`}
+        />
+      ))}
+
+      {fotos.length > 1 && (
+        <>
+          <button
+            onClick={prev}
+            className="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center transition-colors"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <button
+            onClick={next}
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center transition-colors"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex gap-2">
+            {fotos.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrent(i)}
+                className={`w-2 h-2 rounded-full transition-all ${i === current ? 'bg-white scale-125' : 'bg-white/50'}`}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
   )
 }
 

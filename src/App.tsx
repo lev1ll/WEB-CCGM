@@ -21,6 +21,7 @@ import AdminInstalaciones from '@/pages/Admin/Instalaciones'
 import RecursosPage from '@/pages/Recursos'
 import CalendarioPage from '@/pages/Calendario'
 import AdminCalendario from '@/pages/Admin/Calendario'
+import AdminMovilizacion from '@/pages/Admin/Movilizacion'
 import { ErrorBoundary } from '@/components/shared/ErrorBoundary'
 import { HomeNueva } from '@/pages/HomeNueva'
 import { NotFoundPage } from '@/pages/NotFound'
@@ -58,6 +59,7 @@ export default function App() {
             <Route path="admin/academias" element={<AdminAcademias />} />
             <Route path="admin/instalaciones" element={<AdminInstalaciones />} />
             <Route path="admin/calendario" element={<AdminCalendario />} />
+            <Route path="admin/movilizacion" element={<AdminMovilizacion />} />
           </Route>
 
           {/* ── 404 — sin layout, pantalla completa propia ── */}

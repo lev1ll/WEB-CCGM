@@ -1,12 +1,10 @@
-import { MapaInteractivo } from './sections/MapaInteractivo'
-import { DatosContacto } from './sections/DatosContacto'
+import { ContactoHero } from './sections/ContactoHero'
 import { MapaTransporte } from './sections/MapaTransporte'
 
 export function ContactoPage() {
   return (
     <>
-      <DatosContacto />
-      <MapaInteractivo />
+      <ContactoHero />
       <MapaTransporte />
     </>
   )

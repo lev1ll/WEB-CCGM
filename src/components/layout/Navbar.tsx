@@ -83,17 +83,12 @@ export function Navbar() {
               <span className="text-[9px] text-white/80 leading-none">{SCHOOL.email}</span>
             </a>
             <a
-              href={`https://wa.me/${SCHOOL.whatsapp}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl
+              href="#"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl
                          bg-[#25D366] hover:bg-[#25D366]/85 text-white transition-colors"
             >
-              <div className="flex items-center gap-1.5">
-                <MessageCircle className="w-4 h-4 shrink-0" />
-                <span className="font-bold text-xs">WhatsApp</span>
-              </div>
-              <span className="text-[9px] text-white/80 leading-none">{SCHOOL.whatsappDisplay}</span>
+              <MessageCircle className="w-4 h-4 shrink-0" />
+              <span className="font-bold text-xs">WhatsApp</span>
             </a>
           </div>
 
@@ -143,9 +138,7 @@ export function Navbar() {
                   <span className="text-[11px] font-bold text-white">Correo</span>
                 </a>
                 <a
-                  href={`https://wa.me/${SCHOOL.whatsapp}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="#"
                   className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl
                              bg-[#25D366] hover:bg-[#25D366]/85 transition-colors"
                 >
