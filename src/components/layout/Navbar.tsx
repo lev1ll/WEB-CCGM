@@ -33,13 +33,13 @@ export function Navbar() {
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-20 items-center justify-between">
           {/* Logo */}
-          <NavLink to="/" className="flex items-center gap-3">
+          <NavLink to="/" className="flex items-center gap-3 min-w-0">
             <LogoCCGM showText={false} className="h-14 w-14 shrink-0" />
-            <div className="leading-tight">
-              <p className="text-[11px] font-bold tracking-[0.18em] text-muted-foreground uppercase">
+            <div className="leading-tight min-w-0 overflow-hidden">
+              <p className="text-[11px] font-bold tracking-[0.18em] text-muted-foreground uppercase whitespace-nowrap">
                 Colegio Cristiano
               </p>
-              <p className="font-bold text-lg text-foreground" style={{ fontFamily: "'Dancing Script', cursive" }}>
+              <p className="font-bold text-lg text-foreground whitespace-nowrap" style={{ fontFamily: "'Dancing Script', cursive" }}>
                 Gabriela Mistral
               </p>
             </div>
@@ -97,7 +97,7 @@ export function Navbar() {
             type="button"
             aria-label={isOpen ? 'Cerrar menú' : 'Abrir menú'}
             aria-expanded={isOpen}
-            className="md:hidden p-2 rounded-md text-muted-foreground hover:text-foreground"
+            className="md:hidden p-2 rounded-md text-muted-foreground hover:text-foreground shrink-0"
             onClick={() => setIsOpen((prev) => !prev)}
           >
             {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}

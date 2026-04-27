@@ -76,7 +76,7 @@ export function Extraescolares() {
               className={cn('relative flex flex-col sm:flex-row min-h-[320px]', style.bg)}
             >
               {/* Lado izquierdo — foto real o placeholder de color */}
-              <div className="relative sm:w-2/5 flex items-center justify-center py-14 px-8 overflow-hidden">
+              <div className="relative sm:w-2/5 flex items-center justify-center py-8 px-4 sm:py-14 sm:px-8 overflow-hidden">
                 {academiaFotos[academia.name] ? (
                   <img
                     src={academiaFotos[academia.name]}
@@ -106,7 +106,7 @@ export function Extraescolares() {
               </div>
 
               {/* Lado derecho — info */}
-              <div className="sm:w-3/5 bg-black/30 backdrop-blur-sm flex flex-col justify-center px-8 py-10">
+              <div className="sm:w-3/5 bg-black/30 backdrop-blur-sm flex flex-col justify-center px-5 py-8 sm:px-8 sm:py-10">
                 <p className={cn('text-xs font-bold tracking-widest uppercase mb-2 opacity-70', style.text)}>
                   Academia
                 </p>
@@ -147,7 +147,7 @@ export function Extraescolares() {
         </div>
 
         {/* Dots + miniaturas */}
-        <div className="flex items-center justify-center gap-3 mt-6">
+        <div className="flex flex-wrap items-center justify-center gap-2 mt-6">
           {EXTRAESCOLARES.map((ex, i) => {
             const DotIcon = ICON_MAP[ex.icon as IconName] ?? Trophy
             const s = ACADEMIA_STYLE[ex.name] ?? { bg: 'bg-gray-600', text: '' }
