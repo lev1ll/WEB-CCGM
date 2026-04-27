@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react'
 import { SectionWrapper } from '@/components/shared/SectionWrapper'
 import { SectionTitle } from '@/components/shared/SectionTitle'
 import { AnimatedSection } from '@/components/shared/AnimatedSection'
-import { Bus, MapPin } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 
 // Fix Leaflet default icon (Vite strips assets)
@@ -17,19 +16,13 @@ L.Icon.Default.mergeOptions({
 })
 
 // ── Tipos ─────────────────────────────────────────────────────────
-type Chip = { icon: 'Bus' | 'MapPin'; text: string }
 type RutaBus = { id: string; nombre: string; color: string; puntos: [number, number][] }
 type ZonaCobertura = { id: string; nombre: string; descripcion: string; latitud: number; longitud: number; radio_metros: number }
 type FotoBus = { slot: number; src: string; alt: string }
 
-// ── Fallbacks hardcodeados (por si la DB está vacía) ──────────────
+// ── Fallbacks ─────────────────────────────────────────────────────
 const ESCUELA: [number, number] = [-38.7428, -72.9521]
 const CENTRO_IMPERIAL: [number, number] = [-38.7398, -72.9492]
-
-const FALLBACK_CHIPS: Chip[] = [
-  { icon: 'Bus', text: 'Toda Nueva Imperial' },
-  { icon: 'MapPin', text: 'Hasta Supermercado Lily, Labranza' },
-]
 
 // ── Icono escuela ─────────────────────────────────────────────────
 const iconEscuela = L.divIcon({
@@ -52,12 +45,9 @@ function FitBounds({ puntos }: { puntos: [number, number][] }) {
   return null
 }
 
-const ICON_COMPONENTS = { Bus, MapPin }
-
 export function MapaTransporte() {
   const [titulo, setTitulo] = useState('Servicio de movilización escolar')
   const [subtitulo, setSubtitulo] = useState('Cubrimos toda Nueva Imperial y llegamos hasta la primera zona de Labranza')
-  const [chips, setChips] = useState<Chip[]>(FALLBACK_CHIPS)
   const [rutas, setRutas] = useState<RutaBus[]>([])
   const [zonas, setZonas] = useState<ZonaCobertura[]>([])
   const [fotos, setFotos] = useState<FotoBus[]>([])
@@ -66,7 +56,7 @@ export function MapaTransporte() {
   useEffect(() => {
     if (!supabase) { setLoaded(true); return }
     Promise.all([
-      supabase.from('config_movilizacion').select('titulo,subtitulo,chips').eq('id', 1).single(),
+      supabase.from('config_movilizacion').select('titulo,subtitulo').eq('id', 1).single(),
       supabase.from('rutas_bus').select('id,nombre,color,puntos').eq('activo', true).order('orden'),
       supabase.from('zonas_cobertura').select('id,nombre,descripcion,latitud,longitud,radio_metros').eq('activo', true).order('orden'),
       supabase.from('movilizacion_fotos').select('slot,src,alt').order('slot'),
@@ -74,7 +64,6 @@ export function MapaTransporte() {
       if (cfg.data) {
         setTitulo(cfg.data.titulo)
         setSubtitulo(cfg.data.subtitulo)
-        if (Array.isArray(cfg.data.chips) && cfg.data.chips.length > 0) setChips(cfg.data.chips)
       }
       if (ruts.data && ruts.data.length > 0) setRutas(ruts.data as RutaBus[])
       if (zon.data && zon.data.length > 0) setZonas(zon.data as ZonaCobertura[])
@@ -83,14 +72,10 @@ export function MapaTransporte() {
     })
   }, [])
 
-  // Todos los puntos de todas las rutas (para FitBounds)
   const todosPuntos = rutas.flatMap(r => r.puntos)
-  const mapCenter: [number, number] = todosPuntos.length > 0 ? todosPuntos[Math.floor(todosPuntos.length / 2)] : CENTRO_IMPERIAL
-
-  const LEYENDA = [
-    { color: '#2563eb', label: 'Ruta del bus (ida y vuelta)' },
-    { color: '#3b82f680', label: 'Zonas de cobertura' },
-  ]
+  const mapCenter: [number, number] = todosPuntos.length > 0
+    ? todosPuntos[Math.floor(todosPuntos.length / 2)]
+    : CENTRO_IMPERIAL
 
   return (
     <SectionWrapper variant="secondary">
@@ -115,7 +100,6 @@ export function MapaTransporte() {
               />
               {todosPuntos.length > 1 && <FitBounds puntos={todosPuntos} />}
 
-              {/* Rutas */}
               {rutas.flatMap(r =>
                 r.puntos.length > 1 ? [
                   <Polyline key={`${r.id}-main`} positions={r.puntos} pathOptions={{ color: r.color, weight: 5, opacity: 0.85, lineCap: 'round', lineJoin: 'round' }} />,
@@ -123,7 +107,6 @@ export function MapaTransporte() {
                 ] : []
               )}
 
-              {/* Zonas de cobertura */}
               {zonas.map(z => (
                 <Circle
                   key={z.id}
@@ -139,7 +122,6 @@ export function MapaTransporte() {
                 </Circle>
               ))}
 
-              {/* Marker escuela */}
               <Marker position={ESCUELA} icon={iconEscuela}>
                 <Popup>
                   <strong>Escuela Gabriela Mistral</strong><br />
@@ -148,24 +130,6 @@ export function MapaTransporte() {
               </Marker>
             </MapContainer>
           )}
-        </div>
-
-        {/* Leyenda + chips */}
-        <div className="flex flex-wrap gap-4 items-start justify-between">
-          <div className="flex flex-wrap gap-4">
-            {LEYENDA.map((item) => (
-              <div key={item.label} className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span className="inline-block w-5 h-2 rounded-full" style={{ background: item.color }} />
-                {item.label}
-              </div>
-            ))}
-          </div>
-          <div className="flex flex-wrap gap-3">
-            {chips.map((chip, i) => {
-              const Icon = ICON_COMPONENTS[chip.icon]
-              return <Chip key={i} icon={<Icon className="h-3.5 w-3.5" />} text={chip.text} />
-            })}
-          </div>
         </div>
 
         {/* Fotos de buses */}
@@ -186,14 +150,5 @@ function BusFotos({ fotos }: { fotos: FotoBus[] }) {
         ))}
       </div>
     </div>
-  )
-}
-
-function Chip({ icon, text }: { icon: React.ReactNode; text: string }) {
-  return (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-      {icon}
-      {text}
-    </span>
   )
 }
