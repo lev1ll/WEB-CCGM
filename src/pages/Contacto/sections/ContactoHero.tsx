@@ -42,7 +42,7 @@ export function ContactoHero() {
 
         {/* ── Google Maps ── */}
         <AnimatedSection direction="left" delay={0.05}>
-          <div className="relative rounded-2xl overflow-hidden border border-border shadow-md w-full" style={{ height: 540 }}>
+          <div className="relative rounded-2xl overflow-hidden border border-border shadow-md w-full h-72 sm:h-[400px] lg:h-[540px]">
             <iframe
               title="Ubicación Escuela Gabriela Mistral"
               src="https://maps.google.com/maps?q=Escuela+Gabriela+Mistral+General+Urrutia+763+Nueva+Imperial+Chile&t=&z=16&ie=UTF8&iwloc=&output=embed"
@@ -97,7 +97,7 @@ export function ContactoHero() {
           </div>
 
           {/* Horarios */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="p-4 rounded-xl border border-border bg-card space-y-2">
               <div className="flex items-center gap-2 mb-1">
                 <Clock className="w-4 h-4 text-primary" />

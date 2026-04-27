@@ -120,7 +120,7 @@ export default function RecursosPage() {
       {/* Lightbox */}
       {lightbox !== null && currentItem && (
         <div
-          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
+          className="fixed inset-0 z-[1200] bg-black/95 flex items-center justify-center"
           onClick={() => setLightbox(null)}
         >
           <button

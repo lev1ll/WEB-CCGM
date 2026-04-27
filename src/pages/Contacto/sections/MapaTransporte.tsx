@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { SectionWrapper } from '@/components/shared/SectionWrapper'
 import { SectionTitle } from '@/components/shared/SectionTitle'
 import { AnimatedSection } from '@/components/shared/AnimatedSection'
-import { Bus, MapPin, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Bus, MapPin } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 
 // Fix Leaflet default icon (Vite strips assets)
@@ -98,7 +98,7 @@ export function MapaTransporte() {
 
       <AnimatedSection direction="up" delay={0.1} className="mt-10 space-y-4">
         {/* Mapa */}
-        <div className="rounded-2xl overflow-hidden border border-border shadow-md" style={{ height: 480 }}>
+        <div className="rounded-2xl overflow-hidden border border-border shadow-md h-72 sm:h-[480px]">
           {loaded && (
             <MapContainer
               center={mapCenter}
@@ -168,61 +168,23 @@ export function MapaTransporte() {
           </div>
         </div>
 
-        {/* Carrusel de fotos de buses */}
-        {fotos.length > 0 && <BusCarousel fotos={fotos} />}
+        {/* Fotos de buses */}
+        {fotos.length > 0 && <BusFotos fotos={fotos} />}
       </AnimatedSection>
     </SectionWrapper>
   )
 }
 
-function BusCarousel({ fotos }: { fotos: FotoBus[] }) {
-  const [current, setCurrent] = useState(0)
-
-  useEffect(() => {
-    if (fotos.length < 2) return
-    const id = setInterval(() => setCurrent(c => (c + 1) % fotos.length), 4000)
-    return () => clearInterval(id)
-  }, [fotos.length])
-
-  const prev = () => setCurrent(c => (c - 1 + fotos.length) % fotos.length)
-  const next = () => setCurrent(c => (c + 1) % fotos.length)
-
+function BusFotos({ fotos }: { fotos: FotoBus[] }) {
   return (
-    <div className="relative rounded-2xl overflow-hidden border border-border shadow-md bg-black" style={{ height: 300 }}>
-      {fotos.map((f, i) => (
-        <img
-          key={f.slot}
-          src={f.src}
-          alt={f.alt}
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${i === current ? 'opacity-100' : 'opacity-0'}`}
-        />
-      ))}
-
-      {fotos.length > 1 && (
-        <>
-          <button
-            onClick={prev}
-            className="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center transition-colors"
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <button
-            onClick={next}
-            className="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center transition-colors"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex gap-2">
-            {fotos.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setCurrent(i)}
-                className={`w-2 h-2 rounded-full transition-all ${i === current ? 'bg-white scale-125' : 'bg-white/50'}`}
-              />
-            ))}
+    <div className={`mx-auto w-full ${fotos.length === 1 ? 'max-w-md' : 'max-w-2xl'}`}>
+      <div className={fotos.length > 1 ? 'grid grid-cols-1 sm:grid-cols-2 gap-4' : ''}>
+        {fotos.map(f => (
+          <div key={f.slot} className="aspect-video rounded-2xl overflow-hidden border border-border shadow-md">
+            <img src={f.src} alt={f.alt} className="w-full h-full object-cover" />
           </div>
-        </>
-      )}
+        ))}
+      </div>
     </div>
   )
 }

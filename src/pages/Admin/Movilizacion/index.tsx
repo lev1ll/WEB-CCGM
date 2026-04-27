@@ -712,7 +712,7 @@ function TabFotos() {
       )}
 
       {confirmDelete !== null && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+        <div className="fixed inset-0 z-[1200] flex items-center justify-center bg-black/40 px-4">
           <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full space-y-4">
             <h3 className="font-semibold text-gray-900">¿Quitar esta foto?</h3>
             <p className="text-sm text-gray-500">La foto desaparecerá del carrusel en la página pública.</p>

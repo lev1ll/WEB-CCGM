@@ -183,7 +183,7 @@ export default function AdminInstalaciones() {
 
       {/* Confirm delete */}
       {confirmDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+        <div className="fixed inset-0 z-[1200] flex items-center justify-center bg-black/40 px-4">
           <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full space-y-4">
             <h3 className="font-semibold text-gray-900">¿Quitar foto personalizada?</h3>
             <p className="text-sm text-gray-500">
