@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Loader2, Upload, Trash2, Trophy, Dumbbell, Music, Calculator, Recycle, Globe } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { uploadToCloudinary } from '@/lib/utils'
+import CropModal from '@/components/shared/CropModal'
 
 const ACADEMIAS = [
   { nombre: 'Fútbol',        icon: Trophy,      color: 'bg-emerald-600' },
@@ -12,13 +13,14 @@ const ACADEMIAS = [
   { nombre: 'Inglés',        icon: Globe,       color: 'bg-blue-600'    },
 ]
 
-
 export default function AdminAcademias() {
   const [fotos, setFotos] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState<string | null>(null)
+  const [cropSrc, setCropSrc] = useState<string | null>(null)
+  const [cropAcademia, setCropAcademia] = useState<string | null>(null)
+  const [cropUploading, setCropUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const fileRefs = useRef<Record<string, HTMLInputElement | null>>({})
 
   useEffect(() => { load() }, [])
 
@@ -32,14 +34,21 @@ export default function AdminAcademias() {
     setLoading(false)
   }
 
-  async function handleUpload(nombre: string, e: React.ChangeEvent<HTMLInputElement>) {
+  function handleFileSelect(nombre: string, e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
     e.target.value = ''
-    setUploading(nombre)
-    setError(null)
+    setCropAcademia(nombre)
+    setCropSrc(URL.createObjectURL(file))
+  }
+
+  async function handleCropConfirm(croppedFile: File) {
+    if (!cropAcademia) return
+    const nombre = cropAcademia
+    if (cropSrc) URL.revokeObjectURL(cropSrc)
+    setCropSrc(null); setCropAcademia(null); setCropUploading(true); setUploading(nombre); setError(null)
     try {
-      const url = await uploadToCloudinary(file)
+      const url = await uploadToCloudinary(croppedFile)
       await supabase!
         .from('academia_fotos')
         .upsert({ academia: nombre, src: url, alt: nombre, updated_at: new Date().toISOString() }, { onConflict: 'academia' })
@@ -47,8 +56,13 @@ export default function AdminAcademias() {
     } catch {
       setError(`Error al subir foto de ${nombre}.`)
     } finally {
-      setUploading(null)
+      setUploading(null); setCropUploading(false)
     }
+  }
+
+  function handleCropCancel() {
+    if (cropSrc) URL.revokeObjectURL(cropSrc)
+    setCropSrc(null); setCropAcademia(null)
   }
 
   async function handleDelete(nombre: string) {
@@ -84,6 +98,7 @@ export default function AdminAcademias() {
           {ACADEMIAS.map(({ nombre, icon: Icon, color }) => {
             const foto = fotos[nombre]
             const isUploading = uploading === nombre
+            const fileId = `foto-academia-${nombre}`
             return (
               <div key={nombre} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
                 {/* Preview */}
@@ -98,7 +113,6 @@ export default function AdminAcademias() {
                       <Loader2 className="w-6 h-6 animate-spin text-white" />
                     </div>
                   )}
-                  {/* Overlay nombre */}
                   <div className="absolute bottom-0 left-0 right-0 bg-black/40 px-3 py-1.5">
                     <p className="text-white text-sm font-bold">{nombre}</p>
                   </div>
@@ -106,14 +120,20 @@ export default function AdminAcademias() {
 
                 {/* Actions */}
                 <div className="p-3 flex gap-2">
-                  <button
-                    onClick={() => fileRefs.current[nombre]?.click()}
-                    disabled={isUploading}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary/90 disabled:opacity-60 transition-colors"
+                  <label
+                    htmlFor={fileId}
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition-colors cursor-pointer ${isUploading ? 'opacity-60 pointer-events-none' : ''}`}
                   >
                     <Upload className="w-3.5 h-3.5" />
                     {foto ? 'Cambiar foto' : 'Subir foto'}
-                  </button>
+                  </label>
+                  <input
+                    id={fileId}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={e => handleFileSelect(nombre, e)}
+                  />
                   {foto && (
                     <button
                       onClick={() => handleDelete(nombre)}
@@ -124,18 +144,23 @@ export default function AdminAcademias() {
                       <Trash2 className="w-4 h-4" />
                     </button>
                   )}
-                  <input
-                    ref={el => { fileRefs.current[nombre] = el }}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={e => handleUpload(nombre, e)}
-                  />
                 </div>
               </div>
             )
           })}
         </div>
+      )}
+
+      {cropSrc && (
+        <CropModal
+          imageSrc={cropSrc}
+          aspect={4 / 3}
+          cropShape="rect"
+          outputSize={1200}
+          uploading={cropUploading}
+          onConfirm={handleCropConfirm}
+          onCancel={handleCropCancel}
+        />
       )}
     </div>
   )
