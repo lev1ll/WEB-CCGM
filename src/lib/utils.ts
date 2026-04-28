@@ -62,6 +62,8 @@ export async function uploadToCloudinary(file: File): Promise<string> {
   if (!cloudName || !uploadPreset) {
     throw new Error('Cloudinary no configurado (faltan VITE_CLOUDINARY_CLOUD_NAME o VITE_CLOUDINARY_UPLOAD_PRESET)')
   }
+  if (!file.type.startsWith('image/')) throw new Error('Solo se permiten imágenes.')
+  if (file.size > 8 * 1024 * 1024) throw new Error('La imagen no puede superar 8 MB.')
   const formData = new FormData()
   formData.append('file', file)
   formData.append('upload_preset', uploadPreset)
