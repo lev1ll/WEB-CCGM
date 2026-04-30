@@ -98,7 +98,7 @@ export const ADMISSION_FAQ = [
   {
     question: '¿Aceptan alumnos con necesidades educativas especiales (NEE)?',
     answer:
-      'Sí. Contamos con un equipo PIE (Programa de Integración Escolar) compuesto por educadoras diferenciales, psicólogo y fonoaudiólogo. La escuela acepta postulantes con NEE independientemente de la disponibilidad de cupos PIE; sin embargo, si los cupos PIE están completos al momento de la matrícula, no podemos garantizar la asignación de apoyo diferenciado de forma inmediata. En ese caso, el alumno queda en lista de espera para el próximo cupo disponible. Para más información consulta directamente con la Coordinadora PIE.',
+      'Sí. Contamos con un equipo PIE (Programa de Integración Escolar) compuesto por educadoras diferenciales, psicólogo y fonoaudiólogo. Para mayor información consulte directamente con la escuela.',
   },
   {
     question: '¿Cuál es el enfoque valórico de la escuela?',
