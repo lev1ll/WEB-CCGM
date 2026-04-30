@@ -113,6 +113,6 @@ export const ADMISSION_FAQ = [
   {
     question: '¿Puedo inscribir a mi hijo en cualquier momento del año?',
     answer:
-      'Sí. Aceptamos alumnos durante todo el año según disponibilidad de cupos en cada nivel. No es necesario esperar un período específico de admisión. Contáctanos al +56 9 9643 2865 o visítanos en General Urrutia N° 763, Nueva Imperial.',
+      'Sí. Aceptamos alumnos durante todo el año según disponibilidad de cupos en cada nivel. No es necesario esperar un período específico de admisión. Contáctanos al +56 45 261 2597 o visítanos en General Urrutia N° 763, Nueva Imperial.',
   },
 ] as const
