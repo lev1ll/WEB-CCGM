@@ -47,7 +47,7 @@ function FitBounds({ puntos }: { puntos: [number, number][] }) {
 
 export function MapaTransporte() {
   const [titulo, setTitulo] = useState('Servicio de movilización escolar')
-  const [subtitulo, setSubtitulo] = useState('Cubrimos toda Nueva Imperial y llegamos hasta la primera zona de Labranza')
+  const [subtitulo, setSubtitulo] = useState('Nos desplazamos dentro de las zonas de cobertura delimitadas')
   const [rutas, setRutas] = useState<RutaBus[]>([])
   const [zonas, setZonas] = useState<ZonaCobertura[]>([])
   const [fotos, setFotos] = useState<FotoBus[]>([])
