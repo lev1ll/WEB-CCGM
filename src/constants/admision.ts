@@ -26,21 +26,17 @@ export const ADMISSION_REQUIREMENTS = [
   {
     category: 'Documentos personales',
     items: [
-      'Certificado de nacimiento del alumno (original)',
-      'Cédula de identidad del alumno (copia)',
-      'Carnet de vacunas al día',
-      'Cédulas de identidad de ambos apoderados o tutor legal',
-      'Certificado de residencia (boleta de servicio básico)',
+      'Cédula de identidad del estudiante o certificado de nacimiento (obligatorio)',
+      'Cédula de identidad del apoderado (obligatorio)',
     ],
   },
   {
     category: 'Documentos académicos',
     items: [
-      'Informe de notas del año anterior (original timbrado por el establecimiento de origen)',
-      'Certificado de conducta del establecimiento anterior',
-      'Informe de personalidad del establecimiento anterior',
+      'Certificado de estudios',
+      'Informe de notas (solo cuando se solicita la incorporación en el transcurso del año)',
       'Informe PIE o de atención diferenciada si el alumno tiene NEE (si aplica)',
-      'Carta de retiro del establecimiento de origen',
+      'Documento de traslado',
     ],
   },
 ] as const
