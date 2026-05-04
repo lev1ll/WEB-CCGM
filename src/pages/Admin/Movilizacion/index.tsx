@@ -571,7 +571,9 @@ const SLOTS: { slot: 1 | 2; label: string }[] = [
 ]
 
 function TabFotos() {
-  const [fotos, setFotos] = useState<Record<number, string>>({})
+  const [fotos, setFotos] = useState<Record<number, { src: string; alt: string }>>({})
+  const [alts, setAlts] = useState<Record<number, string>>({})
+  const [savingAlt, setSavingAlt] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState<number | null>(null)
   const [cropSrc, setCropSrc] = useState<string | null>(null)
@@ -585,10 +587,15 @@ function TabFotos() {
   async function loadFotos() {
     if (!supabase) return
     setLoading(true)
-    const { data } = await supabase.from('movilizacion_fotos').select('slot,src')
-    const map: Record<number, string> = {}
-    ;(data ?? []).forEach((d: { slot: number; src: string }) => { map[d.slot] = d.src })
+    const { data } = await supabase.from('movilizacion_fotos').select('slot,src,alt')
+    const map: Record<number, { src: string; alt: string }> = {}
+    const altMap: Record<number, string> = {}
+    ;(data ?? []).forEach((d: { slot: number; src: string; alt: string }) => {
+      map[d.slot] = { src: d.src, alt: d.alt ?? '' }
+      altMap[d.slot] = d.alt ?? ''
+    })
     setFotos(map)
+    setAlts(altMap)
     setLoading(false)
   }
 
@@ -607,8 +614,9 @@ function TabFotos() {
     setCropSrc(null); setCropSlot(null); setCropUploading(true); setUploading(slot); setError(null)
     try {
       const url = await uploadToCloudinary(croppedFile)
+      const altText = alts[slot] || `Bus escolar foto ${slot}`
       const { error: e } = await supabase!.from('movilizacion_fotos')
-        .upsert({ slot, src: url, alt: `Bus escolar foto ${slot}` }, { onConflict: 'slot' })
+        .upsert({ slot, src: url, alt: altText }, { onConflict: 'slot' })
       if (e) throw e
       await loadFotos()
     } catch (err: unknown) {
@@ -624,11 +632,20 @@ function TabFotos() {
     setCropSrc(null); setCropSlot(null)
   }
 
+  async function handleSaveAlt(slot: number) {
+    if (!supabase || !fotos[slot]) return
+    setSavingAlt(slot)
+    await supabase.from('movilizacion_fotos').update({ alt: alts[slot] ?? '' }).eq('slot', slot)
+    setFotos(prev => ({ ...prev, [slot]: { ...prev[slot], alt: alts[slot] ?? '' } }))
+    setSavingAlt(null)
+  }
+
   async function handleDelete(slot: number) {
     if (!supabase) return
     setUploading(slot); setConfirmDelete(null)
     await supabase.from('movilizacion_fotos').delete().eq('slot', slot)
     setFotos(prev => { const n = { ...prev }; delete n[slot]; return n })
+    setAlts(prev => { const n = { ...prev }; delete n[slot]; return n })
     setUploading(null)
   }
 
@@ -636,7 +653,7 @@ function TabFotos() {
     <div className="space-y-5">
       <div className="bg-white rounded-xl border border-gray-200 p-5">
         <h2 className="font-semibold text-gray-800 mb-1">Fotos del servicio de bus</h2>
-        <p className="text-sm text-gray-500">Estas fotos aparecen en un carrusel debajo del mapa de recorridos. Sube hasta 2 fotos de los buses.</p>
+        <p className="text-sm text-gray-500">Estas fotos aparecen debajo del mapa de recorridos. Sube hasta 2 fotos y personaliza el nombre de cada una.</p>
       </div>
 
       {error && <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">{error}</div>}
@@ -646,9 +663,11 @@ function TabFotos() {
       ) : (
         <div className="grid sm:grid-cols-2 gap-4">
           {SLOTS.map(({ slot, label }) => {
-            const src = fotos[slot]
+            const foto = fotos[slot]
+            const src = foto?.src
             const isUploading = uploading === slot
             const fileId = `foto-bus-${slot}`
+            const altChanged = foto && (alts[slot] ?? '') !== foto.alt
             return (
               <div key={slot} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
                 <div className="relative h-52 bg-gray-100 flex items-center justify-center overflow-hidden">
@@ -674,6 +693,28 @@ function TabFotos() {
                     <p className="text-white text-sm font-bold">{label}</p>
                   </div>
                 </div>
+
+                {/* Nombre de la foto */}
+                <div className="px-3 pt-3 space-y-1.5">
+                  <label className="text-xs font-medium text-gray-500">Nombre / descripción</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Ej: Bus Ruta Norte"
+                      value={alts[slot] ?? ''}
+                      onChange={e => setAlts(prev => ({ ...prev, [slot]: e.target.value }))}
+                      className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    />
+                    <button
+                      onClick={() => handleSaveAlt(slot)}
+                      disabled={!src || !altChanged || savingAlt === slot}
+                      className="px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {savingAlt === slot ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Guardar'}
+                    </button>
+                  </div>
+                </div>
+
                 <div className="p-3 flex gap-2">
                   <label
                     htmlFor={fileId}
