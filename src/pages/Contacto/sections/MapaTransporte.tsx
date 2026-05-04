@@ -141,11 +141,23 @@ export function MapaTransporte() {
 
 function BusFotos({ fotos }: { fotos: FotoBus[] }) {
   return (
-    <div className={`mx-auto w-full ${fotos.length === 1 ? 'max-w-md' : 'max-w-2xl'}`}>
-      <div className={fotos.length > 1 ? 'grid grid-cols-1 sm:grid-cols-2 gap-4' : ''}>
+    <div className="w-full">
+      <div className="flex items-center gap-3 mb-4">
+        <span className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Nuestros buses</span>
+        <div className="flex-1 h-px bg-border" />
+      </div>
+      <div className={fotos.length === 1 ? 'max-w-md mx-auto' : 'grid grid-cols-1 sm:grid-cols-2 gap-4'}>
         {fotos.map(f => (
-          <div key={f.slot} className="aspect-video rounded-2xl overflow-hidden border border-border shadow-md">
-            <img src={f.src} alt={f.alt} className="w-full h-full object-cover" />
+          <div
+            key={f.slot}
+            className="group relative aspect-video rounded-2xl overflow-hidden border border-border shadow-md bg-muted transition-all duration-300 hover:shadow-xl hover:scale-[1.02]"
+          >
+            <img src={f.src} alt={f.alt} className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105" />
+            {f.alt && (
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-4 py-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                <p className="text-white text-sm font-medium truncate">{f.alt}</p>
+              </div>
+            )}
           </div>
         ))}
       </div>
