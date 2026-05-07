@@ -104,7 +104,7 @@ export default function CalendarioPage() {
         {/* Header compacto */}
         <div className="mb-6">
           <p className="text-[11px] font-bold tracking-[0.25em] text-primary uppercase mb-1">Año escolar</p>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground">Calendario Escolar 2026</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground">Calendario Escolar {year}</h1>
         </div>
 
         {/* Leyenda */}
