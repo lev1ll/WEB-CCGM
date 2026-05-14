@@ -193,32 +193,8 @@ function GaleriaTab({ fotos, onOpen }: { fotos: GaleriaItem[]; onOpen: (i: numbe
 
   return (
     <AnimatedSection direction="up">
-      <div className="columns-2 sm:columns-3 lg:columns-4 gap-3 space-y-3">
-        {fotos.map((foto, i) => (
-          <button
-            key={foto.id}
-            onClick={() => onOpen(i)}
-            className="break-inside-avoid w-full block rounded-xl overflow-hidden border border-border hover:opacity-90 transition-opacity relative group"
-          >
-            <img
-              src={foto.url}
-              alt={foto.caption ?? ''}
-              loading="lazy"
-              className="w-full h-auto object-cover"
-            />
-            {foto.tipo === 'video' && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors">
-                <div className="w-12 h-12 rounded-full bg-red-600/90 flex items-center justify-center shadow-lg">
-                  <Play className="w-6 h-6 text-white fill-white ml-0.5" />
-                </div>
-              </div>
-            )}
-          </button>
-        ))}
-      </div>
-
-      <div className="mt-12 text-center border-t border-border pt-10">
-        <p className="text-sm font-semibold text-muted-foreground mb-5">¿Quieres ver más fotos? Síguenos en nuestras redes</p>
+      <div className="mb-8 text-center">
+        <p className="text-sm font-semibold text-muted-foreground mb-4">¿Quieres ver más fotos? Síguenos en nuestras redes</p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           {SCHOOL.socialMedia.instagram && (
             <a
@@ -248,6 +224,31 @@ function GaleriaTab({ fotos, onOpen }: { fotos: GaleriaItem[]; onOpen: (i: numbe
           )}
         </div>
       </div>
+
+      <div className="columns-2 sm:columns-3 lg:columns-4 gap-3 space-y-3">
+        {fotos.map((foto, i) => (
+          <button
+            key={foto.id}
+            onClick={() => onOpen(i)}
+            className="break-inside-avoid w-full block rounded-xl overflow-hidden border border-border hover:opacity-90 transition-opacity relative group"
+          >
+            <img
+              src={foto.url}
+              alt={foto.caption ?? ''}
+              loading="lazy"
+              className="w-full h-auto object-cover"
+            />
+            {foto.tipo === 'video' && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/30 transition-colors">
+                <div className="w-12 h-12 rounded-full bg-red-600/90 flex items-center justify-center shadow-lg">
+                  <Play className="w-6 h-6 text-white fill-white ml-0.5" />
+                </div>
+              </div>
+            )}
+          </button>
+        ))}
+      </div>
+
     </AnimatedSection>
   )
 }
