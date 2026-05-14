@@ -5,10 +5,10 @@ import { supabase } from '@/lib/supabase'
 
 // Slot mapping: bus 1→slots 1-2, bus 2→slots 3-4, bus 3→slots 5-6, bus 4→slots 7-8
 const MICROS = [
-  { num: 1, nombre: 'Micro 1', slotExt: 1, slotInt: 2 },
-  { num: 2, nombre: 'Micro 2', slotExt: 3, slotInt: 4 },
-  { num: 3, nombre: 'Micro 3', slotExt: 5, slotInt: 6 },
-  { num: 4, nombre: 'Micro 4', slotExt: 7, slotInt: 8 },
+  { num: 1, nombre: 'Transporte 1', slotExt: 1, slotInt: 2 },
+  { num: 2, nombre: 'Transporte 2', slotExt: 3, slotInt: 4 },
+  { num: 3, nombre: 'Transporte 3', slotExt: 5, slotInt: 6 },
+  { num: 4, nombre: 'Transporte 4', slotExt: 7, slotInt: 8 },
 ]
 
 type FotoSlot = { src: string; alt: string }
@@ -121,7 +121,7 @@ export function SeccionMicros() {
             Transporte escolar
           </p>
           <h2 className="text-4xl sm:text-5xl font-extrabold text-white leading-tight">
-            Nuestras micros
+            Nuestro transporte
           </h2>
           <div className="mt-4 flex gap-2">
             <div className="h-1 w-10 rounded-full bg-secondary" />

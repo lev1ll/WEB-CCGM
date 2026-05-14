@@ -1,9 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Monitor, Dumbbell, TreePine, UtensilsCrossed, School } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { SectionWrapper } from '@/components/shared/SectionWrapper'
-import { SectionTitle } from '@/components/shared/SectionTitle'
-import { AnimatedSection } from '@/components/shared/AnimatedSection'
 import { INSTALACIONES } from '@/constants/instalaciones'
 import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
@@ -27,63 +24,84 @@ export function Instalaciones() {
   }, [])
 
   return (
-    <SectionWrapper variant="secondary">
-      <SectionTitle
-        title="Nuestras instalaciones"
-        subtitle="Espacios pensados para el bienestar y el aprendizaje de nuestros estudiantes"
-      />
+    <section className="bg-[#1C1814] py-20 md:py-28">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-      <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {INSTALACIONES.map((item, i) => {
-          const Icon = ICON_MAP[item.icon as IconName]
-          const isWide = i === 0
-          // Foto de Supabase si existe, si no la local predeterminada
-          const imageSrc = fotosDB[item.id] ?? item.image
+        {/* Header */}
+        <div className="mb-12">
+          <p className="text-[11px] font-bold tracking-[0.25em] text-primary uppercase mb-3">
+            Infraestructura
+          </p>
+          <h2 className="text-4xl sm:text-5xl font-extrabold text-white leading-tight">
+            Nuestras instalaciones
+          </h2>
+          <div className="mt-4 flex gap-2">
+            <div className="h-1 w-10 rounded-full bg-primary" />
+            <div className="h-1 w-4 rounded-full bg-white/20" />
+          </div>
+        </div>
 
-          return (
-            <AnimatedSection
-              key={item.id}
-              direction="up"
-              delay={i * 0.08}
-              className={cn(isWide && 'sm:col-span-2 lg:col-span-1')}
-            >
+        {/* Grid de fotos full-bleed */}
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+          {INSTALACIONES.map((item, i) => {
+            const Icon = ICON_MAP[item.icon as IconName]
+            const isFeatured = i === 0
+            const imageSrc = fotosDB[item.id] ?? item.image
+
+            return (
               <motion.div
-                className="group relative overflow-hidden rounded-2xl border border-border bg-card shadow-sm hover:shadow-lg transition-shadow h-full"
-                whileHover={{ y: -4 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                key={item.id}
+                className={cn(
+                  'group relative overflow-hidden rounded-2xl cursor-default',
+                  isFeatured ? 'col-span-2 lg:col-span-2 h-72 sm:h-80' : 'h-56 sm:h-64'
+                )}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08 }}
               >
-                {/* Imagen */}
-                <div className="relative h-52 overflow-hidden bg-muted">
-                  <img
-                    key={imageSrc}
-                    src={imageSrc}
-                    alt={item.name}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none'
-                      e.currentTarget.nextElementSibling?.classList.remove('hidden')
-                    }}
-                  />
-                  {/* Fallback sin foto */}
-                  <div className="hidden h-full w-full flex items-center justify-center bg-primary/5">
-                    <Icon className="h-16 w-16 text-primary/30" />
-                  </div>
+                {/* Imagen full-bleed */}
+                <img
+                  key={imageSrc}
+                  src={imageSrc}
+                  alt={item.name}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none'
+                    const sib = e.currentTarget.nextElementSibling as HTMLElement | null
+                    sib?.classList.remove('hidden')
+                  }}
+                />
+
+                {/* Fallback sin foto */}
+                <div className="hidden absolute inset-0 flex items-center justify-center bg-white/5">
+                  <Icon className="h-20 w-20 text-primary/20" />
                 </div>
 
-                {/* Contenido */}
-                <div className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                      <Icon className="h-4 w-4 text-primary" />
-                    </div>
-                    <h3 className="font-bold text-foreground">{item.name}</h3>
-                  </div>
+                {/* Gradiente inferior */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
+
+                {/* Ícono hover — esquina superior derecha */}
+                <div className="absolute top-4 right-4 w-9 h-9 rounded-xl bg-primary
+                                flex items-center justify-center
+                                opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-1 group-hover:translate-y-0">
+                  <Icon className="w-4 h-4 text-white" />
+                </div>
+
+                {/* Nombre overlay */}
+                <div className="absolute bottom-0 left-0 right-0 px-5 py-4">
+                  <h3 className={cn(
+                    'font-extrabold text-white leading-tight',
+                    isFeatured ? 'text-2xl sm:text-3xl' : 'text-base sm:text-lg'
+                  )}>
+                    {item.name}
+                  </h3>
                 </div>
               </motion.div>
-            </AnimatedSection>
-          )
-        })}
+            )
+          })}
+        </div>
       </div>
-    </SectionWrapper>
+    </section>
   )
 }

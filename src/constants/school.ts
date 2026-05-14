@@ -8,6 +8,7 @@ export const SCHOOL = {
   whatsapp: '+56988916827',
   whatsapp2: '+56996432865',
   whatsappDisplay: '+56 9 8891 6827',
+  whatsapp2Display: '+56 9 9643 2865',
   email: 'EscuelaGM@gmail.com',
   city: 'Nueva Imperial',
   region: 'Región de La Araucanía',

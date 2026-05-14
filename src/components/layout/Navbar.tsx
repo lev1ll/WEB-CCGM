@@ -93,7 +93,7 @@ export function Navbar() {
                 <MessageCircle className="w-4 h-4 shrink-0" />
                 <span className="font-bold text-xs">WhatsApp</span>
               </div>
-              <span className="text-[9px] text-white/80 leading-none">{SCHOOL.whatsappDisplay}</span>
+              <span className="text-[9px] text-white/80 leading-none">{SCHOOL.whatsapp2Display}</span>
             </a>
             <a
               href={`tel:${SCHOOL.phone.replace(/\s/g, '')}`}

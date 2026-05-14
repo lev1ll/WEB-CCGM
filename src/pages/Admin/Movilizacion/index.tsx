@@ -566,10 +566,10 @@ function ZonaEditor({ zona, onBack }: { zona: Zona; onBack: () => void }) {
 // ── Tab Fotos de buses ────────────────────────────────────────────
 
 const MICROS_SLOTS = [
-  { bus: 1, nombre: 'Micro 1', slots: [{ slot: 1, label: 'Exterior' }, { slot: 2, label: 'Interior' }] },
-  { bus: 2, nombre: 'Micro 2', slots: [{ slot: 3, label: 'Exterior' }, { slot: 4, label: 'Interior' }] },
-  { bus: 3, nombre: 'Micro 3', slots: [{ slot: 5, label: 'Exterior' }, { slot: 6, label: 'Interior' }] },
-  { bus: 4, nombre: 'Micro 4', slots: [{ slot: 7, label: 'Exterior' }, { slot: 8, label: 'Interior' }] },
+  { bus: 1, nombre: 'Transporte 1', slots: [{ slot: 1, label: 'Exterior' }, { slot: 2, label: 'Interior' }] },
+  { bus: 2, nombre: 'Transporte 2', slots: [{ slot: 3, label: 'Exterior' }, { slot: 4, label: 'Interior' }] },
+  { bus: 3, nombre: 'Transporte 3', slots: [{ slot: 5, label: 'Exterior' }, { slot: 6, label: 'Interior' }] },
+  { bus: 4, nombre: 'Transporte 4', slots: [{ slot: 7, label: 'Exterior' }, { slot: 8, label: 'Interior' }] },
 ]
 
 function TabFotos() {
