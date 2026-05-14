@@ -37,11 +37,23 @@ const iconEscuela = L.divIcon({
   iconAnchor: [18, 18],
 })
 
-function FitBounds({ puntos }: { puntos: [number, number][] }) {
+function FitAll({ puntos, zonas }: { puntos: [number, number][]; zonas: ZonaCobertura[] }) {
   const map = useMap()
   useEffect(() => {
-    if (puntos.length > 1) map.fitBounds(L.latLngBounds(puntos), { padding: [40, 40] })
-  }, [map, puntos])
+    const all: [number, number][] = [...puntos]
+    // Agrega los bordes de cada círculo de zona para que quepan en el viewport
+    zonas.forEach(z => {
+      const dLat = z.radio_metros / 111320
+      const dLng = z.radio_metros / (111320 * Math.cos(z.latitud * Math.PI / 180))
+      all.push(
+        [z.latitud + dLat, z.longitud + dLng],
+        [z.latitud - dLat, z.longitud - dLng],
+        [z.latitud + dLat, z.longitud - dLng],
+        [z.latitud - dLat, z.longitud + dLng],
+      )
+    })
+    if (all.length > 0) map.fitBounds(L.latLngBounds(all), { padding: [48, 48] })
+  }, [map, puntos, zonas])
   return null
 }
 
@@ -101,7 +113,7 @@ export function MapaTransporte() {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
               />
-              {todosPuntos.length > 1 && <FitBounds puntos={todosPuntos} />}
+              {(todosPuntos.length > 0 || zonas.length > 0) && <FitAll puntos={todosPuntos} zonas={zonas} />}
 
               {rutas.flatMap(r =>
                 r.puntos.length > 1 ? [
