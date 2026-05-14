@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { Menu, X, Mail, MessageCircle, ExternalLink } from 'lucide-react'
+import { Menu, X, Mail, Phone, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { NAV_LINKS } from '@/constants/navigation'
 import { SCHOOL } from '@/constants/school'
@@ -83,12 +83,15 @@ export function Navbar() {
               <span className="text-[9px] text-white/80 leading-none">{SCHOOL.email}</span>
             </a>
             <a
-              href="#"
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl
-                         bg-[#25D366] hover:bg-[#25D366]/85 text-white transition-colors"
+              href={`tel:${SCHOOL.phone.replace(/\s/g, '')}`}
+              className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl
+                         bg-primary hover:bg-primary/85 text-white transition-colors"
             >
-              <MessageCircle className="w-4 h-4 shrink-0" />
-              <span className="font-bold text-xs">WhatsApp</span>
+              <div className="flex items-center gap-1.5">
+                <Phone className="w-4 h-4 shrink-0" />
+                <span className="font-bold text-xs">Teléfono</span>
+              </div>
+              <span className="text-[9px] text-white/80 leading-none">{SCHOOL.phone}</span>
             </a>
           </div>
 
@@ -138,12 +141,12 @@ export function Navbar() {
                   <span className="text-[11px] font-bold text-white">Correo</span>
                 </a>
                 <a
-                  href="#"
+                  href={`tel:${SCHOOL.phone.replace(/\s/g, '')}`}
                   className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl
-                             bg-[#25D366] hover:bg-[#25D366]/85 transition-colors"
+                             bg-primary hover:bg-primary/85 transition-colors"
                 >
-                  <MessageCircle className="w-5 h-5 text-white" />
-                  <span className="text-[11px] font-bold text-white">WhatsApp</span>
+                  <Phone className="w-5 h-5 text-white" />
+                  <span className="text-[11px] font-bold text-white">Teléfono</span>
                 </a>
               </div>
 
