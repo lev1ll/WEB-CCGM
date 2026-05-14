@@ -3,12 +3,12 @@ import { Bus, ChevronLeft, ChevronRight } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { supabase } from '@/lib/supabase'
 
-// Slot mapping: bus 1→slots 1-2, bus 2→slots 3-4, bus 3→slots 5-6, bus 4→slots 7-8
+// Slots 11-18 — separados de los slots 1-2 que usa la página de contacto
 const MICROS = [
-  { num: 1, nombre: 'Transporte 1', slotExt: 1, slotInt: 2 },
-  { num: 2, nombre: 'Transporte 2', slotExt: 3, slotInt: 4 },
-  { num: 3, nombre: 'Transporte 3', slotExt: 5, slotInt: 6 },
-  { num: 4, nombre: 'Transporte 4', slotExt: 7, slotInt: 8 },
+  { num: 1, nombre: 'Transporte 1', slotExt: 11, slotInt: 12 },
+  { num: 2, nombre: 'Transporte 2', slotExt: 13, slotInt: 14 },
+  { num: 3, nombre: 'Transporte 3', slotExt: 15, slotInt: 16 },
+  { num: 4, nombre: 'Transporte 4', slotExt: 17, slotInt: 18 },
 ]
 
 type FotoSlot = { src: string; alt: string }
@@ -103,6 +103,8 @@ export function SeccionMicros() {
     supabase
       .from('movilizacion_fotos')
       .select('slot,src,alt')
+      .gte('slot', 11)
+      .lte('slot', 18)
       .then(({ data }) => {
         const map: Record<number, FotoSlot> = {}
         ;(data ?? []).forEach((d: { slot: number; src: string; alt: string }) => {

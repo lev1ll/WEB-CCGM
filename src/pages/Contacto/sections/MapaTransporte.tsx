@@ -67,7 +67,10 @@ export function MapaTransporte() {
       }
       if (ruts.data && ruts.data.length > 0) setRutas(ruts.data as RutaBus[])
       if (zon.data && zon.data.length > 0) setZonas(zon.data as ZonaCobertura[])
-      if (fots.data && fots.data.length > 0) setFotos(fots.data as FotoBus[])
+      if (fots.data) {
+        const contactFotos = (fots.data as FotoBus[]).filter(f => f.slot <= 2)
+        if (contactFotos.length > 0) setFotos(contactFotos)
+      }
       setLoaded(true)
     })
   }, [])
@@ -83,11 +86,11 @@ export function MapaTransporte() {
 
       <AnimatedSection direction="up" delay={0.1} className="mt-10 space-y-4">
         {/* Mapa */}
-        <div className="rounded-2xl overflow-hidden border border-border shadow-md h-72 sm:h-[480px]">
+        <div className="rounded-2xl overflow-hidden border border-border shadow-md h-80 sm:h-[500px]">
           {loaded && (
             <MapContainer
               center={mapCenter}
-              zoom={11}
+              zoom={13}
               style={{ height: '100%', width: '100%' }}
               zoomControl
               scrollWheelZoom

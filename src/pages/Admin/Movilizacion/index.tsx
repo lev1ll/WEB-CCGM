@@ -565,11 +565,18 @@ function ZonaEditor({ zona, onBack }: { zona: Zona; onBack: () => void }) {
 
 // ── Tab Fotos de buses ────────────────────────────────────────────
 
+// Slots 1-2: fotos generales que aparecen bajo el mapa en /contacto
+const CONTACT_SLOTS: { slot: 1 | 2; label: string }[] = [
+  { slot: 1, label: 'Foto bus 1' },
+  { slot: 2, label: 'Foto bus 2' },
+]
+
+// Slots 11-18: fotos exterior/interior de cada transporte en /nosotros
 const MICROS_SLOTS = [
-  { bus: 1, nombre: 'Transporte 1', slots: [{ slot: 1, label: 'Exterior' }, { slot: 2, label: 'Interior' }] },
-  { bus: 2, nombre: 'Transporte 2', slots: [{ slot: 3, label: 'Exterior' }, { slot: 4, label: 'Interior' }] },
-  { bus: 3, nombre: 'Transporte 3', slots: [{ slot: 5, label: 'Exterior' }, { slot: 6, label: 'Interior' }] },
-  { bus: 4, nombre: 'Transporte 4', slots: [{ slot: 7, label: 'Exterior' }, { slot: 8, label: 'Interior' }] },
+  { bus: 1, nombre: 'Transporte 1', slots: [{ slot: 11, label: 'Exterior' }, { slot: 12, label: 'Interior' }] },
+  { bus: 2, nombre: 'Transporte 2', slots: [{ slot: 13, label: 'Exterior' }, { slot: 14, label: 'Interior' }] },
+  { bus: 3, nombre: 'Transporte 3', slots: [{ slot: 15, label: 'Exterior' }, { slot: 16, label: 'Interior' }] },
+  { bus: 4, nombre: 'Transporte 4', slots: [{ slot: 17, label: 'Exterior' }, { slot: 18, label: 'Interior' }] },
 ]
 
 function TabFotos() {
@@ -653,9 +660,70 @@ function TabFotos() {
 
   return (
     <div className="space-y-6">
+      {/* ── Sección 1: Fotos bajo el mapa en /contacto ── */}
       <div className="bg-white rounded-xl border border-gray-200 p-5">
-        <h2 className="font-semibold text-gray-800 mb-1">Fotos de las micros</h2>
-        <p className="text-sm text-gray-500">Sube la foto exterior e interior de cada micro. Aparecen en la sección "Nuestras Micros" de la página web.</p>
+        <h2 className="font-semibold text-gray-800 mb-1">Fotos del mapa de transporte</h2>
+        <p className="text-sm text-gray-500">Aparecen debajo del mapa en la página de Contacto. Sube hasta 2 fotos generales del servicio de bus.</p>
+      </div>
+
+      {loading ? null : (
+        <div className="grid sm:grid-cols-2 gap-4">
+          {CONTACT_SLOTS.map(({ slot, label }) => {
+            const foto = fotos[slot]
+            const src = foto?.src
+            const isUploading = uploading === slot
+            const fileId = `foto-contacto-${slot}`
+            const altChanged = foto && (alts[slot] ?? '') !== foto.alt
+            return (
+              <div key={slot} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                <div className="relative h-44 bg-gray-100 flex items-center justify-center overflow-hidden">
+                  {src ? (
+                    <img src={src} alt={label} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="flex flex-col items-center gap-2 text-gray-300">
+                      <ImageIcon className="w-10 h-10" />
+                      <span className="text-xs">Sin foto</span>
+                    </div>
+                  )}
+                  {isUploading && (
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                      <Loader2 className="w-6 h-6 animate-spin text-white" />
+                    </div>
+                  )}
+                  {src && <span className="absolute top-2 right-2 bg-green-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide">Subida</span>}
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/40 px-3 py-1.5">
+                    <p className="text-white text-xs font-bold">{label}</p>
+                  </div>
+                </div>
+                <div className="px-3 pt-2.5 space-y-1.5">
+                  <label className="text-xs font-medium text-gray-500">Descripción</label>
+                  <div className="flex gap-2">
+                    <input type="text" placeholder="Ej: Bus Ruta Norte" value={alts[slot] ?? ''} onChange={e => setAlts(prev => ({ ...prev, [slot]: e.target.value }))}
+                      className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                    <button onClick={() => handleSaveAlt(slot)} disabled={!src || !altChanged || savingAlt === slot}
+                      className="px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary/90 disabled:opacity-40 transition-colors">
+                      {savingAlt === slot ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'OK'}
+                    </button>
+                  </div>
+                </div>
+                <div className="p-3 flex gap-2">
+                  <label htmlFor={fileId} className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition-colors cursor-pointer ${isUploading ? 'opacity-60 pointer-events-none' : ''}`}>
+                    <Upload className="w-3.5 h-3.5" />{src ? 'Cambiar' : 'Subir foto'}
+                  </label>
+                  <input id={fileId} type="file" accept="image/*" className="hidden" onChange={e => handleFileSelect(slot, e)} />
+                  {src && <button onClick={() => setConfirmDelete(slot)} disabled={isUploading} className="p-2 rounded-lg bg-red-50 text-red-400 hover:bg-red-100 disabled:opacity-60 transition-colors"><Trash2 className="w-4 h-4" /></button>}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      <div className="border-t border-gray-200 pt-6">
+        <div className="bg-white rounded-xl border border-gray-200 p-5">
+          <h2 className="font-semibold text-gray-800 mb-1">Fotos de transportes — sección Nosotros</h2>
+          <p className="text-sm text-gray-500">Sube la foto exterior e interior de cada transporte. Aparecen en el carrusel de la sección "Nuestro Transporte" en /nosotros.</p>
+        </div>
       </div>
 
       {error && <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">{error}</div>}
