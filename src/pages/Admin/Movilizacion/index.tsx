@@ -565,9 +565,11 @@ function ZonaEditor({ zona, onBack }: { zona: Zona; onBack: () => void }) {
 
 // ── Tab Fotos de buses ────────────────────────────────────────────
 
-const SLOTS: { slot: 1 | 2; label: string }[] = [
-  { slot: 1, label: 'Bus foto 1' },
-  { slot: 2, label: 'Bus foto 2' },
+const MICROS_SLOTS = [
+  { bus: 1, nombre: 'Micro 1', slots: [{ slot: 1, label: 'Exterior' }, { slot: 2, label: 'Interior' }] },
+  { bus: 2, nombre: 'Micro 2', slots: [{ slot: 3, label: 'Exterior' }, { slot: 4, label: 'Interior' }] },
+  { bus: 3, nombre: 'Micro 3', slots: [{ slot: 5, label: 'Exterior' }, { slot: 6, label: 'Interior' }] },
+  { bus: 4, nombre: 'Micro 4', slots: [{ slot: 7, label: 'Exterior' }, { slot: 8, label: 'Interior' }] },
 ]
 
 function TabFotos() {
@@ -614,7 +616,7 @@ function TabFotos() {
     setCropSrc(null); setCropSlot(null); setCropUploading(true); setUploading(slot); setError(null)
     try {
       const url = await uploadToCloudinary(croppedFile)
-      const altText = alts[slot] || `Bus escolar foto ${slot}`
+      const altText = alts[slot] || `Micro foto ${slot}`
       const { error: e } = await supabase!.from('movilizacion_fotos')
         .upsert({ slot, src: url, alt: altText }, { onConflict: 'slot' })
       if (e) throw e
@@ -650,10 +652,10 @@ function TabFotos() {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div className="bg-white rounded-xl border border-gray-200 p-5">
-        <h2 className="font-semibold text-gray-800 mb-1">Fotos del servicio de bus</h2>
-        <p className="text-sm text-gray-500">Estas fotos aparecen debajo del mapa de recorridos. Sube hasta 2 fotos y personaliza el nombre de cada una.</p>
+        <h2 className="font-semibold text-gray-800 mb-1">Fotos de las micros</h2>
+        <p className="text-sm text-gray-500">Sube la foto exterior e interior de cada micro. Aparecen en la sección "Nuestras Micros" de la página web.</p>
       </div>
 
       {error && <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">{error}</div>}
@@ -661,82 +663,91 @@ function TabFotos() {
       {loading ? (
         <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-gray-300" /></div>
       ) : (
-        <div className="grid sm:grid-cols-2 gap-4">
-          {SLOTS.map(({ slot, label }) => {
-            const foto = fotos[slot]
-            const src = foto?.src
-            const isUploading = uploading === slot
-            const fileId = `foto-bus-${slot}`
-            const altChanged = foto && (alts[slot] ?? '') !== foto.alt
-            return (
-              <div key={slot} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                <div className="relative h-52 bg-gray-100 flex items-center justify-center overflow-hidden">
-                  {src ? (
-                    <img src={src} alt={label} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="flex flex-col items-center gap-2 text-gray-300">
-                      <ImageIcon className="w-12 h-12" />
-                      <span className="text-xs">Sin foto</span>
-                    </div>
-                  )}
-                  {isUploading && (
-                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                      <Loader2 className="w-6 h-6 animate-spin text-white" />
-                    </div>
-                  )}
-                  {src && (
-                    <span className="absolute top-2 right-2 bg-green-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide">
-                      Subida
-                    </span>
-                  )}
-                  <div className="absolute bottom-0 left-0 right-0 bg-black/40 px-3 py-1.5">
-                    <p className="text-white text-sm font-bold">{label}</p>
-                  </div>
-                </div>
-
-                {/* Nombre de la foto */}
-                <div className="px-3 pt-3 space-y-1.5">
-                  <label className="text-xs font-medium text-gray-500">Nombre / descripción</label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      placeholder="Ej: Bus Ruta Norte"
-                      value={alts[slot] ?? ''}
-                      onChange={e => setAlts(prev => ({ ...prev, [slot]: e.target.value }))}
-                      className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary/30"
-                    />
-                    <button
-                      onClick={() => handleSaveAlt(slot)}
-                      disabled={!src || !altChanged || savingAlt === slot}
-                      className="px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                    >
-                      {savingAlt === slot ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Guardar'}
-                    </button>
-                  </div>
-                </div>
-
-                <div className="p-3 flex gap-2">
-                  <label
-                    htmlFor={fileId}
-                    className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition-colors cursor-pointer ${isUploading ? 'opacity-60 pointer-events-none' : ''}`}
-                  >
-                    <Upload className="w-3.5 h-3.5" />
-                    {src ? 'Cambiar foto' : 'Subir foto'}
-                  </label>
-                  <input id={fileId} type="file" accept="image/*" className="hidden" onChange={e => handleFileSelect(slot, e)} />
-                  {src && (
-                    <button
-                      onClick={() => setConfirmDelete(slot)}
-                      disabled={isUploading}
-                      className="p-2 rounded-lg bg-red-50 text-red-400 hover:bg-red-100 disabled:opacity-60 transition-colors"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
+        <div className="space-y-6">
+          {MICROS_SLOTS.map(micro => (
+            <div key={micro.bus} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+              <div className="px-5 py-3 border-b border-gray-100 flex items-center gap-2">
+                <Bus className="w-4 h-4 text-primary" />
+                <h3 className="font-semibold text-gray-800">{micro.nombre}</h3>
               </div>
-            )
-          })}
+              <div className="grid sm:grid-cols-2 gap-4 p-4">
+                {micro.slots.map(({ slot, label }) => {
+                  const foto = fotos[slot]
+                  const src = foto?.src
+                  const isUploading = uploading === slot
+                  const fileId = `foto-micro-${slot}`
+                  const altChanged = foto && (alts[slot] ?? '') !== foto.alt
+                  return (
+                    <div key={slot} className="rounded-xl border border-gray-200 overflow-hidden">
+                      <div className="relative h-44 bg-gray-100 flex items-center justify-center overflow-hidden">
+                        {src ? (
+                          <img src={src} alt={label} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="flex flex-col items-center gap-2 text-gray-300">
+                            <ImageIcon className="w-10 h-10" />
+                            <span className="text-xs">Sin foto</span>
+                          </div>
+                        )}
+                        {isUploading && (
+                          <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                            <Loader2 className="w-6 h-6 animate-spin text-white" />
+                          </div>
+                        )}
+                        {src && (
+                          <span className="absolute top-2 right-2 bg-green-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide">
+                            Subida
+                          </span>
+                        )}
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/40 px-3 py-1.5">
+                          <p className="text-white text-xs font-bold">{label}</p>
+                        </div>
+                      </div>
+
+                      <div className="px-3 pt-2.5 space-y-1.5">
+                        <label className="text-xs font-medium text-gray-500">Descripción</label>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder={`Ej: ${micro.nombre} ${label}`}
+                            value={alts[slot] ?? ''}
+                            onChange={e => setAlts(prev => ({ ...prev, [slot]: e.target.value }))}
+                            className="flex-1 text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                          />
+                          <button
+                            onClick={() => handleSaveAlt(slot)}
+                            disabled={!src || !altChanged || savingAlt === slot}
+                            className="px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                          >
+                            {savingAlt === slot ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'OK'}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="p-3 flex gap-2">
+                        <label
+                          htmlFor={fileId}
+                          className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition-colors cursor-pointer ${isUploading ? 'opacity-60 pointer-events-none' : ''}`}
+                        >
+                          <Upload className="w-3.5 h-3.5" />
+                          {src ? 'Cambiar' : 'Subir foto'}
+                        </label>
+                        <input id={fileId} type="file" accept="image/*" className="hidden" onChange={e => handleFileSelect(slot, e)} />
+                        {src && (
+                          <button
+                            onClick={() => setConfirmDelete(slot)}
+                            disabled={isUploading}
+                            className="p-2 rounded-lg bg-red-50 text-red-400 hover:bg-red-100 disabled:opacity-60 transition-colors"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

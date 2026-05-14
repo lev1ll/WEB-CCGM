@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Images, FileText, Download, X, ChevronLeft, ChevronRight, Loader2, Play } from 'lucide-react'
+import { Images, FileText, Download, X, ChevronLeft, ChevronRight, Loader2, Play, Instagram, Facebook } from 'lucide-react'
 import { useSupabaseQuery } from '@/hooks/useSupabaseQuery'
 import { SectionWrapper } from '@/components/shared/SectionWrapper'
 import { AnimatedSection } from '@/components/shared/AnimatedSection'
 import { extractYouTubeId } from '@/lib/utils'
 import type { GaleriaItem, Documento, DocumentoCategoria } from '@/types/noticias.types'
+import { SCHOOL } from '@/constants/school'
 
 const CATEGORIAS: { value: DocumentoCategoria; label: string; emoji: string }[] = [
   { value: 'lista_utiles', label: 'Listas de útiles',    emoji: '📋' },
@@ -214,6 +215,38 @@ function GaleriaTab({ fotos, onOpen }: { fotos: GaleriaItem[]; onOpen: (i: numbe
             )}
           </button>
         ))}
+      </div>
+
+      <div className="mt-12 text-center border-t border-border pt-10">
+        <p className="text-sm font-semibold text-muted-foreground mb-5">¿Quieres ver más fotos? Síguenos en nuestras redes</p>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          {SCHOOL.socialMedia.instagram && (
+            <a
+              href={SCHOOL.socialMedia.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-3 rounded-2xl px-6 py-3.5
+                         font-bold text-white transition-all hover:scale-[1.02] hover:shadow-lg"
+              style={{ background: 'linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)' }}
+            >
+              <Instagram className="w-5 h-5 shrink-0" />
+              <span>@escuela_gm en Instagram</span>
+            </a>
+          )}
+          {SCHOOL.socialMedia.facebook && (
+            <a
+              href={SCHOOL.socialMedia.facebook}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-3 rounded-2xl px-6 py-3.5
+                         bg-[#1877F2] hover:bg-[#166fe5] font-bold text-white
+                         transition-all hover:scale-[1.02] hover:shadow-lg"
+            >
+              <Facebook className="w-5 h-5 shrink-0" />
+              <span>Escuela Gabriela Mistral en Facebook</span>
+            </a>
+          )}
+        </div>
       </div>
     </AnimatedSection>
   )
