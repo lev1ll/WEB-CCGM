@@ -28,7 +28,7 @@ function MicroCard({ micro, fotos }: { micro: typeof MICROS[0]; fotos: Record<nu
       transition={{ delay: micro.num * 0.08 }}
     >
       {/* Imagen con carrusel */}
-      <div className="relative h-52 bg-white/5 overflow-hidden">
+      <div className="relative h-72 bg-white/5 overflow-hidden">
         {foto?.src ? (
           <img
             key={slot}

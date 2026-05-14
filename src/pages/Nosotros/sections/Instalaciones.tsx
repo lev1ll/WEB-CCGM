@@ -65,7 +65,10 @@ export function Instalaciones() {
                   key={imageSrc}
                   src={imageSrc}
                   alt={item.name}
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  className={cn(
+                    'absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105',
+                    item.id === 'gimnasio' && 'object-top'
+                  )}
                   onError={(e) => {
                     e.currentTarget.style.display = 'none'
                     const sib = e.currentTarget.nextElementSibling as HTMLElement | null
