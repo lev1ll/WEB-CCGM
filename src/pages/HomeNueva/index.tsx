@@ -520,9 +520,16 @@ function CTAFinal() {
 }
 
 // ── PÁGINA ────────────────────────────────────────────────────────────
+import { SeoHead } from '@/components/shared/SeoHead'
+
 export function HomeNueva() {
   return (
     <>
+      <SeoHead
+        title="Educación Básica en Nueva Imperial, La Araucanía"
+        description="Escuela básica completa en Nueva Imperial. 46 años formando personas con fe, valores y excelencia académica. 1° a 8° Básico. Matrícula gratuita."
+        canonicalPath="/"
+      />
       <FranjaAcceso />
       <Hero />
       <SobreNosotros />

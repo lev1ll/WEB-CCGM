@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Images, FileText, Download, X, ChevronLeft, ChevronRight, Loader2, Play, Instagram, Facebook } from 'lucide-react'
 import { useSupabaseQuery } from '@/hooks/useSupabaseQuery'
+import { SeoHead } from '@/components/shared/SeoHead'
 import { SectionWrapper } from '@/components/shared/SectionWrapper'
 import { AnimatedSection } from '@/components/shared/AnimatedSection'
 import { extractYouTubeId } from '@/lib/utils'
@@ -60,6 +61,11 @@ export default function RecursosPage() {
 
   return (
     <>
+      <SeoHead
+        title="Galería y Documentos"
+        description="Descarga listas de útiles, reglamentos y circulares. Revisa la galería de fotos de la Escuela Gabriela Mistral en Nueva Imperial."
+        canonicalPath="/recursos"
+      />
       {/* Hero */}
       <div className="bg-navy-deep text-white py-16 md:py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

@@ -1,3 +1,4 @@
+import { SeoHead } from '@/components/shared/SeoHead'
 import { ExternalLink, Phone, Mail } from 'lucide-react'
 import { HeroSeccion } from './sections/HeroSeccion'
 import { PasosAdmision } from './sections/PasosAdmision'
@@ -74,6 +75,11 @@ function CTAContacto() {
 export function AdmisionPage() {
   return (
     <>
+      <SeoHead
+        title="Proceso de Admisión 2026"
+        description="Requisitos, pasos y preguntas frecuentes sobre la admisión en la Escuela Gabriela Mistral. Matrícula completamente gratuita. Inscríbete en la plataforma MINEDUC."
+        canonicalPath="/admision"
+      />
       <HeroSeccion />
       <CTAAnotate />
       <PasosAdmision />

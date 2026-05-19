@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link, Navigate } from 'react-router-dom'
+import { SeoHead } from '@/components/shared/SeoHead'
 import { Calendar, ChevronRight, ArrowLeft, Share2, Copy, Check } from 'lucide-react'
 import DOMPurify from 'dompurify'
 import { useSupabaseQuery } from '@/hooks/useSupabaseQuery'
@@ -74,6 +75,14 @@ export default function NoticiaDetallePage() {
 
   return (
     <>
+      {noticia && (
+        <SeoHead
+          title={noticia.titulo}
+          description={noticia.resumen ?? `Noticia de la Escuela Gabriela Mistral — ${noticia.titulo}`}
+          canonicalPath={`/noticias/${noticia.slug}`}
+          ogImage={noticia.imagen_portada ?? undefined}
+        />
+      )}
       {/* Hero */}
       <div className="relative bg-navy-deep text-white">
         {noticia?.imagen_portada && (

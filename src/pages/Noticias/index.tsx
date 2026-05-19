@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useSupabaseQuery } from '@/hooks/useSupabaseQuery'
 import type { Noticia, NoticiaCategoria } from '@/types/noticias.types'
 import NoticiasGrid from './sections/NoticiasGrid'
+import { SeoHead } from '@/components/shared/SeoHead'
 
 export default function NoticiasPage() {
   const { select, isLoading } = useSupabaseQuery()
@@ -21,6 +22,11 @@ export default function NoticiasPage() {
 
   return (
     <>
+      <SeoHead
+        title="Noticias y Novedades"
+        description="Entérate de todo lo que pasa en la Escuela Gabriela Mistral: actividades, logros, eventos y comunicados oficiales."
+        canonicalPath="/noticias"
+      />
       <NoticiasGrid
         items={items}
         isLoading={isLoading}

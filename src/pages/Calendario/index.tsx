@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, X, CalendarDays } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useSupabaseQuery } from '@/hooks/useSupabaseQuery'
 import type { Noticia } from '@/types/noticias.types'
+import { SeoHead } from '@/components/shared/SeoHead'
 
 interface EventoCalendario {
   id: string
@@ -98,6 +99,12 @@ export default function CalendarioPage() {
     .slice(0, 5)
 
   return (
+    <>
+    <SeoHead
+      title="Calendario Escolar 2026"
+      description="Fechas importantes, feriados, eventos y actividades del año escolar 2026 en la Escuela Gabriela Mistral, Nueva Imperial."
+      canonicalPath="/calendario"
+    />
     <div className="min-h-screen bg-[#FAF7F2] py-8 sm:py-10">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
 
@@ -329,5 +336,6 @@ export default function CalendarioPage() {
         )}
       </div>
     </div>
+    </>
   )
 }
