@@ -310,6 +310,12 @@ function TabHorarios() {
   const [copySource, setCopySource] = useState('')
   const [copying, setCopying] = useState(false)
   const [copyError, setCopyError] = useState<string | null>(null)
+  // Editar bloque de horas
+  const [editBloqueOpen, setEditBloqueOpen] = useState(false)
+  const [editingBloque, setEditingBloque] = useState<{ hora_inicio: string; hora_fin: string } | null>(null)
+  const [editBloqueForm, setEditBloqueForm] = useState({ hora_inicio: '', hora_fin: '' })
+  const [editBloqueError, setEditBloqueError] = useState<string | null>(null)
+  const [savingEditBloque, setSavingEditBloque] = useState(false)
 
   useEffect(() => { loadCeldas() }, [curso])
 
@@ -390,6 +396,28 @@ function TabHorarios() {
     setDeletingBloque(null)
   }
 
+  async function editBloqueHoras() {
+    if (!editingBloque || !supabase) return
+    const { hora_inicio: newHi, hora_fin: newHf } = editBloqueForm
+    if (!newHi || !newHf) { setEditBloqueError('Ingresa hora inicio y hora fin.'); return }
+    if (newHi >= newHf) { setEditBloqueError('La hora de inicio debe ser antes que la hora de fin.'); return }
+    const conflict = bloques.some(b =>
+      b.hora_inicio === newHi && b.hora_fin === newHf &&
+      !(b.hora_inicio === editingBloque.hora_inicio && b.hora_fin === editingBloque.hora_fin)
+    )
+    if (conflict) { setEditBloqueError('Ya existe un bloque con ese horario.'); return }
+    setSavingEditBloque(true)
+    setEditBloqueError(null)
+    await supabase.from('horarios')
+      .update({ hora_inicio: newHi, hora_fin: newHf })
+      .eq('curso', curso)
+      .eq('hora_inicio', editingBloque.hora_inicio)
+      .eq('hora_fin', editingBloque.hora_fin)
+    await loadCeldas()
+    setEditBloqueOpen(false)
+    setSavingEditBloque(false)
+  }
+
   async function copiarDesde() {
     if (!copySource || !supabase) return
     setCopying(true)
@@ -401,7 +429,7 @@ function TabHorarios() {
         return
       }
       await supabase.from('horarios').delete().eq('curso', curso)
-      const newRows = sourceCells.map(({ id: _id, curso: _c, ...rest }) => ({ ...rest, curso }))
+      const newRows = sourceCells.map(({ id: _id, curso: _c, ...rest }) => ({ ...rest, curso, asignatura: '' }))
       const r = await bulkInsert('horarios', newRows as Record<string, unknown>[])
       if (r.success) { await loadCeldas(); setCopyOpen(false) }
       else setCopyError(r.error ?? 'Error al copiar')
@@ -489,16 +517,30 @@ function TabHorarios() {
                     )
                   })}
                   <td className="px-1 py-2 text-center">
-                    <button
-                      onClick={() => deleteBloque(bloque.hora_inicio, bloque.hora_fin)}
-                      disabled={deletingBloque === `${bloque.hora_inicio}|${bloque.hora_fin}`}
-                      className="p-1 text-gray-300 hover:text-red-500 rounded disabled:opacity-50 transition-colors"
-                      title="Eliminar bloque"
-                    >
-                      {deletingBloque === `${bloque.hora_inicio}|${bloque.hora_fin}`
-                        ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        : <Trash2 className="w-3.5 h-3.5" />}
-                    </button>
+                    <div className="flex items-center justify-center gap-0.5">
+                      <button
+                        onClick={() => {
+                          setEditingBloque(bloque)
+                          setEditBloqueForm({ hora_inicio: bloque.hora_inicio, hora_fin: bloque.hora_fin })
+                          setEditBloqueError(null)
+                          setEditBloqueOpen(true)
+                        }}
+                        className="p-1 text-gray-300 hover:text-primary rounded transition-colors"
+                        title="Editar horario del bloque"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => deleteBloque(bloque.hora_inicio, bloque.hora_fin)}
+                        disabled={deletingBloque === `${bloque.hora_inicio}|${bloque.hora_fin}`}
+                        className="p-1 text-gray-300 hover:text-red-500 rounded disabled:opacity-50 transition-colors"
+                        title="Eliminar bloque"
+                      >
+                        {deletingBloque === `${bloque.hora_inicio}|${bloque.hora_fin}`
+                          ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          : <Trash2 className="w-3.5 h-3.5" />}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -542,6 +584,48 @@ function TabHorarios() {
               <button onClick={addBloque} disabled={savingBloque}
                 className="flex-1 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50">
                 {savingBloque ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : 'Agregar'}
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog editar bloque */}
+      <Dialog open={editBloqueOpen} onOpenChange={open => !open && setEditBloqueOpen(false)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Editar horario del bloque</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-xs text-gray-500">
+              Cambia la hora de inicio y/o fin del bloque en <strong>{curso} Básico</strong>.
+              Las asignaturas se conservan.
+            </p>
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="Hora inicio">
+                <input type="time" value={editBloqueForm.hora_inicio}
+                  onChange={e => setEditBloqueForm(p => ({ ...p, hora_inicio: e.target.value }))}
+                  className={inputClass} />
+              </Field>
+              <Field label="Hora fin">
+                <input type="time" value={editBloqueForm.hora_fin}
+                  onChange={e => setEditBloqueForm(p => ({ ...p, hora_fin: e.target.value }))}
+                  className={inputClass} />
+              </Field>
+            </div>
+            {editBloqueError && (
+              <div className="flex items-center gap-2 text-xs text-red-600 bg-red-50 rounded px-3 py-2">
+                <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" /> {editBloqueError}
+              </div>
+            )}
+            <div className="flex gap-2">
+              <button onClick={() => setEditBloqueOpen(false)}
+                className="flex-1 py-2 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors">
+                Cancelar
+              </button>
+              <button onClick={editBloqueHoras} disabled={savingEditBloque}
+                className="flex-1 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50">
+                {savingEditBloque ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : 'Guardar'}
               </button>
             </div>
           </div>
