@@ -67,51 +67,9 @@ export default function HorariosPage() {
 
       <PageHero
         title="Horarios"
-        subtitle="Atención de apoderados y horarios semanales por curso"
+        subtitle="Horarios semanales por curso y atención de apoderados"
         breadcrumb="Horarios"
       />
-
-      {/* ── Atención de Apoderados ── */}
-      <SectionWrapper>
-        <SectionTitle
-          title="Atención de Apoderados"
-          subtitle="Horario de atención por docente"
-        />
-
-        {loading ? (
-          <div className="flex justify-center py-12 text-muted-foreground">Cargando...</div>
-        ) : atencion.length === 0 ? (
-          <p className="text-center text-muted-foreground py-12 mt-8">Información no disponible aún.</p>
-        ) : (
-          <AnimatedSection direction="up">
-            <div className="overflow-x-auto rounded-xl border border-border mt-8 shadow-sm">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-primary text-white">
-                    {['Nombre', 'Cargo', 'Día', 'Horario'].map(h => (
-                      <th key={h} className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider">{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {atencion.map((item, i) => (
-                    <tr key={item.id} className={i % 2 === 0 ? 'bg-white' : 'bg-muted/30'}>
-                      <td className="px-5 py-3.5 font-semibold text-foreground">{item.nombre}</td>
-                      <td className="px-5 py-3.5 text-muted-foreground">{item.cargo}</td>
-                      <td className="px-5 py-3.5 text-muted-foreground capitalize">
-                        {DIA_LABELS[item.dia] ?? item.dia}
-                      </td>
-                      <td className="px-5 py-3.5 font-medium text-secondary">
-                        {formatHora(item.hora_inicio)} – {formatHora(item.hora_fin)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </AnimatedSection>
-        )}
-      </SectionWrapper>
 
       {/* ── Horarios por Curso ── */}
       <SectionWrapper className="bg-muted/40">
@@ -180,6 +138,49 @@ export default function HorariosPage() {
           </AnimatedSection>
         )}
       </SectionWrapper>
+
+      {/* ── Atención de Apoderados ── */}
+      <SectionWrapper>
+        <SectionTitle
+          title="Atención de Apoderados"
+          subtitle="Horario de atención por docente"
+        />
+
+        {loading ? (
+          <div className="flex justify-center py-12 text-muted-foreground">Cargando...</div>
+        ) : atencion.length === 0 ? (
+          <p className="text-center text-muted-foreground py-12 mt-8">Información no disponible aún.</p>
+        ) : (
+          <AnimatedSection direction="up">
+            <div className="overflow-x-auto rounded-xl border border-border mt-8 shadow-sm">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-primary text-white">
+                    {['Nombre', 'Cargo', 'Día', 'Horario'].map(h => (
+                      <th key={h} className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {atencion.map((item, i) => (
+                    <tr key={item.id} className={i % 2 === 0 ? 'bg-white' : 'bg-muted/30'}>
+                      <td className="px-5 py-3.5 font-semibold text-foreground">{item.nombre}</td>
+                      <td className="px-5 py-3.5 text-muted-foreground">{item.cargo}</td>
+                      <td className="px-5 py-3.5 text-muted-foreground capitalize">
+                        {DIA_LABELS[item.dia] ?? item.dia}
+                      </td>
+                      <td className="px-5 py-3.5 font-medium text-secondary">
+                        {formatHora(item.hora_inicio)} – {formatHora(item.hora_fin)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </AnimatedSection>
+        )}
+      </SectionWrapper>
+
     </>
   )
 }
