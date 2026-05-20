@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Plus, Trash2, Loader2, AlertCircle, Pencil } from 'lucide-react'
+import { Plus, Trash2, Loader2, AlertCircle, Pencil, ChevronUp, ChevronDown } from 'lucide-react'
 import { useSupabaseQuery } from '@/hooks/useSupabaseQuery'
 import { supabase } from '@/lib/supabase'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -27,11 +27,11 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 // ─── Atención de Apoderados ────────────────────────────────────────────────
 
-type AtencionForm = { nombre: string; cargo: string; dia: string; hora_inicio: string; hora_fin: string; orden: number }
-const EMPTY_ATENCION: AtencionForm = { nombre: '', cargo: '', dia: 'lunes', hora_inicio: '', hora_fin: '', orden: 0 }
+type AtencionForm = { nombre: string; cargo: string; dia: string; hora_inicio: string; hora_fin: string }
+const EMPTY_ATENCION: AtencionForm = { nombre: '', cargo: '', dia: 'lunes', hora_inicio: '', hora_fin: '' }
 
 function TabAtencion() {
-  const { select, upsert, remove } = useSupabaseQuery()
+  const { select, upsert, remove, update: updateRow } = useSupabaseQuery()
   const [items, setItems] = useState<AtencionApoderado[]>([])
   const [loading, setLoading] = useState(true)
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -40,6 +40,7 @@ function TabAtencion() {
   const [saving, setSaving] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [moving, setMoving] = useState<string | null>(null)
 
   useEffect(() => { load() }, [])
 
@@ -63,7 +64,7 @@ function TabAtencion() {
     setEditing(item)
     setForm({
       nombre: item.nombre, cargo: item.cargo, dia: item.dia,
-      hora_inicio: item.hora_inicio, hora_fin: item.hora_fin, orden: item.orden,
+      hora_inicio: item.hora_inicio, hora_fin: item.hora_fin,
     })
     setFormError(null)
     setDialogOpen(true)
@@ -76,7 +77,9 @@ function TabAtencion() {
     }
     setSaving(true)
     setFormError(null)
-    const payload = editing ? { id: editing.id, ...form } : { ...form }
+    const payload = editing
+      ? { id: editing.id, ...form }
+      : { ...form, orden: items.length }
     const r = await upsert('atencion_apoderados', payload as Record<string, unknown>)
     if (r.success) { await load(); setDialogOpen(false) }
     else setFormError(r.error ?? 'Error al guardar')
@@ -88,6 +91,20 @@ function TabAtencion() {
     await remove('atencion_apoderados', id)
     setItems(prev => prev.filter(x => x.id !== id))
     setDeletingId(null)
+  }
+
+  async function moveItem(index: number, dir: 'up' | 'down') {
+    const target = dir === 'up' ? index - 1 : index + 1
+    if (target < 0 || target >= items.length) return
+    setMoving(items[index].id)
+    const newItems = [...items]
+    ;[newItems[index], newItems[target]] = [newItems[target], newItems[index]]
+    const withOrden = newItems.map((t, i) => ({ ...t, orden: i }))
+    setItems(withOrden)
+    await Promise.all(withOrden.map(t =>
+      updateRow('atencion_apoderados', t.id, { orden: t.orden } as Record<string, unknown>)
+    ))
+    setMoving(null)
   }
 
   return (
@@ -113,14 +130,35 @@ function TabAtencion() {
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                {['Nombre', 'Cargo', 'Día', 'Horario', ''].map(h => (
-                  <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wide">{h}</th>
+                {['', 'Nombre', 'Cargo', 'Día', 'Horario', ''].map((h, i) => (
+                  <th key={i} className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wide">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {items.map(item => (
+              {items.map((item, idx) => (
                 <tr key={item.id} className="hover:bg-gray-50">
+                  {/* Flechas de orden */}
+                  <td className="px-2 py-3">
+                    <div className="flex flex-col">
+                      <button
+                        onClick={() => moveItem(idx, 'up')}
+                        disabled={idx === 0 || moving === item.id}
+                        className="p-0.5 text-gray-300 hover:text-gray-600 disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
+                        title="Mover arriba"
+                      >
+                        <ChevronUp className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => moveItem(idx, 'down')}
+                        disabled={idx === items.length - 1 || moving === item.id}
+                        className="p-0.5 text-gray-300 hover:text-gray-600 disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
+                        title="Mover abajo"
+                      >
+                        <ChevronDown className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </td>
                   <td className="px-4 py-3 font-medium text-gray-900">{item.nombre}</td>
                   <td className="px-4 py-3 text-gray-600">{item.cargo}</td>
                   <td className="px-4 py-3 text-gray-600 capitalize">{DIA_LABELS[item.dia] ?? item.dia}</td>
@@ -202,15 +240,6 @@ function TabAtencion() {
                 />
               </Field>
             </div>
-            <Field label="Orden">
-              <input
-                type="number"
-                min={0}
-                value={form.orden}
-                onChange={e => setForm(p => ({ ...p, orden: Number(e.target.value) }))}
-                className={inputClass}
-              />
-            </Field>
             {formError && (
               <div className="flex items-center gap-2 text-xs text-red-600 bg-red-50 rounded px-3 py-2">
                 <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" /> {formError}

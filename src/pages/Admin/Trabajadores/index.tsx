@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Pencil, Plus, Trash2, Loader2, Upload, X, AlertCircle } from 'lucide-react'
+import { Pencil, Plus, Trash2, Loader2, Upload, X, AlertCircle, ChevronUp, ChevronDown } from 'lucide-react'
 import { useSupabaseQuery } from '@/hooks/useSupabaseQuery'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import CropModal from '@/components/shared/CropModal'
@@ -12,10 +12,10 @@ const CATEGORIAS: { value: TrabajadorCategoria; label: string }[] = [
   { value: 'asistente', label: 'Asistentes de la Educación' },
 ]
 
-const EMPTY_FORM = { name: '', role: '', categoria: 'docente' as TrabajadorCategoria, photo: '', orden: 0 }
+const EMPTY_FORM = { name: '', role: '', categoria: 'docente' as TrabajadorCategoria, photo: '' }
 
 export default function AdminTrabajadores() {
-  const { select, upsert, remove, isLoading, error } = useSupabaseQuery()
+  const { select, upsert, remove, update: updateRow, isLoading, error } = useSupabaseQuery()
   const [trabajadores, setTrabajadores] = useState<Trabajador[]>([])
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editing, setEditing] = useState<Trabajador | null>(null)
@@ -26,6 +26,7 @@ export default function AdminTrabajadores() {
   const [confirmDelete, setConfirmDelete] = useState<Trabajador | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
+  const [moving, setMoving] = useState<string | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => { load() }, [])
@@ -44,7 +45,7 @@ export default function AdminTrabajadores() {
 
   function openEdit(t: Trabajador) {
     setEditing(t)
-    setForm({ name: t.name, role: t.role, categoria: t.categoria, photo: t.photo, orden: t.orden })
+    setForm({ name: t.name, role: t.role, categoria: t.categoria, photo: t.photo })
     setActionError(null)
     setDialogOpen(true)
   }
@@ -54,7 +55,6 @@ export default function AdminTrabajadores() {
     if (!file) return
     const url = URL.createObjectURL(file)
     setCropSrc(url)
-    // reset input para permitir seleccionar el mismo archivo de nuevo
     e.target.value = ''
   }
 
@@ -78,9 +78,10 @@ export default function AdminTrabajadores() {
     }
     setSaving(true)
     setActionError(null)
+    const catCount = trabajadores.filter(t => t.categoria === form.categoria).length
     const payload = editing
       ? { id: editing.id, ...form }
-      : { ...form }
+      : { ...form, orden: catCount }
     const r = await upsert('trabajadores', payload as Record<string, unknown>)
     if (r.success) {
       await load()
@@ -101,6 +102,31 @@ export default function AdminTrabajadores() {
     }
     setDeletingId(null)
     setConfirmDelete(null)
+  }
+
+  async function moveItem(categoria: TrabajadorCategoria, index: number, dir: 'up' | 'down') {
+    const catItems = trabajadores
+      .filter(t => t.categoria === categoria)
+      .sort((a, b) => a.orden - b.orden)
+
+    const target = dir === 'up' ? index - 1 : index + 1
+    if (target < 0 || target >= catItems.length) return
+
+    setMoving(catItems[index].id)
+
+    const newCat = [...catItems]
+    ;[newCat[index], newCat[target]] = [newCat[target], newCat[index]]
+    const withOrden = newCat.map((t, i) => ({ ...t, orden: i }))
+
+    setTrabajadores(prev => {
+      const map = new Map(withOrden.map(t => [t.id, t]))
+      return prev.map(t => map.get(t.id) ?? t)
+    })
+
+    await Promise.all(withOrden.map(t =>
+      updateRow('trabajadores', t.id, { orden: t.orden } as Record<string, unknown>)
+    ))
+    setMoving(null)
   }
 
   const initials = (name: string) =>
@@ -134,7 +160,9 @@ export default function AdminTrabajadores() {
       ) : (
         <div className="space-y-8">
           {CATEGORIAS.map(cat => {
-            const miembros = trabajadores.filter(t => t.categoria === cat.value)
+            const miembros = trabajadores
+              .filter(t => t.categoria === cat.value)
+              .sort((a, b) => a.orden - b.orden)
             return (
               <div key={cat.value}>
                 <h2 className="text-xs font-bold tracking-widest text-gray-400 uppercase mb-3">
@@ -144,7 +172,7 @@ export default function AdminTrabajadores() {
                   <p className="text-sm text-gray-400 italic">Sin personas en esta categoría.</p>
                 ) : (
                   <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    {miembros.map(t => (
+                    {miembros.map((t, idx) => (
                       <div key={t.id} className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-3 shadow-sm">
                         {t.photo ? (
                           <img src={t.photo} alt={t.name} className="w-12 h-12 rounded-full object-cover flex-shrink-0" />
@@ -157,7 +185,26 @@ export default function AdminTrabajadores() {
                           <p className="font-semibold text-gray-900 text-sm truncate">{t.name}</p>
                           <p className="text-xs text-gray-500 truncate">{t.role}</p>
                         </div>
-                        <div className="flex gap-1 flex-shrink-0">
+                        <div className="flex items-center gap-0.5 flex-shrink-0">
+                          {/* Flechas de orden */}
+                          <div className="flex flex-col">
+                            <button
+                              onClick={() => moveItem(cat.value, idx, 'up')}
+                              disabled={idx === 0 || moving === t.id}
+                              className="p-0.5 rounded text-gray-300 hover:text-gray-600 disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
+                              title="Mover arriba"
+                            >
+                              <ChevronUp className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() => moveItem(cat.value, idx, 'down')}
+                              disabled={idx === miembros.length - 1 || moving === t.id}
+                              className="p-0.5 rounded text-gray-300 hover:text-gray-600 disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
+                              title="Mover abajo"
+                            >
+                              <ChevronDown className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
                           <button onClick={() => openEdit(t)}
                             className="p-1.5 rounded-md text-gray-400 hover:text-primary hover:bg-primary/5 transition-colors">
                             <Pencil className="w-3.5 h-3.5" />
@@ -262,19 +309,6 @@ export default function AdminTrabajadores() {
               >
                 {CATEGORIAS.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
               </select>
-            </div>
-
-            {/* Orden */}
-            <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-700">Orden de aparición</label>
-              <input
-                type="number"
-                value={form.orden}
-                onChange={e => setForm(prev => ({ ...prev, orden: Number(e.target.value) }))}
-                min={0}
-                className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
-              />
-              <p className="text-xs text-gray-400">Número menor aparece primero (0, 1, 2…)</p>
             </div>
 
             {actionError && (
