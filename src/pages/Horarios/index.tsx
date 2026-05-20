@@ -65,11 +65,7 @@ export default function HorariosPage() {
         canonicalPath="/horarios"
       />
 
-      <PageHero
-        title="Horarios"
-        subtitle="Horarios semanales por curso y atención de apoderados"
-        breadcrumb="Horarios"
-      />
+      <PageHero title="Horarios" breadcrumb="Horarios" compact />
 
       {/* ── Horarios por Curso ── */}
       <SectionWrapper className="bg-muted/40">
