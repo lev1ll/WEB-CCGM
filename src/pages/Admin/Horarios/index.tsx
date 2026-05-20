@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Plus, Trash2, Loader2, AlertCircle, Pencil, ChevronUp, ChevronDown, Copy } from 'lucide-react'
+import { Plus, Trash2, Loader2, AlertCircle, Pencil, ChevronUp, ChevronDown, Copy, Share2 } from 'lucide-react'
 import { useSupabaseQuery } from '@/hooks/useSupabaseQuery'
 import { supabase } from '@/lib/supabase'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -308,8 +308,14 @@ function TabHorarios() {
   // Copiar horario
   const [copyOpen, setCopyOpen] = useState(false)
   const [copySource, setCopySource] = useState('')
+
   const [copying, setCopying] = useState(false)
   const [copyError, setCopyError] = useState<string | null>(null)
+  // Aplicar bloques a otros cursos
+  const [applyOpen, setApplyOpen] = useState(false)
+  const [applyTargets, setApplyTargets] = useState<string[]>([])
+  const [applying, setApplying] = useState(false)
+  const [applyError, setApplyError] = useState<string | null>(null)
   // Editar bloque de horas
   const [editBloqueOpen, setEditBloqueOpen] = useState(false)
   const [editingBloque, setEditingBloque] = useState<{ hora_inicio: string; hora_fin: string } | null>(null)
@@ -396,6 +402,26 @@ function TabHorarios() {
     setDeletingBloque(null)
   }
 
+  async function aplicarBloques() {
+    if (!supabase || applyTargets.length === 0) return
+    if (bloques.length === 0) { setApplyError('Este curso no tiene bloques para aplicar.'); return }
+    setApplying(true)
+    setApplyError(null)
+    for (const targetCurso of applyTargets) {
+      const targetCells = await select<HorarioCelda>('horarios', { filter: { curso: targetCurso } })
+      const existing = new Set(targetCells.map(c => `${c.hora_inicio}|${c.hora_fin}`))
+      const missing = bloques.filter(b => !existing.has(`${b.hora_inicio}|${b.hora_fin}`))
+      if (missing.length === 0) continue
+      const rows = missing.flatMap(b =>
+        DIAS.map(dia => ({ curso: targetCurso, dia, hora_inicio: b.hora_inicio, hora_fin: b.hora_fin, asignatura: '', orden: 0 }))
+      )
+      await bulkInsert('horarios', rows as Record<string, unknown>[])
+    }
+    setApplyOpen(false)
+    setApplyTargets([])
+    setApplying(false)
+  }
+
   async function editBloqueHoras() {
     if (!editingBloque || !supabase) return
     const { hora_inicio: newHi, hora_fin: newHf } = editBloqueForm
@@ -460,6 +486,14 @@ function TabHorarios() {
       <div className="flex flex-wrap justify-between items-center gap-2">
         <p className="text-xs text-gray-400">Haz clic en una celda para editar (guarda al salir del campo)</p>
         <div className="flex items-center gap-2 flex-wrap">
+          {bloques.length > 0 && (
+            <button
+              onClick={() => { setApplyOpen(true); setApplyTargets([]); setApplyError(null) }}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
+            >
+              <Share2 className="w-3.5 h-3.5" /> Aplicar a...
+            </button>
+          )}
           <button
             onClick={() => { setCopyOpen(true); setCopySource(''); setCopyError(null) }}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
@@ -584,6 +618,55 @@ function TabHorarios() {
               <button onClick={addBloque} disabled={savingBloque}
                 className="flex-1 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50">
                 {savingBloque ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : 'Agregar'}
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog aplicar bloques a otros cursos */}
+      <Dialog open={applyOpen} onOpenChange={open => !open && setApplyOpen(false)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Aplicar bloques de {curso} Básico a...</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-xs text-gray-500">
+              Se agregarán los bloques horarios (sin asignaturas) a los cursos seleccionados.
+              Los bloques que ya existan no se tocarán.
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              {CURSOS.filter(c => c !== curso).map(c => (
+                <label key={c} className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg border cursor-pointer transition-colors ${
+                  applyTargets.includes(c)
+                    ? 'border-primary bg-primary/5 text-primary'
+                    : 'border-gray-200 text-gray-700 hover:bg-gray-50'
+                }`}>
+                  <input
+                    type="checkbox"
+                    checked={applyTargets.includes(c)}
+                    onChange={e => setApplyTargets(prev =>
+                      e.target.checked ? [...prev, c] : prev.filter(x => x !== c)
+                    )}
+                    className="accent-primary"
+                  />
+                  <span className="text-sm font-medium">{c} Básico</span>
+                </label>
+              ))}
+            </div>
+            {applyError && (
+              <div className="flex items-center gap-2 text-xs text-red-600 bg-red-50 rounded px-3 py-2">
+                <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" /> {applyError}
+              </div>
+            )}
+            <div className="flex gap-2">
+              <button onClick={() => setApplyOpen(false)}
+                className="flex-1 py-2 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors">
+                Cancelar
+              </button>
+              <button onClick={aplicarBloques} disabled={applyTargets.length === 0 || applying}
+                className="flex-1 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50">
+                {applying ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : `Aplicar a ${applyTargets.length || ''} curso${applyTargets.length !== 1 ? 's' : ''}`}
               </button>
             </div>
           </div>
