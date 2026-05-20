@@ -13,6 +13,9 @@ const DIA_LABELS: Record<string, string> = {
   lunes: 'Lunes', martes: 'Martes', miercoles: 'Miércoles',
   jueves: 'Jueves', viernes: 'Viernes', sabado: 'Sábado',
 }
+const DIA_LABELS_SHORT: Record<string, string> = {
+  lunes: 'Lun', martes: 'Mar', miercoles: 'Mié', jueves: 'Jue', viernes: 'Vie',
+}
 
 function formatHora(h: string) {
   return h.replace(/^0/, '')
@@ -24,6 +27,11 @@ export default function HorariosPage() {
   const [horarios, setHorarios] = useState<HorarioCelda[]>([])
   const [selectedCurso, setSelectedCurso] = useState('1°')
   const [loading, setLoading] = useState(true)
+
+  const [selectedDia, setSelectedDia] = useState<string>(() => {
+    const d = new Date().getDay()
+    return d >= 1 && d <= 5 ? DIAS[d - 1] : 'lunes'
+  })
 
   useEffect(() => {
     async function load() {
@@ -75,18 +83,18 @@ export default function HorariosPage() {
         />
 
         {/* Selector de curso */}
-        <div className="flex flex-wrap gap-2 mt-6 justify-center">
+        <div className="flex flex-wrap gap-1.5 mt-6 justify-center">
           {CURSOS.map(c => (
             <button
               key={c}
               onClick={() => setSelectedCurso(c)}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
+              className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all ${
                 selectedCurso === c
-                  ? 'bg-primary text-white shadow-md'
-                  : 'bg-white text-gray-700 border border-border hover:border-primary hover:text-primary'
+                  ? 'bg-primary text-white shadow-md scale-105'
+                  : 'bg-white text-gray-600 border border-border hover:border-primary hover:text-primary'
               }`}
             >
-              {c} Básico
+              {c} <span className="hidden sm:inline">Básico</span>
             </button>
           ))}
         </div>
@@ -99,13 +107,17 @@ export default function HorariosPage() {
           </p>
         ) : (
           <AnimatedSection direction="up" key={selectedCurso}>
-            <div className="overflow-x-auto rounded-xl border border-border mt-8 shadow-sm">
+
+            {/* ── Escritorio: grilla ── */}
+            <div className="hidden md:block overflow-x-auto rounded-2xl border border-border mt-8 shadow-sm bg-white">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-primary text-white">
-                    <th className="px-4 py-3.5 text-center text-xs font-semibold min-w-[90px]">Horario</th>
+                  <tr>
+                    <th className="px-4 py-3.5 text-center text-xs font-bold text-primary bg-primary/5 border-b border-border min-w-[90px]">
+                      Horario
+                    </th>
                     {DIAS.map(d => (
-                      <th key={d} className="px-4 py-3.5 text-center text-xs font-semibold min-w-[110px]">
+                      <th key={d} className="px-4 py-3.5 text-center text-xs font-bold text-white bg-primary border-b border-primary/80 min-w-[120px]">
                         {DIA_LABELS[d]}
                       </th>
                     ))}
@@ -113,16 +125,22 @@ export default function HorariosPage() {
                 </thead>
                 <tbody className="divide-y divide-border">
                   {bloques.map((bloque, i) => (
-                    <tr key={`${bloque.hora_inicio}|${bloque.hora_fin}`} className={i % 2 === 0 ? 'bg-white' : 'bg-muted/30'}>
-                      <td className="px-3 py-3 text-center font-bold text-secondary text-xs whitespace-nowrap">
-                        {formatHora(bloque.hora_inicio)}<br />
-                        <span className="text-muted-foreground font-normal">{formatHora(bloque.hora_fin)}</span>
+                    <tr key={`${bloque.hora_inicio}|${bloque.hora_fin}`}
+                      className={i % 2 === 0 ? 'bg-white hover:bg-muted/20' : 'bg-muted/20 hover:bg-muted/40'}
+                      style={{ transition: 'background 0.15s' }}
+                    >
+                      <td className="px-3 py-3.5 text-center border-r border-border bg-primary/5 whitespace-nowrap">
+                        <span className="text-xs font-bold text-primary">{formatHora(bloque.hora_inicio)}</span>
+                        <span className="text-xs text-muted-foreground"> – {formatHora(bloque.hora_fin)}</span>
                       </td>
                       {DIAS.map(dia => {
                         const asig = getAsignatura(dia, bloque.hora_inicio, bloque.hora_fin)
                         return (
-                          <td key={dia} className="px-3 py-3 text-center text-sm text-foreground">
-                            {asig || <span className="text-muted-foreground/30 select-none">—</span>}
+                          <td key={dia} className="px-3 py-3.5 text-center">
+                            {asig
+                              ? <span className="text-sm font-medium text-foreground">{asig}</span>
+                              : <span className="text-muted-foreground/25 select-none text-base">—</span>
+                            }
                           </td>
                         )
                       })}
@@ -131,6 +149,50 @@ export default function HorariosPage() {
                 </tbody>
               </table>
             </div>
+
+            {/* ── Móvil: día selector + lista ── */}
+            <div className="md:hidden mt-5 space-y-3">
+              <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 snap-x snap-mandatory">
+                {DIAS.map(d => (
+                  <button
+                    key={d}
+                    onClick={() => setSelectedDia(d)}
+                    className={`flex flex-col items-center px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap shrink-0 snap-start transition-all ${
+                      selectedDia === d
+                        ? 'bg-primary text-white shadow-md'
+                        : 'bg-white text-gray-600 border border-border'
+                    }`}
+                  >
+                    <span className="text-base leading-none mb-0.5">{DIA_LABELS_SHORT[d]}</span>
+                  </button>
+                ))}
+              </div>
+
+              <div className="space-y-2">
+                {bloques.map(bloque => {
+                  const asig = getAsignatura(selectedDia, bloque.hora_inicio, bloque.hora_fin)
+                  return (
+                    <div
+                      key={`${bloque.hora_inicio}|${bloque.hora_fin}`}
+                      className="flex items-stretch bg-white rounded-xl border border-border shadow-sm overflow-hidden"
+                    >
+                      <div className="w-1 bg-primary shrink-0" />
+                      <div className="px-3 py-3 text-center shrink-0 flex flex-col justify-center w-20 border-r border-border">
+                        <p className="text-xs font-bold text-primary leading-none">{formatHora(bloque.hora_inicio)}</p>
+                        <p className="text-[10px] text-muted-foreground mt-0.5">{formatHora(bloque.hora_fin)}</p>
+                      </div>
+                      <div className="px-4 py-3 flex items-center flex-1">
+                        {asig
+                          ? <p className="text-sm font-semibold text-foreground">{asig}</p>
+                          : <p className="text-xs text-muted-foreground italic">Sin asignatura</p>
+                        }
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
           </AnimatedSection>
         )}
       </SectionWrapper>
@@ -148,35 +210,30 @@ export default function HorariosPage() {
           <p className="text-center text-muted-foreground py-12 mt-8">Información no disponible aún.</p>
         ) : (
           <AnimatedSection direction="up">
-            <div className="overflow-x-auto rounded-xl border border-border mt-8 shadow-sm">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-primary text-white">
-                    {['Nombre', 'Cargo', 'Día', 'Horario'].map(h => (
-                      <th key={h} className="px-5 py-3.5 text-left text-xs font-semibold uppercase tracking-wider">{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {atencion.map((item, i) => (
-                    <tr key={item.id} className={i % 2 === 0 ? 'bg-white' : 'bg-muted/30'}>
-                      <td className="px-5 py-3.5 font-semibold text-foreground">{item.nombre}</td>
-                      <td className="px-5 py-3.5 text-muted-foreground">{item.cargo}</td>
-                      <td className="px-5 py-3.5 text-muted-foreground capitalize">
-                        {DIA_LABELS[item.dia] ?? item.dia}
-                      </td>
-                      <td className="px-5 py-3.5 font-medium text-secondary">
-                        {formatHora(item.hora_inicio)} – {formatHora(item.hora_fin)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {atencion.map(item => (
+                <div
+                  key={item.id}
+                  className="bg-white rounded-2xl border border-border shadow-sm p-5 flex flex-col gap-4 hover:shadow-md transition-shadow"
+                >
+                  <div>
+                    <p className="font-bold text-foreground leading-snug">{item.nombre}</p>
+                    <p className="text-sm text-muted-foreground mt-1 leading-snug">{item.cargo}</p>
+                  </div>
+                  <div className="mt-auto pt-3 border-t border-border flex items-center gap-2 flex-wrap">
+                    <span className="px-2.5 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full capitalize">
+                      {DIA_LABELS[item.dia] ?? item.dia}
+                    </span>
+                    <span className="text-sm font-bold text-secondary">
+                      {formatHora(item.hora_inicio)} – {formatHora(item.hora_fin)}
+                    </span>
+                  </div>
+                </div>
+              ))}
             </div>
           </AnimatedSection>
         )}
       </SectionWrapper>
-
     </>
   )
 }

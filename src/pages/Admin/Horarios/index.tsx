@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Plus, Trash2, Loader2, AlertCircle, Pencil, ChevronUp, ChevronDown } from 'lucide-react'
+import { Plus, Trash2, Loader2, AlertCircle, Pencil, ChevronUp, ChevronDown, Copy } from 'lucide-react'
 import { useSupabaseQuery } from '@/hooks/useSupabaseQuery'
 import { supabase } from '@/lib/supabase'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -126,67 +126,103 @@ function TabAtencion() {
       ) : items.length === 0 ? (
         <p className="text-sm text-gray-400 italic py-8 text-center">Sin registros. Agrega el primero.</p>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-gray-200">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                {['', 'Nombre', 'Cargo', 'Día', 'Horario', ''].map((h, i) => (
-                  <th key={i} className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wide">{h}</th>
+        <>
+          {/* Vista escritorio */}
+          <div className="hidden md:block overflow-x-auto rounded-xl border border-gray-200">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  {['', 'Nombre', 'Cargo', 'Día', 'Horario', ''].map((h, i) => (
+                    <th key={i} className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wide">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {items.map((item, idx) => (
+                  <tr key={item.id} className="hover:bg-gray-50">
+                    <td className="px-2 py-3">
+                      <div className="flex flex-col">
+                        <button
+                          onClick={() => moveItem(idx, 'up')}
+                          disabled={idx === 0 || moving === item.id}
+                          className="p-0.5 text-gray-300 hover:text-gray-600 disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
+                          title="Mover arriba"
+                        >
+                          <ChevronUp className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => moveItem(idx, 'down')}
+                          disabled={idx === items.length - 1 || moving === item.id}
+                          className="p-0.5 text-gray-300 hover:text-gray-600 disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
+                          title="Mover abajo"
+                        >
+                          <ChevronDown className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 font-medium text-gray-900">{item.nombre}</td>
+                    <td className="px-4 py-3 text-gray-600">{item.cargo}</td>
+                    <td className="px-4 py-3 text-gray-600 capitalize">{DIA_LABELS[item.dia] ?? item.dia}</td>
+                    <td className="px-4 py-3 text-gray-600 font-medium">{item.hora_inicio} – {item.hora_fin}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex gap-1">
+                        <button onClick={() => openEdit(item)}
+                          className="p-1.5 text-gray-400 hover:text-primary hover:bg-primary/5 rounded-md transition-colors">
+                          <Pencil className="w-3.5 h-3.5" />
+                        </button>
+                        <button onClick={() => handleDelete(item.id)} disabled={deletingId === item.id}
+                          className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors disabled:opacity-50">
+                          {deletingId === item.id
+                            ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            : <Trash2 className="w-3.5 h-3.5" />}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
                 ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {items.map((item, idx) => (
-                <tr key={item.id} className="hover:bg-gray-50">
-                  {/* Flechas de orden */}
-                  <td className="px-2 py-3">
-                    <div className="flex flex-col">
-                      <button
-                        onClick={() => moveItem(idx, 'up')}
-                        disabled={idx === 0 || moving === item.id}
-                        className="p-0.5 text-gray-300 hover:text-gray-600 disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
-                        title="Mover arriba"
-                      >
+              </tbody>
+            </table>
+          </div>
+
+          {/* Vista móvil: cards */}
+          <div className="md:hidden space-y-3">
+            {items.map((item, idx) => (
+              <div key={item.id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-gray-900 text-sm">{item.nombre}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{item.cargo}</p>
+                    <p className="text-xs text-gray-400 mt-1 capitalize">
+                      {DIA_LABELS[item.dia] ?? item.dia} · {item.hora_inicio} – {item.hora_fin}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <div className="flex flex-col mr-1">
+                      <button onClick={() => moveItem(idx, 'up')} disabled={idx === 0 || moving === item.id}
+                        className="p-0.5 text-gray-300 hover:text-gray-600 disabled:opacity-20 disabled:cursor-not-allowed">
                         <ChevronUp className="w-3.5 h-3.5" />
                       </button>
-                      <button
-                        onClick={() => moveItem(idx, 'down')}
-                        disabled={idx === items.length - 1 || moving === item.id}
-                        className="p-0.5 text-gray-300 hover:text-gray-600 disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
-                        title="Mover abajo"
-                      >
+                      <button onClick={() => moveItem(idx, 'down')} disabled={idx === items.length - 1 || moving === item.id}
+                        className="p-0.5 text-gray-300 hover:text-gray-600 disabled:opacity-20 disabled:cursor-not-allowed">
                         <ChevronDown className="w-3.5 h-3.5" />
                       </button>
                     </div>
-                  </td>
-                  <td className="px-4 py-3 font-medium text-gray-900">{item.nombre}</td>
-                  <td className="px-4 py-3 text-gray-600">{item.cargo}</td>
-                  <td className="px-4 py-3 text-gray-600 capitalize">{DIA_LABELS[item.dia] ?? item.dia}</td>
-                  <td className="px-4 py-3 text-gray-600 font-medium">{item.hora_inicio} – {item.hora_fin}</td>
-                  <td className="px-4 py-3">
-                    <div className="flex gap-1">
-                      <button
-                        onClick={() => openEdit(item)}
-                        className="p-1.5 text-gray-400 hover:text-primary hover:bg-primary/5 rounded-md transition-colors"
-                      >
-                        <Pencil className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(item.id)}
-                        disabled={deletingId === item.id}
-                        className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors disabled:opacity-50"
-                      >
-                        {deletingId === item.id
-                          ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                          : <Trash2 className="w-3.5 h-3.5" />}
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                    <button onClick={() => openEdit(item)}
+                      className="p-1.5 text-gray-400 hover:text-primary hover:bg-primary/5 rounded-md transition-colors">
+                      <Pencil className="w-3.5 h-3.5" />
+                    </button>
+                    <button onClick={() => handleDelete(item.id)} disabled={deletingId === item.id}
+                      className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors disabled:opacity-50">
+                      {deletingId === item.id
+                        ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        : <Trash2 className="w-3.5 h-3.5" />}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       <Dialog open={dialogOpen} onOpenChange={open => !open && setDialogOpen(false)}>
@@ -224,20 +260,14 @@ function TabAtencion() {
             </Field>
             <div className="grid grid-cols-2 gap-3">
               <Field label="Hora inicio *">
-                <input
-                  type="time"
-                  value={form.hora_inicio}
+                <input type="time" value={form.hora_inicio}
                   onChange={e => setForm(p => ({ ...p, hora_inicio: e.target.value }))}
-                  className={inputClass}
-                />
+                  className={inputClass} />
               </Field>
               <Field label="Hora fin *">
-                <input
-                  type="time"
-                  value={form.hora_fin}
+                <input type="time" value={form.hora_fin}
                   onChange={e => setForm(p => ({ ...p, hora_fin: e.target.value }))}
-                  className={inputClass}
-                />
+                  className={inputClass} />
               </Field>
             </div>
             {formError && (
@@ -246,17 +276,12 @@ function TabAtencion() {
               </div>
             )}
             <div className="flex gap-2 pt-1">
-              <button
-                onClick={() => setDialogOpen(false)}
-                className="flex-1 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
-              >
+              <button onClick={() => setDialogOpen(false)}
+                className="flex-1 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
                 Cancelar
               </button>
-              <button
-                onClick={handleSave}
-                disabled={saving}
-                className="flex-1 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50"
-              >
+              <button onClick={handleSave} disabled={saving}
+                className="flex-1 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50">
                 {saving ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : editing ? 'Guardar' : 'Agregar'}
               </button>
             </div>
@@ -280,6 +305,11 @@ function TabHorarios() {
   const [savingBloque, setSavingBloque] = useState(false)
   const [bloqueError, setBloqueError] = useState<string | null>(null)
   const [deletingBloque, setDeletingBloque] = useState<string | null>(null)
+  // Copiar horario
+  const [copyOpen, setCopyOpen] = useState(false)
+  const [copySource, setCopySource] = useState('')
+  const [copying, setCopying] = useState(false)
+  const [copyError, setCopyError] = useState<string | null>(null)
 
   useEffect(() => { loadCeldas() }, [curso])
 
@@ -360,6 +390,26 @@ function TabHorarios() {
     setDeletingBloque(null)
   }
 
+  async function copiarDesde() {
+    if (!copySource || !supabase) return
+    setCopying(true)
+    setCopyError(null)
+    try {
+      const sourceCells = await select<HorarioCelda>('horarios', { filter: { curso: copySource } })
+      if (sourceCells.length === 0) {
+        setCopyError(`${copySource} Básico no tiene bloques cargados aún.`)
+        return
+      }
+      await supabase.from('horarios').delete().eq('curso', curso)
+      const newRows = sourceCells.map(({ id: _id, created_at: _ca, curso: _c, ...rest }) => ({ ...rest, curso }))
+      const r = await bulkInsert('horarios', newRows as Record<string, unknown>[])
+      if (r.success) { await loadCeldas(); setCopyOpen(false) }
+      else setCopyError(r.error ?? 'Error al copiar')
+    } finally {
+      setCopying(false)
+    }
+  }
+
   return (
     <div className="space-y-4">
       {/* Selector de curso */}
@@ -379,14 +429,22 @@ function TabHorarios() {
         ))}
       </div>
 
-      <div className="flex justify-between items-center">
-        <p className="text-xs text-gray-400">Haz clic en una celda para editar la asignatura (guarda al salir)</p>
-        <button
-          onClick={() => { setAddBloqueOpen(true); setBloqueError(null); setNewBloque({ hora_inicio: '', hora_fin: '' }) }}
-          className="flex items-center gap-2 px-3 py-1.5 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors"
-        >
-          <Plus className="w-3.5 h-3.5" /> Agregar bloque
-        </button>
+      <div className="flex flex-wrap justify-between items-center gap-2">
+        <p className="text-xs text-gray-400">Haz clic en una celda para editar (guarda al salir del campo)</p>
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            onClick={() => { setCopyOpen(true); setCopySource(''); setCopyError(null) }}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
+          >
+            <Copy className="w-3.5 h-3.5" /> Copiar de...
+          </button>
+          <button
+            onClick={() => { setAddBloqueOpen(true); setBloqueError(null); setNewBloque({ hora_inicio: '', hora_fin: '' }) }}
+            className="flex items-center gap-2 px-3 py-1.5 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-primary/90 transition-colors"
+          >
+            <Plus className="w-3.5 h-3.5" /> Agregar bloque
+          </button>
+        </div>
       </div>
 
       {loading ? (
@@ -396,16 +454,16 @@ function TabHorarios() {
       ) : bloques.length === 0 ? (
         <div className="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-200">
           <p className="text-sm text-gray-500">Sin bloques para {curso} Básico.</p>
-          <p className="text-xs text-gray-400 mt-1">Usa "Agregar bloque" para crear la primera fila del horario.</p>
+          <p className="text-xs text-gray-400 mt-1">Usa "Agregar bloque" o "Copiar de..." para comenzar.</p>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-gray-200">
-          <table className="w-full text-sm">
+        <div className="overflow-x-auto rounded-xl border border-gray-200 -mx-1 px-1">
+          <table className="w-full text-sm" style={{ minWidth: 560 }}>
             <thead>
               <tr className="bg-gray-900 text-white">
                 <th className="px-3 py-3 text-center text-xs font-semibold whitespace-nowrap">Horario</th>
                 {DIA_COLS.map(d => (
-                  <th key={d.key} className="px-3 py-3 text-center text-xs font-semibold min-w-[110px]">{d.label}</th>
+                  <th key={d.key} className="px-3 py-3 text-center text-xs font-semibold min-w-[100px]">{d.label}</th>
                 ))}
                 <th className="px-2 py-3 w-8" />
               </tr>
@@ -461,20 +519,14 @@ function TabHorarios() {
             </p>
             <div className="grid grid-cols-2 gap-3">
               <Field label="Hora inicio">
-                <input
-                  type="time"
-                  value={newBloque.hora_inicio}
+                <input type="time" value={newBloque.hora_inicio}
                   onChange={e => setNewBloque(p => ({ ...p, hora_inicio: e.target.value }))}
-                  className={inputClass}
-                />
+                  className={inputClass} />
               </Field>
               <Field label="Hora fin">
-                <input
-                  type="time"
-                  value={newBloque.hora_fin}
+                <input type="time" value={newBloque.hora_fin}
                   onChange={e => setNewBloque(p => ({ ...p, hora_fin: e.target.value }))}
-                  className={inputClass}
-                />
+                  className={inputClass} />
               </Field>
             </div>
             {bloqueError && (
@@ -483,18 +535,51 @@ function TabHorarios() {
               </div>
             )}
             <div className="flex gap-2">
-              <button
-                onClick={() => setAddBloqueOpen(false)}
-                className="flex-1 py-2 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
-              >
+              <button onClick={() => setAddBloqueOpen(false)}
+                className="flex-1 py-2 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors">
                 Cancelar
               </button>
-              <button
-                onClick={addBloque}
-                disabled={savingBloque}
-                className="flex-1 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50"
-              >
+              <button onClick={addBloque} disabled={savingBloque}
+                className="flex-1 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50">
                 {savingBloque ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : 'Agregar'}
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog copiar horario */}
+      <Dialog open={copyOpen} onOpenChange={open => !open && setCopyOpen(false)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Copiar horario de otro curso</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-xs text-gray-500">
+              Se copiarán todos los bloques y asignaturas al curso <strong>{curso} Básico</strong>.
+              Los bloques actuales serán <span className="text-red-500 font-medium">reemplazados</span>.
+            </p>
+            <Field label="Copiar desde">
+              <select value={copySource} onChange={e => setCopySource(e.target.value)} className={inputClass}>
+                <option value="">Selecciona un curso...</option>
+                {CURSOS.filter(c => c !== curso).map(c => (
+                  <option key={c} value={c}>{c} Básico</option>
+                ))}
+              </select>
+            </Field>
+            {copyError && (
+              <div className="flex items-center gap-2 text-xs text-red-600 bg-red-50 rounded px-3 py-2">
+                <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" /> {copyError}
+              </div>
+            )}
+            <div className="flex gap-2">
+              <button onClick={() => setCopyOpen(false)}
+                className="flex-1 py-2 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition-colors">
+                Cancelar
+              </button>
+              <button onClick={copiarDesde} disabled={!copySource || copying}
+                className="flex-1 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50">
+                {copying ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : 'Copiar'}
               </button>
             </div>
           </div>
