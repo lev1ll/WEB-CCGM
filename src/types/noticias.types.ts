@@ -111,3 +111,23 @@ export interface ContactMessage {
   leido: boolean
   created_at: string
 }
+
+export interface HorarioCelda {
+  id: string
+  curso: string
+  dia: string
+  hora_inicio: string
+  hora_fin: string
+  asignatura: string
+  orden: number
+}
+
+export interface AtencionApoderado {
+  id: string
+  nombre: string
+  cargo: string
+  dia: string
+  hora_inicio: string
+  hora_fin: string
+  orden: number
+}

@@ -1,12 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { Loader2, Upload, Trash2, Monitor, Dumbbell, TreePine, UtensilsCrossed, School } from 'lucide-react'
+import { Loader2, Upload, Trash2 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { uploadToCloudinary } from '@/lib/utils'
 import { INSTALACIONES } from '@/constants/instalaciones'
 import CropModal from '@/components/shared/CropModal'
-
-const ICON_MAP = { Monitor, Dumbbell, TreePine, UtensilsCrossed, School } as const
-type IconName = keyof typeof ICON_MAP
 
 export default function AdminInstalaciones() {
   const [fotos, setFotos] = useState<Record<string, string>>({})
@@ -88,7 +85,7 @@ export default function AdminInstalaciones() {
         <h1 className="text-xl font-bold text-gray-900">Fotos de Instalaciones</h1>
         <p className="text-sm text-gray-500 mt-0.5">
           Sube una foto por instalación para mostrarla en la sección "Nosotros".
-          Si no hay foto subida se usa la imagen predeterminada.
+          Si no hay foto subida la card aparece sin imagen.
         </p>
       </div>
 
@@ -104,9 +101,8 @@ export default function AdminInstalaciones() {
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {INSTALACIONES.map(({ id, name, image: fallback, icon }) => {
-            const Icon = ICON_MAP[icon as IconName]
-            const foto = fotos[id] ?? fallback
+          {INSTALACIONES.map(({ id, name }) => {
+            const foto = fotos[id]
             const hasCustom = !!fotos[id]
             const isUploading = uploading === id
             return (
@@ -116,7 +112,7 @@ export default function AdminInstalaciones() {
                   {foto ? (
                     <img src={foto} alt={name} className="w-full h-full object-cover" />
                   ) : (
-                    <Icon className="w-14 h-14 text-gray-300" />
+                    <div className="w-full h-full bg-gray-50" />
                   )}
                   {isUploading && (
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center">

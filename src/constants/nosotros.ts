@@ -50,37 +50,6 @@ export const MISION_VISION = {
   },
 } as const
 
-export const EQUIPO = [
-  {
-    name: 'Alejandro Montes Riquelme',
-    role: 'Director',
-    bio: 'Director de la Escuela Gabriela Mistral, comprometido con el proyecto educativo institucional y el desarrollo de la comunidad de Nueva Imperial.',
-    initials: 'AM',
-    photo: '',
-  },
-  {
-    name: 'Marcela Catalán Soto',
-    role: 'Jefa de UTP',
-    bio: 'Responsable de la gestión pedagógica y del desarrollo curricular del establecimiento.',
-    initials: 'MC',
-    photo: '',
-  },
-  {
-    name: 'Elizabeth Oñate',
-    role: 'Inspectora General',
-    bio: 'A cargo de la convivencia escolar y la gestión administrativa del día a día.',
-    initials: 'EO',
-    photo: '',
-  },
-  {
-    name: 'Elizabeth Cahuín Quiroz',
-    role: 'Coordinadora PIE',
-    bio: 'Lidera el Programa de Integración Escolar, velando por la inclusión y atención oportuna de estudiantes con NEE.',
-    initials: 'EC',
-    photo: '',
-  },
-] as const
-
 export const VALORES_INSTITUCIONALES = [
   {
     icon: 'Heart',

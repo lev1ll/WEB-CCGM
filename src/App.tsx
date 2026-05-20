@@ -20,8 +20,10 @@ import AdminAcademias from '@/pages/Admin/Academias'
 import AdminInstalaciones from '@/pages/Admin/Instalaciones'
 import RecursosPage from '@/pages/Recursos'
 import CalendarioPage from '@/pages/Calendario'
+import HorariosPage from '@/pages/Horarios'
 import AdminCalendario from '@/pages/Admin/Calendario'
 import AdminMovilizacion from '@/pages/Admin/Movilizacion'
+import AdminHorarios from '@/pages/Admin/Horarios'
 import { ErrorBoundary } from '@/components/shared/ErrorBoundary'
 import { HomeNueva } from '@/pages/HomeNueva'
 import { NotFoundPage } from '@/pages/NotFound'
@@ -43,6 +45,7 @@ export default function App() {
             <Route path="noticias/:slug" element={<ErrorBoundary><NoticiaDetallePage /></ErrorBoundary>} />
             <Route path="recursos" element={<ErrorBoundary><RecursosPage /></ErrorBoundary>} />
             <Route path="calendario" element={<ErrorBoundary><CalendarioPage /></ErrorBoundary>} />
+            <Route path="horarios" element={<ErrorBoundary><HorariosPage /></ErrorBoundary>} />
           </Route>
 
           {/* ── Panel Admin (layout separado, auth-guardado) ── */}
@@ -60,6 +63,7 @@ export default function App() {
             <Route path="admin/instalaciones" element={<AdminInstalaciones />} />
             <Route path="admin/calendario" element={<AdminCalendario />} />
             <Route path="admin/movilizacion" element={<AdminMovilizacion />} />
+            <Route path="admin/horarios" element={<AdminHorarios />} />
           </Route>
 
           {/* ── 404 — sin layout, pantalla completa propia ── */}

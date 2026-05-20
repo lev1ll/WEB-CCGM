@@ -1,31 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="75 118 270 278">
-  <!-- Círculo dorado -->
-  <circle cx="210" cy="255" r="132" fill="none" stroke="#C9A227" stroke-width="8"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Fondo negro -->
+  <circle cx="32" cy="32" r="31" fill="#1C1814"/>
+  <!-- Borde dorado -->
+  <circle cx="32" cy="32" r="29" fill="none" stroke="#C9A227" stroke-width="2"/>
 
-  <!-- Cuadrado negro -->
-  <rect x="110" y="158" width="138" height="132" fill="#1C1814"/>
+  <!-- Página izquierda del libro -->
+  <path d="M11,44 L11,22 Q11,19 14,18.5 L30,18 L30,46 L14,46.5 Q11,46 11,44 Z" fill="#F0C030"/>
+  <!-- Sombra interior izquierda -->
+  <path d="M27,18 L30,18 L30,46 L27,46 Z" fill="#D4A820" opacity="0.5"/>
 
-  <!-- Cuadrado amarillo -->
-  <rect x="182" y="228" width="124" height="108" fill="#F0C030"/>
+  <!-- Página derecha del libro -->
+  <path d="M34,18 L50,18.5 Q53,19 53,22 L53,44 Q53,46 50,46.5 L34,46 Z" fill="#F0C030"/>
+  <!-- Sombra interior derecha -->
+  <path d="M34,18 L37,18 L37,46 L34,46 Z" fill="#D4A820" opacity="0.5"/>
 
-  <!-- Cuadrado rojo -->
-  <rect x="103" y="265" width="96" height="84" fill="#CC2200"/>
+  <!-- Lomo rojo -->
+  <rect x="29.5" y="16.5" width="5" height="31" rx="1" fill="#CC2200"/>
 
-  <!-- Gabriela — dorado sobre negro -->
-  <text
-    x="118" y="223"
-    font-family="'Dancing Script', Georgia, serif"
-    font-weight="700"
-    font-size="52"
-    fill="#F0C030"
-  >Gabriela</text>
-
-  <!-- Mistral — blanco sobre amarillo para que contraste -->
-  <text
-    x="186" y="310"
-    font-family="'Dancing Script', Georgia, serif"
-    font-weight="700"
-    font-size="50"
-    fill="white"
-  >Mistral</text>
+  <!-- G en página izquierda -->
+  <text x="21" y="37" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="16" fill="#1C1814" text-anchor="middle">G</text>
+  <!-- M en página derecha -->
+  <text x="43" y="37" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="16" fill="#1C1814" text-anchor="middle">M</text>
 </svg>
