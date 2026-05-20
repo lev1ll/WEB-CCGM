@@ -401,7 +401,7 @@ function TabHorarios() {
         return
       }
       await supabase.from('horarios').delete().eq('curso', curso)
-      const newRows = sourceCells.map(({ id: _id, created_at: _ca, curso: _c, ...rest }) => ({ ...rest, curso }))
+      const newRows = sourceCells.map(({ id: _id, curso: _c, ...rest }) => ({ ...rest, curso }))
       const r = await bulkInsert('horarios', newRows as Record<string, unknown>[])
       if (r.success) { await loadCeldas(); setCopyOpen(false) }
       else setCopyError(r.error ?? 'Error al copiar')
